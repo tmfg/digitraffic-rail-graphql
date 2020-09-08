@@ -1,6 +1,8 @@
 package graphqlscope.graphql;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,29 @@ public class GraphQLDataFetchers {
                             null,
                             null
                     ));
+        };
+    }
+
+    public DataFetcher trainsFetcher() {
+        return dataFetchingEnvironment -> {
+            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
+
+            List<Train> trains = trainRepository.findByDepartureDate(departureDate);
+            return trains.stream()
+                    .map(s -> new TrainTO(
+                            s.cancelled,
+                            s.commuterLineID,
+                            s.deleted,
+                            s.id.departureDate,
+                            s.operatorShortCode,
+                            s.runningCurrently,
+                            s.timetableAcceptanceDate,
+                            s.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
+                            s.id.trainNumber.intValue(),
+                            s.version.toString(),
+                            null,
+                            null
+                    )).collect(Collectors.toList());
         };
     }
 }

@@ -1,5 +1,6 @@
 type Query {
     train(trainNumber:Int, departureDate:Date): Train
+    trains(departureDate:Date): [Train]
 }
 
 type Train {

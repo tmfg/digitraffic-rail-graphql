@@ -63,6 +63,7 @@ public class GraphQLProvider {
                 .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("train", graphQLDataFetchers.trainFetcher())
+                        .dataFetcher("trains", graphQLDataFetchers.trainsFetcher())
                 );
 
         for (MyDataFetcher fetcher : this.fetchers) {
