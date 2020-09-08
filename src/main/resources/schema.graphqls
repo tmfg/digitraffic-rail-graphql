@@ -1,0 +1,22 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+}
+
+type Animal {
+    color: String
+    countries: [Country]
+    countryIds: [ID]
+    id: ID
+    name: String
+}
+
+type Country {
+    id: ID
+    name: String
+}
+
+type Query {
+    animals(id: ID): [Animal]
+}
