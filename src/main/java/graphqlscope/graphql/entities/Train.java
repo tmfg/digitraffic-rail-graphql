@@ -1,15 +1,10 @@
 package graphqlscope.graphql.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
+
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 
 @Entity
 public class Train {
@@ -21,8 +16,24 @@ public class Train {
     @EmbeddedId
     public TrainId id;
 
+    @Column
+    public String commuterLineID;
+
+    @Column
+    public boolean runningCurrently;
+
+    @Column
+    public boolean cancelled;
+
+    @Column
+    public Boolean deleted;
 
     @Column
     public Long version;
+
+    @Column
+    public ZonedDateTime timetableAcceptanceDate;
+
+    public TimetableType timetableType;
 
 }

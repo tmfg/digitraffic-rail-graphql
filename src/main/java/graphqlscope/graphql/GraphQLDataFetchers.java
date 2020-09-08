@@ -20,9 +20,11 @@ import graphql.schema.DataFetcher;
 import graphqlscope.graphql.entities.Cause;
 import graphqlscope.graphql.entities.TimeTableRow;
 import graphqlscope.graphql.entities.TimeTableRowId;
+import graphqlscope.graphql.entities.Train;
 import graphqlscope.graphql.entities.TrainId;
 import graphqlscope.graphql.model.CauseTO;
 import graphqlscope.graphql.model.TimeTableRowTO;
+import graphqlscope.graphql.model.TimetableTypeTO;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.CauseRepository;
 import graphqlscope.graphql.repositories.TimeTableRowRepository;
@@ -42,19 +44,24 @@ public class GraphQLDataFetchers {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
 
-    private static final Map<String, String> COUNTRIES = Map.of(
-            "A", "Argentina",
-            "B", "Brazil",
-            "C", "Chile"
-    );
-
     public DataFetcher trainFetcher() {
         return dataFetchingEnvironment -> {
             Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
             return trainRepository.findById(new TrainId(trainNumber, departureDate))
-                    .map(s -> new TrainTO(s.id.trainNumber.intValue(), s.id.departureDate.toString(), s.version.toString(), null));
+                    .map(s -> new TrainTO(
+                            s.cancelled,
+                            s.commuterLineID,
+                            s.deleted,
+                            s.id.departureDate.toString(),
+                            s.runningCurrently,
+                            s.timetableAcceptanceDate.toString(),
+                            s.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
+                            s.id.trainNumber.intValue(),
+                            s.version.toString(),
+                            null
+                    ));
         };
     }
 

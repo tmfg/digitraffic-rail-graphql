@@ -3,10 +3,22 @@ type Query {
 }
 
 type Train {
-    trainNumber:Int
-    departureDate:Date
-    version:String
-    timeTableRows: [TimeTableRow]
+    cancelled                 : Boolean
+    commuterLineid           : String
+    deleted                   : Boolean
+    departureDate            : Date
+    #    operatorShortCode       : String
+    #    operatorUicCode         : Int
+    runningCurrently         : Boolean
+    timetableAcceptanceDate : Date
+    timetableType            : TimetableType
+    #    trainCategoryId         : Int
+    trainNumber              : Int
+    #    trainTypeId             : Int
+    version                   : String
+    #    operator                  : Operator
+    timeTableRows           : [TimeTableRow]
+    #    train_locations           : [TrainLocation]
 }
 
 type TimeTableRow {
@@ -36,3 +48,8 @@ type Cause {
 
 scalar Date
 scalar DateTime
+
+enum TimetableType {
+    REGULAR,
+    ADHOC
+}
