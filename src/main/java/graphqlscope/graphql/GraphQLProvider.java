@@ -4,9 +4,11 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import graphqlscope.graphql.fetchers.MyDataFetcher;
 
 @Component
 public class GraphQLProvider {
@@ -30,6 +33,9 @@ public class GraphQLProvider {
     public GraphQLProvider(GraphQLDataFetchers graphQLDataFetchers) {
         this.graphQLDataFetchers = graphQLDataFetchers;
     }
+
+    @Autowired
+    private List<MyDataFetcher> fetchers;
 
     @Bean
     public GraphQL graphQL() {
@@ -52,18 +58,19 @@ public class GraphQLProvider {
     }
 
     private RuntimeWiring buildWiring() {
-        return RuntimeWiring.newRuntimeWiring()
+        RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring()
                 .scalar(ExtendedScalars.Date)
                 .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("train", graphQLDataFetchers.trainFetcher())
-                )
-                .type(newTypeWiring("Train")
-                        .dataFetcher("timeTableRows", graphQLDataFetchers.trainTimeTableRowsFetcher())
-                )
-                .type(newTypeWiring("TimeTableRow")
-                        .dataFetcher("causes", graphQLDataFetchers.timeTableRowCauseFetcher())
-                )
+                );
+
+        for (MyDataFetcher fetcher : this.fetchers) {
+            builder = builder.type(newTypeWiring(fetcher.getTypeName())
+                    .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
+        }
+
+        return builder
                 .build();
     }
 

@@ -10,7 +10,7 @@ type Train {
     #    operatorShortCode       : String
     #    operatorUicCode         : Int
     runningCurrently         : Boolean
-    timetableAcceptanceDate : Date
+    timetableAcceptanceDate : DateTime
     timetableType            : TimetableType
     #    trainCategoryId         : Int
     trainNumber              : Int

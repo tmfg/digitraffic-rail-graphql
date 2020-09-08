@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -16,16 +17,15 @@ import graphql.GraphQL;
 import graphql.Internal;
 import graphql.spring.web.servlet.GraphQLInvocation;
 import graphql.spring.web.servlet.GraphQLInvocationData;
-import graphqlscope.graphql.entities.TimeTableRowId;
-import graphqlscope.graphql.entities.TrainId;
-import graphqlscope.graphql.model.CauseTO;
-import graphqlscope.graphql.model.TimeTableRowTO;
+import graphqlscope.graphql.fetchers.MyDataFetcher;
 
 @Component
 @Internal
 @Primary
 @Profile({"request", "default"})
 public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
+    @Autowired
+    private List<MyDataFetcher> fetchers;
 
     private final GraphQL graphQL;
     private final GraphQLDataFetchers graphQLDataFetchers;
@@ -43,11 +43,11 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
                 .variables(invocationData.getVariables());
 
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
-        DataLoader<TrainId, List<TimeTableRowTO>> timeTableRowLoader = DataLoader.newDataLoader(graphQLDataFetchers.timeTableRowBatchLoader());
-        dataLoaderRegistry.register("timeTableRows", timeTableRowLoader);
 
-        DataLoader<TimeTableRowId, List<CauseTO>> causeLoader = DataLoader.newDataLoader(graphQLDataFetchers.causeBatchLoader());
-        dataLoaderRegistry.register("causes", causeLoader);
+        for (MyDataFetcher fetcher : fetchers) {
+            DataLoader timeTableRowLoader = DataLoader.newDataLoader(fetcher.createLoader());
+            dataLoaderRegistry.register(fetcher.getFieldName(), timeTableRowLoader);
+        }
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);
         executionInputBuilder.context(dataLoaderRegistry);

@@ -54,7 +54,8 @@ graphqlCodegen {
   apiPackageName = "graphqlscope.graphql.api"
   modelPackageName = "graphqlscope.graphql.model"
   customTypesMapping = [
-        DateTime: "java.time.ZonedDateTime"
+        DateTime: "java.time.ZonedDateTime",
+        Date: "java.time.LocalDate"
   ]
   modelNameSuffix = "TO"
   generateApis = true
