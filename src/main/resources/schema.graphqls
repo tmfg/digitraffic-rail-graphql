@@ -1,6 +1,15 @@
 type Query {
     animals(id: ID): [Animal]
+    train(trainNumber:Int, departureDate:Date): Train
 }
+
+type Train {
+    trainNumber:Int
+    departureDate:Date
+    version:String
+}
+
+scalar Date
 
 type Animal {
     id: ID

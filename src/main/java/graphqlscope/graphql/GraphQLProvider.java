@@ -1,14 +1,12 @@
 package graphqlscope.graphql;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
-import graphqlscope.graphql.model.CountryTO;
+import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
+
+import java.io.IOException;
+import java.net.URL;
+
+import javax.annotation.PostConstruct;
+
 import org.dataloader.CacheMap;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderOptions;
@@ -21,12 +19,17 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.annotation.PostConstruct;
-
-import java.io.IOException;
-import java.net.URL;
-
-import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import graphql.GraphQL;
+import graphql.scalars.ExtendedScalars;
+import graphql.schema.GraphQLScalarType;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.RuntimeWiring;
+import graphql.schema.idl.SchemaGenerator;
+import graphql.schema.idl.SchemaParser;
+import graphql.schema.idl.TypeDefinitionRegistry;
+import graphqlscope.graphql.model.CountryTO;
 
 @Component
 public class GraphQLProvider {
@@ -48,8 +51,8 @@ public class GraphQLProvider {
     @Scope(value = WebApplicationContext.SCOPE_APPLICATION, proxyMode = ScopedProxyMode.TARGET_CLASS)
     @Profile("global")
     public DataLoaderRegistry globalDataLoaderRegistry(
-      @Value("${cache.maxCacheSize}") long maxCacheSize,
-      @Value("${cache.expiryInSeconds}") long expiryInSeconds
+            @Value("${cache.maxCacheSize}") long maxCacheSize,
+            @Value("${cache.expiryInSeconds}") long expiryInSeconds
     ) {
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
@@ -78,13 +81,15 @@ public class GraphQLProvider {
 
     private RuntimeWiring buildWiring() {
         return RuntimeWiring.newRuntimeWiring()
-          .type(newTypeWiring("Query")
-            .dataFetcher("animals", graphQLDataFetchers.animalsFetcher())
-          )
-          .type(newTypeWiring("Animal")
-            .dataFetcher("countries", graphQLDataFetchers.animalCountriesFetcher())
-          )
-          .build();
+                .scalar(ExtendedScalars.Date)
+                .type(newTypeWiring("Query")
+                        .dataFetcher("animals", graphQLDataFetchers.animalsFetcher())
+                        .dataFetcher("train", graphQLDataFetchers.trainFetcher())
+                )
+                .type(newTypeWiring("Animal")
+                        .dataFetcher("countries", graphQLDataFetchers.animalCountriesFetcher())
+                )
+                .build();
     }
 
 
