@@ -23,7 +23,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import graphql.GraphQL;
 import graphql.scalars.ExtendedScalars;
-import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
@@ -82,9 +81,13 @@ public class GraphQLProvider {
     private RuntimeWiring buildWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .scalar(ExtendedScalars.Date)
+                .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("animals", graphQLDataFetchers.animalsFetcher())
                         .dataFetcher("train", graphQLDataFetchers.trainFetcher())
+                )
+                .type(newTypeWiring("Train")
+                        .dataFetcher("timeTableRows", graphQLDataFetchers.trainTimeTableRowsFetcher())
                 )
                 .type(newTypeWiring("Animal")
                         .dataFetcher("countries", graphQLDataFetchers.animalCountriesFetcher())

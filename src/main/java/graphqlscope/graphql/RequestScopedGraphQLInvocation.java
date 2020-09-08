@@ -1,12 +1,8 @@
 package graphqlscope.graphql;
 
-import graphql.ExecutionInput;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.Internal;
-import graphql.spring.web.servlet.GraphQLInvocation;
-import graphql.spring.web.servlet.GraphQLInvocationData;
-import graphqlscope.graphql.model.CountryTO;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.context.annotation.Primary;
@@ -14,7 +10,15 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.concurrent.CompletableFuture;
+import graphql.ExecutionInput;
+import graphql.ExecutionResult;
+import graphql.GraphQL;
+import graphql.Internal;
+import graphql.spring.web.servlet.GraphQLInvocation;
+import graphql.spring.web.servlet.GraphQLInvocationData;
+import graphqlscope.graphql.entities.TrainId;
+import graphqlscope.graphql.model.CountryTO;
+import graphqlscope.graphql.model.TimeTableRowTO;
 
 @Component
 @Internal
@@ -33,13 +37,16 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
     @Override
     public CompletableFuture<ExecutionResult> invoke(GraphQLInvocationData invocationData, WebRequest webRequest) {
         ExecutionInput.Builder executionInputBuilder = ExecutionInput.newExecutionInput()
-          .query(invocationData.getQuery())
-          .operationName(invocationData.getOperationName())
-          .variables(invocationData.getVariables());
+                .query(invocationData.getQuery())
+                .operationName(invocationData.getOperationName())
+                .variables(invocationData.getVariables());
 
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
         DataLoader<String, CountryTO> countryLoader = DataLoader.newDataLoader(graphQLDataFetchers.countryBatchLoader());
         dataLoaderRegistry.register("countries", countryLoader);
+
+        DataLoader<TrainId, List<TimeTableRowTO>> timeTableRowLoader = DataLoader.newDataLoader(graphQLDataFetchers.timeTableRowBatchLoader());
+        dataLoaderRegistry.register("timeTableRows", timeTableRowLoader);
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);
         executionInputBuilder.context(dataLoaderRegistry);

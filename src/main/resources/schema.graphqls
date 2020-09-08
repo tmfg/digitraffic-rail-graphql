@@ -7,9 +7,20 @@ type Train {
     trainNumber:Int
     departureDate:Date
     version:String
+    timeTableRows: [TimeTableRow]
 }
 
-scalar Date
+type TimeTableRow {
+    stationShortCode: String
+    stationUICCode: Int
+    countryCode: String
+    type: String
+    trainStopping: Boolean
+    commercialStop: Boolean
+    commercialTrack: String
+    cancelled: Boolean
+    scheduledTime: DateTime
+}
 
 type Animal {
     id: ID
@@ -23,3 +34,6 @@ type Country {
     id: ID
     name: String
 }
+
+scalar Date
+scalar DateTime

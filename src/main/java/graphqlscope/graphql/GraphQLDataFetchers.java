@@ -3,6 +3,7 @@ package graphqlscope.graphql;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -17,10 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetcher;
+import graphqlscope.graphql.entities.TimeTableRow;
 import graphqlscope.graphql.entities.TrainId;
 import graphqlscope.graphql.model.AnimalTO;
 import graphqlscope.graphql.model.CountryTO;
+import graphqlscope.graphql.model.TimeTableRowTO;
 import graphqlscope.graphql.model.TrainTO;
+import graphqlscope.graphql.repositories.TimeTableRowRepository;
 import graphqlscope.graphql.repositories.TrainRepository;
 
 @Component
@@ -28,6 +32,9 @@ public class GraphQLDataFetchers {
 
     @Autowired
     private TrainRepository trainRepository;
+
+    @Autowired
+    private TimeTableRowRepository timeTableRowRepository;
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
 
@@ -80,7 +87,41 @@ public class GraphQLDataFetchers {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
             return trainRepository.findById(new TrainId(trainNumber, departureDate))
-                    .map(s -> new TrainTO(s.id.trainNumber.intValue(), s.id.departureDate.toString(), s.version.toString()));
+                    .map(s -> new TrainTO(s.id.trainNumber.intValue(), s.id.departureDate.toString(), s.version.toString(), null));
         };
+    }
+
+    public DataFetcher trainTimeTableRowsFetcher() {
+        return dataFetchingEnvironment -> {
+            TrainTO parent = dataFetchingEnvironment.getSource();
+
+
+            DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getContext();
+            DataLoader<TrainId, TimeTableRowTO> timeTableRowLoader = dataLoaderRegistry.getDataLoader("timeTableRows");
+
+            return timeTableRowLoader.load(new TrainId(parent.getTrainNumber().longValue(), LocalDate.parse(parent.getDepartureDate())));
+        };
+    }
+
+    public BatchLoader<TrainId, List<TimeTableRowTO>> timeTableRowBatchLoader() {
+        return trainIds ->
+                CompletableFuture.supplyAsync(() -> {
+                            List<TimeTableRow> timeTableRows = timeTableRowRepository.findAllByTrainIds(trainIds);
+
+                            Map<TrainId, List<TimeTableRowTO>> timeTableRowsGroupBy = new HashMap<>();
+                            for (TimeTableRow timeTableRow : timeTableRows) {
+                                TrainId trainId = new TrainId(timeTableRow.id.trainNumber, timeTableRow.id.departureDate);
+                                List<TimeTableRowTO> timeTableRowTOS = timeTableRowsGroupBy.get(trainId);
+                                if (timeTableRowTOS == null) {
+                                    timeTableRowTOS = new ArrayList<>();
+                                    timeTableRowsGroupBy.put(trainId, timeTableRowTOS);
+                                }
+
+                                timeTableRowTOS.add(new TimeTableRowTO("a", 1, "b", "c", true, true, "d", true, timeTableRow.scheduledTime));
+                            }
+
+                            return trainIds.stream().map(s -> timeTableRowsGroupBy.get(s)).collect(Collectors.toList());
+                        }
+                );
     }
 }
