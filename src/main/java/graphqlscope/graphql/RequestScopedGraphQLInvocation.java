@@ -27,13 +27,8 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
     @Autowired
     private List<MyDataFetcher> fetchers;
 
-    private final GraphQL graphQL;
-    private final GraphQLDataFetchers graphQLDataFetchers;
-
-    public RequestScopedGraphQLInvocation(GraphQL graphQL, GraphQLDataFetchers graphQLDataFetchers) {
-        this.graphQL = graphQL;
-        this.graphQLDataFetchers = graphQLDataFetchers;
-    }
+    @Autowired
+    private GraphQL graphQL;
 
     @Override
     public CompletableFuture<ExecutionResult> invoke(GraphQLInvocationData invocationData, WebRequest webRequest) {

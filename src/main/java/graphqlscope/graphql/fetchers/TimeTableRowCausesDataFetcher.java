@@ -1,6 +1,7 @@
 package graphqlscope.graphql.fetchers;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import graphqlscope.graphql.model.TimeTableRowTO;
 import graphqlscope.graphql.repositories.CauseRepository;
 
 @Component
-public class TimeTableRowCausesDataFetcher extends MyDataFetcher {
+public class TimeTableRowCausesDataFetcher extends MyDataFetcher<TimeTableRowId, List<CauseTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;
@@ -32,7 +33,7 @@ public class TimeTableRowCausesDataFetcher extends MyDataFetcher {
     }
 
     @Override
-    public DataFetcher createFetcher() {
+    public DataFetcher<CompletableFuture<List<CauseTO>>> createFetcher() {
         return dataFetcherFactory.createDataFetcher("causes", (TimeTableRowTO parent) -> new TimeTableRowId(parent.getId().longValue(), parent.getDepartureDate(), parent.getTrainNumber().longValue()));
     }
 

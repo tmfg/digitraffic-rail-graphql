@@ -1,6 +1,7 @@
 package graphqlscope.graphql.fetchers;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.TimeTableRowRepository;
 
 @Component
-public class TrainToTimeTableRowDataFetcher extends MyDataFetcher {
+public class TrainToTimeTableRowDataFetcher extends MyDataFetcher<TrainId, List<TimeTableRowTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;
@@ -32,7 +33,7 @@ public class TrainToTimeTableRowDataFetcher extends MyDataFetcher {
     }
 
     @Override
-    public DataFetcher createFetcher() {
+    public DataFetcher<CompletableFuture<List<TimeTableRowTO>>> createFetcher() {
         return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTO parent) -> new TrainId(parent.getTrainNumber().longValue(), parent.getDepartureDate()));
     }
 

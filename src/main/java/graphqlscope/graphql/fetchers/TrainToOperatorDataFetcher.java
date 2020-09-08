@@ -1,5 +1,7 @@
 package graphqlscope.graphql.fetchers;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,7 +12,7 @@ import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.OperatorRepository;
 
 @Component
-public class TrainToOperatorDataFetcher extends MyDataFetcher {
+public class TrainToOperatorDataFetcher extends MyDataFetcher<String, OperatorTO> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;
@@ -29,7 +31,7 @@ public class TrainToOperatorDataFetcher extends MyDataFetcher {
     }
 
     @Override
-    public DataFetcher createFetcher() {
+    public DataFetcher<CompletableFuture<OperatorTO>> createFetcher() {
         return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTO parent) -> parent.getOperatorShortCode());
     }
 

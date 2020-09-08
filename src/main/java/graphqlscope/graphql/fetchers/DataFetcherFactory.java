@@ -18,12 +18,12 @@ import graphql.schema.DataFetcher;
 @Component
 public class DataFetcherFactory {
 
-    public <Parent, ParentId> DataFetcher createDataFetcher(String loaderKey, Function<Parent, ParentId> parentIdProvider) {
+    public <Parent, ParentId, Child> DataFetcher<CompletableFuture<Child>> createDataFetcher(String loaderKey, Function<Parent, ParentId> parentIdProvider) {
         return dataFetchingEnvironment -> {
             Parent parent = dataFetchingEnvironment.getSource();
 
             DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getContext();
-            DataLoader<ParentId, ?> timeTableRowLoader = dataLoaderRegistry.getDataLoader(loaderKey);
+            DataLoader<ParentId, Child> timeTableRowLoader = dataLoaderRegistry.getDataLoader(loaderKey);
 
             return timeTableRowLoader.load(parentIdProvider.apply(parent));
         };
