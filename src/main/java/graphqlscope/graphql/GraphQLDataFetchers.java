@@ -18,12 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetcher;
+import graphqlscope.graphql.entities.Cause;
 import graphqlscope.graphql.entities.TimeTableRow;
+import graphqlscope.graphql.entities.TimeTableRowId;
 import graphqlscope.graphql.entities.TrainId;
 import graphqlscope.graphql.model.AnimalTO;
+import graphqlscope.graphql.model.CauseTO;
 import graphqlscope.graphql.model.CountryTO;
 import graphqlscope.graphql.model.TimeTableRowTO;
 import graphqlscope.graphql.model.TrainTO;
+import graphqlscope.graphql.repositories.CauseRepository;
 import graphqlscope.graphql.repositories.TimeTableRowRepository;
 import graphqlscope.graphql.repositories.TrainRepository;
 
@@ -35,6 +39,9 @@ public class GraphQLDataFetchers {
 
     @Autowired
     private TimeTableRowRepository timeTableRowRepository;
+
+    @Autowired
+    private CauseRepository causeRepository;
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
 
@@ -117,10 +124,44 @@ public class GraphQLDataFetchers {
                                     timeTableRowsGroupBy.put(trainId, timeTableRowTOS);
                                 }
 
-                                timeTableRowTOS.add(new TimeTableRowTO("a", 1, "b", "c", true, true, "d", true, timeTableRow.scheduledTime));
+                                timeTableRowTOS.add(new TimeTableRowTO("a", 1, "b", "c", true, true, "d", true, timeTableRow.scheduledTime, null, timeTableRow.id.attapId.intValue(), timeTableRow.id
+                                        .trainNumber.intValue(), timeTableRow.id.departureDate.toString()));
                             }
 
                             return trainIds.stream().map(s -> timeTableRowsGroupBy.get(s)).collect(Collectors.toList());
+                        }
+                );
+    }
+
+    public DataFetcher timeTableRowCauseFetcher() {
+        return dataFetchingEnvironment -> {
+            TimeTableRowTO parent = dataFetchingEnvironment.getSource();
+
+            DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getContext();
+            DataLoader<TimeTableRowId, CauseTO> timeTableRowLoader = dataLoaderRegistry.getDataLoader("causes");
+
+            return timeTableRowLoader.load(new TimeTableRowId(parent.getId().longValue(), LocalDate.parse(parent.getDepartureDate()), parent.getTrainNumber().longValue()));
+        };
+    }
+
+    public BatchLoader<TimeTableRowId, List<CauseTO>> causeBatchLoader() {
+        return parentIds ->
+                CompletableFuture.supplyAsync(() -> {
+                            List<Cause> children = causeRepository.findAllByTimeTableRowIds(parentIds);
+
+                            Map<TimeTableRowId, List<CauseTO>> childrenGroupedBy = new HashMap<>();
+                            for (Cause child : children) {
+                                TimeTableRowId parentId = child.timeTableRowId;
+                                List<CauseTO> childTOs = childrenGroupedBy.get(parentId);
+                                if (childTOs == null) {
+                                    childTOs = new ArrayList<>();
+                                    childrenGroupedBy.put(parentId, childTOs);
+                                }
+
+                                childTOs.add(new CauseTO(child.timeTableRowId.attapId.intValue(), child.timeTableRowId.trainNumber.intValue(), child.timeTableRowId.departureDate.toString()));
+                            }
+
+                            return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
                         }
                 );
     }

@@ -20,6 +20,19 @@ type TimeTableRow {
     commercialTrack: String
     cancelled: Boolean
     scheduledTime: DateTime
+    causes: [Cause]
+
+    id: Int
+    trainNumber:Int
+    departureDate:Date
+}
+
+type Cause {
+    #    categoryCode: CategoryCode
+
+    timeTableRowId: Int
+    trainNumber:Int
+    departureDate:Date
 }
 
 type Animal {
