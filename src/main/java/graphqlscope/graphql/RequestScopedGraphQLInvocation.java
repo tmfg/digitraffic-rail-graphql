@@ -19,7 +19,6 @@ import graphql.spring.web.servlet.GraphQLInvocationData;
 import graphqlscope.graphql.entities.TimeTableRowId;
 import graphqlscope.graphql.entities.TrainId;
 import graphqlscope.graphql.model.CauseTO;
-import graphqlscope.graphql.model.CountryTO;
 import graphqlscope.graphql.model.TimeTableRowTO;
 
 @Component
@@ -44,9 +43,6 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
                 .variables(invocationData.getVariables());
 
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
-        DataLoader<String, CountryTO> countryLoader = DataLoader.newDataLoader(graphQLDataFetchers.countryBatchLoader());
-        dataLoaderRegistry.register("countries", countryLoader);
-
         DataLoader<TrainId, List<TimeTableRowTO>> timeTableRowLoader = DataLoader.newDataLoader(graphQLDataFetchers.timeTableRowBatchLoader());
         dataLoaderRegistry.register("timeTableRows", timeTableRowLoader);
 

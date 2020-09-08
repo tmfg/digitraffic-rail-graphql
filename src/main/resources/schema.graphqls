@@ -1,5 +1,4 @@
 type Query {
-    animals(id: ID): [Animal]
     train(trainNumber:Int, departureDate:Date): Train
 }
 
@@ -33,19 +32,6 @@ type Cause {
     timeTableRowId: Int
     trainNumber:Int
     departureDate:Date
-}
-
-type Animal {
-    id: ID
-    name: String
-    color: String
-    countryIds: [ID]
-    countries: [Country]
-}
-
-type Country {
-    id: ID
-    name: String
 }
 
 scalar Date
