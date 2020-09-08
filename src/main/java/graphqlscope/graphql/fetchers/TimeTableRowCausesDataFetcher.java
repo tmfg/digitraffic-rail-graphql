@@ -38,7 +38,7 @@ public class TimeTableRowCausesDataFetcher extends MyDataFetcher {
 
     @Override
     public BatchLoader<TimeTableRowId, List<CauseTO>> createLoader() {
-        return dataFetcherFactory.createDataLoader(
+        return dataFetcherFactory.createOneToManyDataLoader(
                 parentIds -> causeRepository.findAllByTimeTableRowIds(parentIds),
                 child -> child.timeTableRowId,
                 child -> new CauseTO(child.timeTableRowId.attapId.intValue(), child.timeTableRowId.trainNumber.intValue(), child.timeTableRowId.departureDate));

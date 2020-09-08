@@ -7,7 +7,7 @@ type Train {
     commuterLineid           : String
     deleted                   : Boolean
     departureDate            : Date
-    #    operatorShortCode       : String
+    operatorShortCode       : String
     #    operatorUicCode         : Int
     runningCurrently         : Boolean
     timetableAcceptanceDate : DateTime
@@ -16,7 +16,7 @@ type Train {
     trainNumber              : Int
     #    trainTypeId             : Int
     version                   : String
-    #    operator                  : Operator
+    operator                  : Operator
     timeTableRows           : [TimeTableRow]
     #    train_locations           : [TrainLocation]
 }
@@ -44,6 +44,12 @@ type Cause {
     timeTableRowId: Int
     trainNumber:Int
     departureDate:Date
+}
+
+type Operator {
+    operatorName         : String
+    operatorShortCode   : String
+    operatorUicCode     : Int
 }
 
 scalar Date

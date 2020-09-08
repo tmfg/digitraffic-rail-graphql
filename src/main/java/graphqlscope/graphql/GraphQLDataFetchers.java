@@ -33,11 +33,13 @@ public class GraphQLDataFetchers {
                             s.commuterLineID,
                             s.deleted,
                             s.id.departureDate,
+                            s.operatorShortCode,
                             s.runningCurrently,
                             s.timetableAcceptanceDate,
                             s.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
                             s.id.trainNumber.intValue(),
                             s.version.toString(),
+                            null,
                             null
                     ));
         };

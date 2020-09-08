@@ -38,7 +38,7 @@ public class TrainToTimeTableRowDataFetcher extends MyDataFetcher {
 
     @Override
     public BatchLoader<TrainId, List<TimeTableRowTO>> createLoader() {
-        return dataFetcherFactory.createDataLoader(
+        return dataFetcherFactory.createOneToManyDataLoader(
                 parentIds -> timeTableRowRepository.findAllByTrainIds(parentIds),
                 child -> new TrainId(child.id.trainNumber, child.id.departureDate),
                 child -> new TimeTableRowTO("a", 1, "b", "c", true, true, "d", true, child.scheduledTime, null, child.id.attapId.intValue(), child.id.trainNumber.intValue(), child.id.departureDate));

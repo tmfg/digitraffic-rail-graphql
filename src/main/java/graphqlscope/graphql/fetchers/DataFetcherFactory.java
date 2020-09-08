@@ -29,28 +29,45 @@ public class DataFetcherFactory {
         };
     }
 
-    public <ParentId, Child, ChildTO> BatchLoader<ParentId, List<ChildTO>> createDataLoader(
+    public <ParentId, Child, ChildTO> BatchLoader<ParentId, List<ChildTO>> createOneToManyDataLoader(
             Function<List<ParentId>, List<Child>> childProvider,
             Function<Child, ParentId> parentIdProvider,
             Function<Child, ChildTO> childTOConverter) {
-        return parentIds ->
-                CompletableFuture.supplyAsync(() -> {
-                            List<Child> children = childProvider.apply(parentIds);
+        return parentIds -> CompletableFuture.supplyAsync(() -> {
+                    List<Child> children = childProvider.apply(parentIds);
 
-                            Map<ParentId, List<ChildTO>> childrenGroupedBy = new HashMap<>();
-                            for (Child child : children) {
-                                ParentId parentId = parentIdProvider.apply(child);
-                                List<ChildTO> childTOs = childrenGroupedBy.get(parentId);
-                                if (childTOs == null) {
-                                    childTOs = new ArrayList<>();
-                                    childrenGroupedBy.put(parentId, childTOs);
-                                }
-
-                                childTOs.add(childTOConverter.apply(child));
-                            }
-
-                            return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
+                    Map<ParentId, List<ChildTO>> childrenGroupedBy = new HashMap<>();
+                    for (Child child : children) {
+                        ParentId parentId = parentIdProvider.apply(child);
+                        List<ChildTO> childTOs = childrenGroupedBy.get(parentId);
+                        if (childTOs == null) {
+                            childTOs = new ArrayList<>();
+                            childrenGroupedBy.put(parentId, childTOs);
                         }
-                );
+
+                        childTOs.add(childTOConverter.apply(child));
+                    }
+
+                    return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
+                }
+        );
+    }
+
+    public <ParentId, Child, ChildTO> BatchLoader<ParentId, ChildTO> createOneToOneDataLoader(
+            Function<List<ParentId>, List<Child>> childProvider,
+            Function<Child, ParentId> parentIdProvider,
+            Function<Child, ChildTO> childTOConverter) {
+        return parentIds -> CompletableFuture.supplyAsync(() -> {
+                    List<Child> children = childProvider.apply(parentIds);
+
+                    Map<ParentId, ChildTO> childrenMap = new HashMap<>();
+                    for (Child child : children) {
+                        ParentId parentId = parentIdProvider.apply(child);
+                        childrenMap.put(parentId, childTOConverter.apply(child));
+                    }
+
+                    return parentIds.stream().map(s -> childrenMap.get(s)).collect(Collectors.toList());
+                }
+        );
     }
 }
