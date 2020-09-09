@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost/avoindata?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useSSL=false
+    url: jdbc:mysql://localhost/avoindata?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
     password:
 

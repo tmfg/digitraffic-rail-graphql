@@ -1,25 +1,26 @@
 type Query {
     train(trainNumber:Int, departureDate:Date): Train
+    trainsGreaterThanVersion(version:String): [Train]
     trains(departureDate:Date): [Train]
 }
 
 type Train {
-    cancelled                 : Boolean
-    commuterLineid           : String
-    deleted                   : Boolean
-    departureDate            : Date
-    operatorShortCode       : String
-    #    operatorUicCode         : Int
-    runningCurrently         : Boolean
+    cancelled : Boolean
+    commuterLineid : String
+    deleted : Boolean
+    departureDate : Date
+    operatorShortCode : String
+    # operatorUicCode : Int
+    runningCurrently : Boolean
     timetableAcceptanceDate : DateTime
-    timetableType            : TimetableType
-    #    trainCategoryId         : Int
-    trainNumber              : Int
-    #    trainTypeId             : Int
-    version                   : String
-    operator                  : Operator
-    timeTableRows           : [TimeTableRow]
-    #    train_locations           : [TrainLocation]
+    timetableType : TimetableType
+    # trainCategoryId : Int
+    trainNumber : Int
+    # trainTypeId : Int
+    version : String
+    operator : Operator
+    timeTableRows : [TimeTableRow]
+    train_locations : [TrainLocation]
 }
 
 type TimeTableRow {
@@ -40,7 +41,7 @@ type TimeTableRow {
 }
 
 type Cause {
-    #    categoryCode: CategoryCode
+    # categoryCode: CategoryCode
 
     timeTableRowId: Int
     trainNumber:Int
@@ -48,9 +49,17 @@ type Cause {
 }
 
 type Operator {
-    operatorName         : String
-    operatorShortCode   : String
-    operatorUicCode     : Int
+    operatorName : String
+    operatorShortCode : String
+    operatorUicCode : Int
+}
+
+type TrainLocation {
+    departureDate : Date
+    speed : Int
+    timestamp : DateTime
+    trainNumber : Int
+    location : [Int]
 }
 
 scalar Date
