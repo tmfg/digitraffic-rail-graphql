@@ -16,4 +16,7 @@ import graphqlscope.graphql.entities.TrainId;
 public interface CompositionRepository extends JpaRepository<Composition, TrainId> {
     @Query("select e from Composition e where e.id.departureDate = ?1")
     List<Composition> findByDepartureDate(LocalDate departureDate);
+
+    @Query("select e from Composition e where e.id in ?1")
+    List<Composition> findAllByTrainIds(List<TrainId> parentIds);
 }

@@ -3,10 +3,10 @@ type Query {
     trainsGreaterThanVersion(version : String) : [Train]
     trains(departureDate : Date) : [Train]
 
-    trainLocation(trainNumber : Int, departureDate : Date) : [TrainLocation]
-
-    composition(trainNumber : Int, departureDate : Date) : Composition
-    compositions(departureDate : Date) : [Composition]
+    #    trainLocation(trainNumber : Int, departureDate : Date) : [TrainLocation]
+    #
+    #    composition(trainNumber : Int, departureDate : Date) : Composition
+    #    compositions(departureDate : Date) : [Composition]
 }
 
 type Train {
@@ -15,20 +15,18 @@ type Train {
     deleted : Boolean
     departureDate : Date
     operatorShortCode : String
-    # operatorUicCode : Int
     runningCurrently : Boolean
     timetableAcceptanceDate : DateTime
     timetableType : TimetableType
-    # trainCategoryId : Int
     trainNumber : Int
-    # trainTypeId : Int
     version : String
     trainTypeId : Int
     trainCategoryId : Int
     operator : Operator
+    trainType : TrainType
     timeTableRows : [TimeTableRow]
     trainLocations : [TrainLocation]
-    trainType : TrainType
+    compositions : [Composition]
 }
 
 type TrainType {
@@ -62,8 +60,6 @@ type TimeTableRow {
 }
 
 type Cause {
-    # categoryCode : CategoryCode
-
     timeTableRowId : Int
     trainNumber : Int
     departureDate : Date

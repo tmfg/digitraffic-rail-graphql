@@ -10,21 +10,13 @@ import graphql.schema.DataFetcher;
 import graphqlscope.graphql.model.TrainCategoryTO;
 import graphqlscope.graphql.model.TrainTypeTO;
 import graphqlscope.graphql.repositories.TrainCategoryRepository;
-import graphqlscope.graphql.repositories.TrainTypeRepository;
 import graphqlscope.graphql.to.TrainCategoryTOConverter;
-import graphqlscope.graphql.to.TrainTypeTOConverter;
 
 @Component
 public class TrainTypeToTrainCategoryDataFetcher extends BaseDataFetcher<Long, TrainCategoryTO> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;
-
-    @Autowired
-    private TrainTypeTOConverter trainTypeTOConverter;
-
-    @Autowired
-    private TrainTypeRepository trainTypeRepository;
 
     @Autowired
     private TrainCategoryRepository trainCategoryRepository;
