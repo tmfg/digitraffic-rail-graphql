@@ -13,15 +13,17 @@ import org.springframework.stereotype.Component;
 import graphql.schema.DataFetcher;
 import graphqlscope.graphql.entities.Train;
 import graphqlscope.graphql.entities.TrainId;
-import graphqlscope.graphql.model.TimetableTypeTO;
-import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.TrainRepository;
+import graphqlscope.graphql.to.TrainTOConverter;
 
 @Component
 public class GraphQLDataFetchers {
 
     @Autowired
     private TrainRepository trainRepository;
+
+    @Autowired
+    private TrainTOConverter trainTOConverter;
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
 
@@ -30,21 +32,7 @@ public class GraphQLDataFetchers {
             Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
-            return trainRepository.findById(new TrainId(trainNumber, departureDate))
-                    .map(s -> new TrainTO(
-                            s.cancelled,
-                            s.commuterLineID,
-                            s.deleted,
-                            s.id.departureDate,
-                            s.operatorShortCode,
-                            s.runningCurrently,
-                            s.timetableAcceptanceDate,
-                            s.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
-                            s.id.trainNumber.intValue(),
-                            s.version.toString(),
-                            null,
-                            null
-                    ));
+            return trainRepository.findById(new TrainId(trainNumber, departureDate)).map(trainTOConverter::convertTrainToTrainTO);
         };
     }
 
@@ -53,21 +41,7 @@ public class GraphQLDataFetchers {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
             List<Train> trains = trainRepository.findByDepartureDate(departureDate);
-            return trains.stream()
-                    .map(s -> new TrainTO(
-                            s.cancelled,
-                            s.commuterLineID,
-                            s.deleted,
-                            s.id.departureDate,
-                            s.operatorShortCode,
-                            s.runningCurrently,
-                            s.timetableAcceptanceDate,
-                            s.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
-                            s.id.trainNumber.intValue(),
-                            s.version.toString(),
-                            null,
-                            null
-                    )).collect(Collectors.toList());
+            return trains.stream().map(trainTOConverter::convertTrainToTrainTO).collect(Collectors.toList());
         };
     }
 
@@ -76,21 +50,9 @@ public class GraphQLDataFetchers {
             String version = dataFetchingEnvironment.getArgument("version");
 
             List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, 2500));
-            return trains.stream()
-                    .map(s -> new TrainTO(
-                            s.cancelled,
-                            s.commuterLineID,
-                            s.deleted,
-                            s.id.departureDate,
-                            s.operatorShortCode,
-                            s.runningCurrently,
-                            s.timetableAcceptanceDate,
-                            s.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
-                            s.id.trainNumber.intValue(),
-                            s.version.toString(),
-                            null,
-                            null
-                    )).collect(Collectors.toList());
+            return trains.stream().map(trainTOConverter::convertTrainToTrainTO).collect(Collectors.toList());
         };
     }
+
+
 }
