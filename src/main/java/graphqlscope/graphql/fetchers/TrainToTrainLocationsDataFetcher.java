@@ -15,7 +15,7 @@ import graphqlscope.graphql.repositories.TrainLocationRepository;
 import graphqlscope.graphql.to.TrainLocationTOConverter;
 
 @Component
-public class TrainToTrainLocationsDataFetcher extends MyDataFetcher<TrainId, List<TrainLocationTO>> {
+public class TrainToTrainLocationsDataFetcher extends BaseDataFetcher<TrainId, List<TrainLocationTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;

@@ -15,7 +15,7 @@ import graphqlscope.graphql.repositories.JourneySectionRepository;
 import graphqlscope.graphql.to.JourneySectionTOConverter;
 
 @Component
-public class CompositionToJourneySectionsDataFetcher extends MyDataFetcher<TrainId, List<JourneySectionTO>> {
+public class CompositionToJourneySectionsDataFetcher extends BaseDataFetcher<TrainId, List<JourneySectionTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;

@@ -20,6 +20,8 @@ public class TrainTOConverter {
                 entity.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
                 entity.id.trainNumber.intValue(),
                 entity.version.toString(),
+                entity.trainTypeId.intValue(),
+                entity.trainCategoryId.intValue(),
                 null,
                 null,
                 null

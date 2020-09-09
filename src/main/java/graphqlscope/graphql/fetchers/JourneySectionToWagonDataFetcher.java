@@ -14,7 +14,7 @@ import graphqlscope.graphql.repositories.WagonRepository;
 import graphqlscope.graphql.to.WagonTOConverter;
 
 @Component
-public class JourneySectionToWagonDataFetcher extends MyDataFetcher<Long, List<WagonTO>> {
+public class JourneySectionToWagonDataFetcher extends BaseDataFetcher<Long, List<WagonTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;

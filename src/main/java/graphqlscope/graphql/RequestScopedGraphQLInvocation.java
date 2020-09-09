@@ -17,7 +17,7 @@ import graphql.GraphQL;
 import graphql.Internal;
 import graphql.spring.web.servlet.GraphQLInvocation;
 import graphql.spring.web.servlet.GraphQLInvocationData;
-import graphqlscope.graphql.fetchers.MyDataFetcher;
+import graphqlscope.graphql.fetchers.BaseDataFetcher;
 
 @Component
 @Internal
@@ -25,7 +25,7 @@ import graphqlscope.graphql.fetchers.MyDataFetcher;
 @Profile({"request", "default"})
 public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
     @Autowired
-    private List<MyDataFetcher> fetchers;
+    private List<BaseDataFetcher> fetchers;
 
     @Autowired
     private GraphQL graphQL;
@@ -39,7 +39,7 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
 
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
-        for (MyDataFetcher fetcher : fetchers) {
+        for (BaseDataFetcher fetcher : fetchers) {
             DataLoader timeTableRowLoader = DataLoader.newDataLoader(fetcher.createLoader());
             dataLoaderRegistry.register(fetcher.getFieldName(), timeTableRowLoader);
         }

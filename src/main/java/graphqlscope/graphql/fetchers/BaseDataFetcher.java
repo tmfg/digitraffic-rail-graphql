@@ -6,7 +6,7 @@ import org.dataloader.BatchLoader;
 
 import graphql.schema.DataFetcher;
 
-public abstract class MyDataFetcher<ParentId, Child> {
+public abstract class BaseDataFetcher<ParentId, Child> {
     public abstract String getTypeName();
 
     public abstract String getFieldName();

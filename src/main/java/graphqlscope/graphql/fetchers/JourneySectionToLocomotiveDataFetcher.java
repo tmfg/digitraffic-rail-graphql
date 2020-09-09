@@ -14,7 +14,7 @@ import graphqlscope.graphql.repositories.LocomotiveRepository;
 import graphqlscope.graphql.to.LocomotiveTOConverter;
 
 @Component
-public class JourneySectionToLocomotiveDataFetcher extends MyDataFetcher<Long, List<LocomotiveTO>> {
+public class JourneySectionToLocomotiveDataFetcher extends BaseDataFetcher<Long, List<LocomotiveTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;

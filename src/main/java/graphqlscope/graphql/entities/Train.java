@@ -22,5 +22,7 @@ public class Train {
     public ZonedDateTime timetableAcceptanceDate;
     public TimetableType timetableType;
     public String operatorShortCode;
+    public Long trainCategoryId;
+    public Long trainTypeId;
 
 }

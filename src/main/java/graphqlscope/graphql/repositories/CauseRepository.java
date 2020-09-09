@@ -13,6 +13,6 @@ import graphqlscope.graphql.entities.TimeTableRowId;
 @Repository
 @Transactional
 public interface CauseRepository extends JpaRepository<Cause, Long> {
-    @Query("select c from Cause c where c.timeTableRow.id in ?1")
+    @Query("select c from Cause c where c.timeTableRowId in ?1")
     List<Cause> findAllByTimeTableRowIds(Iterable<TimeTableRowId> timeTableRowIds);
 }

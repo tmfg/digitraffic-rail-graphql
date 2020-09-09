@@ -21,7 +21,7 @@ import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
-import graphqlscope.graphql.fetchers.MyDataFetcher;
+import graphqlscope.graphql.fetchers.BaseDataFetcher;
 
 @Component
 public class GraphQLProvider {
@@ -35,7 +35,7 @@ public class GraphQLProvider {
     }
 
     @Autowired
-    private List<MyDataFetcher> fetchers;
+    private List<BaseDataFetcher> fetchers;
 
     @Bean
     public GraphQL graphQL() {
@@ -70,7 +70,7 @@ public class GraphQLProvider {
                         .dataFetcher("compositions", graphQLDataFetchers.compositionsFetcher())
                 );
 
-        for (MyDataFetcher fetcher : this.fetchers) {
+        for (BaseDataFetcher fetcher : this.fetchers) {
             builder = builder.type(newTypeWiring(fetcher.getTypeName())
                     .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
         }

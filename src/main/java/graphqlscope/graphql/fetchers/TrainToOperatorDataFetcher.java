@@ -12,7 +12,7 @@ import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.OperatorRepository;
 
 @Component
-public class TrainToOperatorDataFetcher extends MyDataFetcher<String, OperatorTO> {
+public class TrainToOperatorDataFetcher extends BaseDataFetcher<String, OperatorTO> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;

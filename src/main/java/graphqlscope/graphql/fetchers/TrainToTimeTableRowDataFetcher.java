@@ -15,7 +15,7 @@ import graphqlscope.graphql.repositories.TimeTableRowRepository;
 import graphqlscope.graphql.to.TimeTableRowTOConverter;
 
 @Component
-public class TrainToTimeTableRowDataFetcher extends MyDataFetcher<TrainId, List<TimeTableRowTO>> {
+public class TrainToTimeTableRowDataFetcher extends BaseDataFetcher<TrainId, List<TimeTableRowTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;

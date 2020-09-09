@@ -23,6 +23,8 @@ type Train {
     trainNumber : Int
     # trainTypeId : Int
     version : String
+    trainTypeId:Int
+    trainCategoryId:Int
     operator : Operator
     timeTableRows : [TimeTableRow]
     trainLocations : [TrainLocation]
@@ -52,6 +54,11 @@ type Cause {
     timeTableRowId: Int
     trainNumber:Int
     departureDate:Date
+
+    id:Int
+    categoryCodeId: Int
+    detailedCategoryCodeId : Int
+    thirdCategoryCodeId: Int
 }
 
 type Operator {
@@ -109,10 +116,10 @@ type Wagon {
     luggage :Boolean
     pet :Boolean
     playground :Boolean
-    sales_number :Int
+    salesNumber :Int
     smoking :Boolean
     video :Boolean
-    wagon_type :String
+    wagonType :String
     vehicleNumber :String
     journeysectionId : Int
 }

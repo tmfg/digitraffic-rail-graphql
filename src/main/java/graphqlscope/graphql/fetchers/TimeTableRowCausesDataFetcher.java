@@ -12,15 +12,19 @@ import graphqlscope.graphql.entities.TimeTableRowId;
 import graphqlscope.graphql.model.CauseTO;
 import graphqlscope.graphql.model.TimeTableRowTO;
 import graphqlscope.graphql.repositories.CauseRepository;
+import graphqlscope.graphql.to.CauseTOConverter;
 
 @Component
-public class TimeTableRowCausesDataFetcher extends MyDataFetcher<TimeTableRowId, List<CauseTO>> {
+public class TimeTableRowCausesDataFetcher extends BaseDataFetcher<TimeTableRowId, List<CauseTO>> {
 
     @Autowired
     private DataFetcherFactory dataFetcherFactory;
 
     @Autowired
     private CauseRepository causeRepository;
+
+    @Autowired
+    private CauseTOConverter causeTOConverter;
 
     @Override
     public String getTypeName() {
@@ -42,6 +46,6 @@ public class TimeTableRowCausesDataFetcher extends MyDataFetcher<TimeTableRowId,
         return dataFetcherFactory.createOneToManyDataLoader(
                 parentIds -> causeRepository.findAllByTimeTableRowIds(parentIds),
                 child -> child.timeTableRowId,
-                child -> new CauseTO(child.timeTableRowId.attapId.intValue(), child.timeTableRowId.trainNumber.intValue(), child.timeTableRowId.departureDate));
+                causeTOConverter::convert);
     }
 }
