@@ -1,8 +1,8 @@
 plugins {
-  id 'org.springframework.boot' version '2.3.3.RELEASE'
-  id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-  id 'java'
-  id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
 }
 
 group = 'graphqlscope-graphql'
@@ -10,53 +10,58 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '12'
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-  compile 'com.graphql-java-kickstart:graphiql-spring-boot-starter:5.2'
-  compile 'com.graphql-java:graphql-java-extended-scalars:1.0'
-  compile 'com.google.guava:guava:28.1-jre'
+    compile 'com.graphql-java-kickstart:graphiql-spring-boot-starter:5.2'
+    compile 'com.graphql-java:graphql-java-extended-scalars:1.0'
+    compile 'com.google.guava:guava:28.1-jre'
 
-  developmentOnly 'org.springframework.boot:spring-boot-devtools'
-  runtimeOnly 'mysql:mysql-connector-java'
+    compile 'com.vividsolutions:jts:1.13'
+    compile('org.hibernate:hibernate-spatial') {
+      exclude group: 'postgresql', module: 'org.postgresql'
+    }
 
-  implementation 'org.springframework.boot:spring-boot-starter-actuator'
-  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-  implementation 'com.graphql-java:graphql-java:13.0'
-  implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:1.0'
-  implementation 'org.springframework.boot:spring-boot-starter-web'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.graphql-java:graphql-java:13.0'
+    implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 sourceSets {
-  main {
-    java {
-      srcDirs = ['src/main/java', 'src/main/graphqlGen']
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/main/graphqlGen']
+        }
     }
-  }
 }
 
 task cleanGraphqlGen {
-  doFirst {
-    delete("$projectDir/src/main/graphqlGen")
-  }
+    doFirst {
+        delete("$projectDir/src/main/graphqlGen")
+    }
 }
 
 clean {
-  dependsOn 'cleanGraphqlGen'
+    dependsOn 'cleanGraphqlGen'
 }
 
 compileJava.dependsOn graphqlCodegen
 
 graphqlCodegen {
-  graphqlSchemaPaths = ["$projectDir/src/main/resources/schema.graphqls".toString()]
-  outputDir = new File("$projectDir/src/main/graphqlGen")
-  apiPackageName = "graphqlscope.graphql.api"
-  modelPackageName = "graphqlscope.graphql.model"
-  customTypesMapping = [
-        DateTime: "java.time.ZonedDateTime",
-        Date: "java.time.LocalDate"
-  ]
-  modelNameSuffix = "TO"
-  generateApis = true
+    graphqlSchemaPaths = ["$projectDir/src/main/resources/schema.graphqls".toString()]
+    outputDir = new File("$projectDir/src/main/graphqlGen")
+    apiPackageName = "graphqlscope.graphql.api"
+    modelPackageName = "graphqlscope.graphql.model"
+    customTypesMapping = [
+            DateTime: "java.time.ZonedDateTime",
+            Date    : "java.time.LocalDate"
+    ]
+    modelNameSuffix = "TO"
+    generateApis = true
 }

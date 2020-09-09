@@ -3,7 +3,9 @@ spring:
     url: jdbc:mysql://localhost/avoindata?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
     password:
-
+  jpa:
+    properties:
+      hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'
 server:
   port: 8081
 

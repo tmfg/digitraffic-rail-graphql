@@ -7,13 +7,17 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import graphql.schema.DataFetcher;
 import graphqlscope.graphql.entities.Train;
 import graphqlscope.graphql.entities.TrainId;
+import graphqlscope.graphql.entities.TrainLocation;
+import graphqlscope.graphql.repositories.TrainLocationRepository;
 import graphqlscope.graphql.repositories.TrainRepository;
+import graphqlscope.graphql.to.TrainLocationTOConverter;
 import graphqlscope.graphql.to.TrainTOConverter;
 
 @Component
@@ -24,6 +28,12 @@ public class GraphQLDataFetchers {
 
     @Autowired
     private TrainTOConverter trainTOConverter;
+
+    @Autowired
+    private TrainLocationRepository trainLocationRepository;
+
+    @Autowired
+    private TrainLocationTOConverter trainLocationTOConverter;
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
 
@@ -55,4 +65,18 @@ public class GraphQLDataFetchers {
     }
 
 
+    public DataFetcher trainLocationFetcher() {
+        return dataFetchingEnvironment -> {
+            Long trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
+            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
+
+            TrainLocation trainLocation = new TrainLocation();
+            trainLocation.trainLocationId.trainNumber = trainNumber;
+            trainLocation.trainLocationId.departureDate = departureDate;
+
+            List<TrainLocation> trainLocations = trainLocationRepository.findAll(Example.of(trainLocation));
+
+            return trainLocations.stream().map(trainLocationTOConverter::convert).collect(Collectors.toList());
+        };
+    }
 }

@@ -2,6 +2,8 @@ type Query {
     train(trainNumber:Int, departureDate:Date): Train
     trainsGreaterThanVersion(version:String): [Train]
     trains(departureDate:Date): [Train]
+
+    trainLocation(trainNumber:Int, departureDate:Date): TrainLocation
 }
 
 type Train {
@@ -20,7 +22,7 @@ type Train {
     version : String
     operator : Operator
     timeTableRows : [TimeTableRow]
-    train_locations : [TrainLocation]
+    trainLocations : [TrainLocation]
 }
 
 type TimeTableRow {
@@ -60,7 +62,7 @@ type TrainLocation {
     speed : Int
     timestamp : DateTime
     trainNumber : Int
-    location : [Int]
+    location : [Float]
 }
 
 scalar Date

@@ -65,6 +65,7 @@ public class GraphQLProvider {
                         .dataFetcher("train", graphQLDataFetchers.trainFetcher())
                         .dataFetcher("trains", graphQLDataFetchers.trainsFetcher())
                         .dataFetcher("trainsGreaterThanVersion", graphQLDataFetchers.trainsGreaterThanVersionFetcher())
+                        .dataFetcher("trainLocation", graphQLDataFetchers.trainLocationFetcher())
                 );
 
         for (MyDataFetcher fetcher : this.fetchers) {
