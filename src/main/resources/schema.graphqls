@@ -88,7 +88,7 @@ type JourneySection {
     maximumSpeed : Int
     totalLength : Int
     locomotives : [Locomotive]
-    #wagon : wagon[]
+    wagons : [Wagon]
 }
 
 type Locomotive {
@@ -98,6 +98,23 @@ type Locomotive {
     powerTypeAbbreviation: String
     journeysectionId : Int
     vehicleNumber : String
+}
+
+type Wagon {
+    id :Int
+    catering :Boolean
+    disabled :Boolean
+    length :Int
+    location :Int
+    luggage :Boolean
+    pet :Boolean
+    playground :Boolean
+    sales_number :Int
+    smoking :Boolean
+    video :Boolean
+    wagon_type :String
+    vehicleNumber :String
+    journeysectionId : Int
 }
 
 scalar Date

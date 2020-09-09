@@ -14,12 +14,6 @@ public class JourneySection {
     public Long beginTimeTableRowId;
     public Long endTimeTableRowId;
 
-//    @OneToMany(mappedBy = "journeysection", fetch = FetchType.LAZY)
-//    public Set<Locomotive> locomotives = new LinkedHashSet<>();
-//
-//    @OneToMany(mappedBy = "journeysection", fetch = FetchType.LAZY)
-//    public Set<Wagon> wagons = new LinkedHashSet<>();
-
 
     public int totalLength;
     public int maximumSpeed;

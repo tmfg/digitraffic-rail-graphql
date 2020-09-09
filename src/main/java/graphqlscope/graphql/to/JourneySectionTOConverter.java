@@ -15,7 +15,9 @@ public class JourneySectionTOConverter {
                 entity.beginTimeTableRowId.intValue(),
                 entity.endTimeTableRowId.intValue(),
                 entity.maximumSpeed,
-                entity.totalLength
+                entity.totalLength,
+                null,
+                null
         );
     }
 }
