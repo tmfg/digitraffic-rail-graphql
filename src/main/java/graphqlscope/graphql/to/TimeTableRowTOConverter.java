@@ -19,6 +19,7 @@ public class TimeTableRowTOConverter {
                 entity.commercialTrack,
                 entity.cancelled,
                 entity.scheduledTime,
+                entity.actualTime,
                 entity.id.attapId.intValue(),
                 entity.id.trainNumber.intValue(),
                 entity.id.departureDate,
