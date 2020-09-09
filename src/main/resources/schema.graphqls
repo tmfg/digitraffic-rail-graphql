@@ -76,7 +76,28 @@ type Composition {
     trainTypeId :Int
     version :String
     operatorUicCode :Int
-    #journey_section :journey_section[]
+    journeySections:[JourneySection]
+}
+
+type JourneySection {
+    id : Int
+    departureDate : Date
+    trainNumber : Int
+    beginTimeTableRowId : Int
+    endTimeTableRowId : Int
+    maximumSpeed : Int
+    totalLength : Int
+    locomotives : [Locomotive]
+    #wagon : wagon[]
+}
+
+type Locomotive {
+    id : Int
+    location : Int
+    locomotiveType : String
+    powerTypeAbbreviation: String
+    journeysectionId : Int
+    vehicleNumber : String
 }
 
 scalar Date

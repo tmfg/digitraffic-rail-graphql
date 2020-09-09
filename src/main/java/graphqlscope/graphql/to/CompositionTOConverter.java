@@ -15,7 +15,8 @@ public class CompositionTOConverter {
                 entity.trainCategoryId.intValue(),
                 entity.trainTypeId.intValue(),
                 entity.version.toString(),
-                entity.operatorUicCode
+                entity.operatorUicCode,
+                null
         );
     }
 }
