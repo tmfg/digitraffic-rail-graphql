@@ -8,18 +8,18 @@ import graphqlscope.graphql.model.TrainTO;
 
 @Component
 public class TrainTOConverter {
-    public TrainTO convert(Train train) {
+    public TrainTO convert(Train entity) {
         return new TrainTO(
-                train.cancelled,
-                train.commuterLineID,
-                train.deleted,
-                train.id.departureDate,
-                train.operatorShortCode,
-                train.runningCurrently,
-                train.timetableAcceptanceDate,
-                train.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
-                train.id.trainNumber.intValue(),
-                train.version.toString(),
+                entity.cancelled,
+                entity.commuterLineID,
+                entity.deleted,
+                entity.id.departureDate,
+                entity.operatorShortCode,
+                entity.runningCurrently,
+                entity.timetableAcceptanceDate,
+                entity.timetableType.equals(Train.TimetableType.ADHOC) ? TimetableTypeTO.ADHOC : TimetableTypeTO.REGULAR,
+                entity.id.trainNumber.intValue(),
+                entity.version.toString(),
                 null,
                 null,
                 null

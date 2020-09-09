@@ -3,7 +3,10 @@ type Query {
     trainsGreaterThanVersion(version:String): [Train]
     trains(departureDate:Date): [Train]
 
-    trainLocation(trainNumber:Int, departureDate:Date): TrainLocation
+    trainLocation(trainNumber:Int, departureDate:Date): [TrainLocation]
+
+    composition(trainNumber:Int, departureDate:Date): Composition
+    compositions(departureDate:Date): [Composition]
 }
 
 type Train {
@@ -63,6 +66,17 @@ type TrainLocation {
     timestamp : DateTime
     trainNumber : Int
     location : [Float]
+}
+
+type Composition {
+    departureDate :Date
+    trainNumber :Int
+    operatorShortCode :String
+    trainCategoryId :Int
+    trainTypeId :Int
+    version :String
+    operatorUicCode :Int
+    #journey_section :journey_section[]
 }
 
 scalar Date
