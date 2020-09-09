@@ -1,12 +1,12 @@
 type Query {
-    train(trainNumber:Int, departureDate:Date): Train
-    trainsGreaterThanVersion(version:String): [Train]
-    trains(departureDate:Date): [Train]
+    train(trainNumber : Int, departureDate : Date) : Train
+    trainsGreaterThanVersion(version : String) : [Train]
+    trains(departureDate : Date) : [Train]
 
-    trainLocation(trainNumber:Int, departureDate:Date): [TrainLocation]
+    trainLocation(trainNumber : Int, departureDate : Date) : [TrainLocation]
 
-    composition(trainNumber:Int, departureDate:Date): Composition
-    compositions(departureDate:Date): [Composition]
+    composition(trainNumber : Int, departureDate : Date) : Composition
+    compositions(departureDate : Date) : [Composition]
 }
 
 type Train {
@@ -23,42 +23,55 @@ type Train {
     trainNumber : Int
     # trainTypeId : Int
     version : String
-    trainTypeId:Int
-    trainCategoryId:Int
+    trainTypeId : Int
+    trainCategoryId : Int
     operator : Operator
     timeTableRows : [TimeTableRow]
     trainLocations : [TrainLocation]
+    trainType : TrainType
+}
+
+type TrainType {
+    id : Int
+    name : String
+    trainCategoryId : Int
+    trainCategory : TrainCategory
+}
+
+type TrainCategory {
+    id : Int
+    name : String
 }
 
 type TimeTableRow {
-    stationShortCode: String
-    stationUICCode: Int
-    countryCode: String
-    type: TimeTableRowType
-    trainStopping: Boolean
-    commercialStop: Boolean
-    commercialTrack: String
-    cancelled: Boolean
-    scheduledTime: DateTime
+    stationShortCode : String
+    stationUICCode : Int
+    countryCode : String
+    type : TimeTableRowType
+    trainStopping : Boolean
+    commercialStop : Boolean
+    commercialTrack : String
+    cancelled : Boolean
+    scheduledTime : DateTime
 
-    id: Int
-    trainNumber:Int
-    departureDate:Date
+    id : Int
+    trainNumber : Int
+    departureDate : Date
 
-    causes: [Cause]
+    causes : [Cause]
 }
 
 type Cause {
-    # categoryCode: CategoryCode
+    # categoryCode : CategoryCode
 
-    timeTableRowId: Int
-    trainNumber:Int
-    departureDate:Date
+    timeTableRowId : Int
+    trainNumber : Int
+    departureDate : Date
 
-    id:Int
-    categoryCodeId: Int
+    id : Int
+    categoryCodeId : Int
     detailedCategoryCodeId : Int
-    thirdCategoryCodeId: Int
+    thirdCategoryCodeId : Int
 }
 
 type Operator {
@@ -76,14 +89,14 @@ type TrainLocation {
 }
 
 type Composition {
-    departureDate :Date
-    trainNumber :Int
-    operatorShortCode :String
-    trainCategoryId :Int
-    trainTypeId :Int
-    version :String
-    operatorUicCode :Int
-    journeySections:[JourneySection]
+    departureDate : Date
+    trainNumber : Int
+    operatorShortCode : String
+    trainCategoryId : Int
+    trainTypeId : Int
+    version : String
+    operatorUicCode : Int
+    journeySections : [JourneySection]
 }
 
 type JourneySection {
@@ -102,25 +115,25 @@ type Locomotive {
     id : Int
     location : Int
     locomotiveType : String
-    powerTypeAbbreviation: String
+    powerTypeAbbreviation : String
     journeysectionId : Int
     vehicleNumber : String
 }
 
 type Wagon {
-    id :Int
-    catering :Boolean
-    disabled :Boolean
-    length :Int
-    location :Int
-    luggage :Boolean
-    pet :Boolean
-    playground :Boolean
-    salesNumber :Int
-    smoking :Boolean
-    video :Boolean
-    wagonType :String
-    vehicleNumber :String
+    id : Int
+    catering : Boolean
+    disabled : Boolean
+    length : Int
+    location : Int
+    luggage : Boolean
+    pet : Boolean
+    playground : Boolean
+    salesNumber : Int
+    smoking : Boolean
+    video : Boolean
+    wagonType : String
+    vehicleNumber : String
     journeysectionId : Int
 }
 

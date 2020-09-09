@@ -24,6 +24,7 @@ public class TrainTOConverter {
                 entity.trainCategoryId.intValue(),
                 null,
                 null,
+                null,
                 null
         );
     }
