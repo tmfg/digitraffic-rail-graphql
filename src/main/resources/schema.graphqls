@@ -27,17 +27,18 @@ type TimeTableRow {
     stationShortCode: String
     stationUICCode: Int
     countryCode: String
-    type: String
+    type: TimeTableRowType
     trainStopping: Boolean
     commercialStop: Boolean
     commercialTrack: String
     cancelled: Boolean
     scheduledTime: DateTime
-    causes: [Cause]
 
     id: Int
     trainNumber:Int
     departureDate:Date
+
+    causes: [Cause]
 }
 
 type Cause {
@@ -68,4 +69,8 @@ scalar DateTime
 enum TimetableType {
     REGULAR,
     ADHOC
+}
+enum TimeTableRowType {
+    ARRIVAL
+    DEPARTURE
 }

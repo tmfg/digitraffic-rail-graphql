@@ -12,6 +12,7 @@ import graphqlscope.graphql.entities.TrainId;
 import graphqlscope.graphql.model.TimeTableRowTO;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.TimeTableRowRepository;
+import graphqlscope.graphql.to.TimeTableRowTOConverter;
 
 @Component
 public class TrainToTimeTableRowDataFetcher extends MyDataFetcher<TrainId, List<TimeTableRowTO>> {
@@ -21,6 +22,9 @@ public class TrainToTimeTableRowDataFetcher extends MyDataFetcher<TrainId, List<
 
     @Autowired
     private TimeTableRowRepository timeTableRowRepository;
+
+    @Autowired
+    private TimeTableRowTOConverter timeTableRowTOConverter;
 
     @Override
     public String getTypeName() {
@@ -39,9 +43,6 @@ public class TrainToTimeTableRowDataFetcher extends MyDataFetcher<TrainId, List<
 
     @Override
     public BatchLoader<TrainId, List<TimeTableRowTO>> createLoader() {
-        return dataFetcherFactory.createOneToManyDataLoader(
-                parentIds -> timeTableRowRepository.findAllByTrainIds(parentIds),
-                child -> new TrainId(child.id.trainNumber, child.id.departureDate),
-                child -> new TimeTableRowTO("a", 1, "b", "c", true, true, "d", true, child.scheduledTime, null, child.id.attapId.intValue(), child.id.trainNumber.intValue(), child.id.departureDate));
+        return dataFetcherFactory.createOneToManyDataLoader(parentIds -> timeTableRowRepository.findAllByTrainIds(parentIds), child -> new TrainId(child.id.trainNumber, child.id.departureDate), timeTableRowTOConverter::convert);
     }
 }

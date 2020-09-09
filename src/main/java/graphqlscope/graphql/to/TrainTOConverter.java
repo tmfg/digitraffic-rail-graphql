@@ -8,7 +8,7 @@ import graphqlscope.graphql.model.TrainTO;
 
 @Component
 public class TrainTOConverter {
-    public TrainTO convertTrainToTrainTO(Train train) {
+    public TrainTO convert(Train train) {
         return new TrainTO(
                 train.cancelled,
                 train.commuterLineID,

@@ -32,7 +32,7 @@ public class GraphQLDataFetchers {
             Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
-            return trainRepository.findById(new TrainId(trainNumber, departureDate)).map(trainTOConverter::convertTrainToTrainTO);
+            return trainRepository.findById(new TrainId(trainNumber, departureDate)).map(trainTOConverter::convert);
         };
     }
 
@@ -41,7 +41,7 @@ public class GraphQLDataFetchers {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
             List<Train> trains = trainRepository.findByDepartureDate(departureDate);
-            return trains.stream().map(trainTOConverter::convertTrainToTrainTO).collect(Collectors.toList());
+            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }
 
@@ -50,7 +50,7 @@ public class GraphQLDataFetchers {
             String version = dataFetchingEnvironment.getArgument("version");
 
             List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, 2500));
-            return trains.stream().map(trainTOConverter::convertTrainToTrainTO).collect(Collectors.toList());
+            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }
 
