@@ -1,24 +1,24 @@
 package graphqlscope.graphql.fetchers;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
-import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.schema.DataFetcher;
+import graphqlscope.graphql.entities.Operator;
+import graphqlscope.graphql.fetchers.base.OneToOneDataFetcher;
 import graphqlscope.graphql.model.OperatorTO;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.OperatorRepository;
+import graphqlscope.graphql.to.OperatorTOConverter;
 
 @Component
-public class TrainToOperatorDataFetcher extends BaseDataFetcher<String, OperatorTO> {
-
-    @Autowired
-    private DataFetcherFactory dataFetcherFactory;
-
+public class TrainToOperatorDataFetcher extends OneToOneDataFetcher<String, TrainTO, Operator, OperatorTO> {
     @Autowired
     private OperatorRepository operatorRepository;
+
+    @Autowired
+    private OperatorTOConverter operatorTOConverter;
 
     @Override
     public String getTypeName() {
@@ -31,15 +31,22 @@ public class TrainToOperatorDataFetcher extends BaseDataFetcher<String, Operator
     }
 
     @Override
-    public DataFetcher<CompletableFuture<OperatorTO>> createFetcher() {
-        return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTO parent) -> parent.getOperatorShortCode());
+    public String createKeyFromParent(TrainTO trainTO) {
+        return trainTO.getOperatorShortCode();
     }
 
     @Override
-    public BatchLoader<String, OperatorTO> createLoader() {
-        return dataFetcherFactory.createOneToOneDataLoader(
-                parentIds -> operatorRepository.findByOperatorShortCodeIn(parentIds),
-                child -> child.operatorShortCode,
-                child -> new OperatorTO(child.operatorName, child.operatorShortCode, child.operatorUicCode));
+    public String createKeyFromChild(Operator child) {
+        return child.operatorShortCode;
+    }
+
+    @Override
+    public OperatorTO createChildTOToFromChild(Operator child) {
+        return operatorTOConverter.convert(child);
+    }
+
+    @Override
+    public List<Operator> findChildrenByKeys(List<String> keys) {
+        return operatorRepository.findByOperatorShortCodeIn(keys);
     }
 }

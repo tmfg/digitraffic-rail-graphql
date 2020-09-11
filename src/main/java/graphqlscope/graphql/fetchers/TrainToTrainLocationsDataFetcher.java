@@ -1,25 +1,20 @@
 package graphqlscope.graphql.fetchers;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.schema.DataFetcher;
 import graphqlscope.graphql.entities.TrainId;
+import graphqlscope.graphql.entities.TrainLocation;
+import graphqlscope.graphql.fetchers.base.OneToManyDataFetcher;
 import graphqlscope.graphql.model.TrainLocationTO;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.TrainLocationRepository;
 import graphqlscope.graphql.to.TrainLocationTOConverter;
 
 @Component
-public class TrainToTrainLocationsDataFetcher extends BaseDataFetcher<TrainId, List<TrainLocationTO>> {
-
-    @Autowired
-    private DataFetcherFactory dataFetcherFactory;
-
+public class TrainToTrainLocationsDataFetcher extends OneToManyDataFetcher<TrainId, TrainTO, TrainLocation, TrainLocationTO> {
     @Autowired
     private TrainLocationTOConverter trainLocationTOConverter;
 
@@ -37,12 +32,22 @@ public class TrainToTrainLocationsDataFetcher extends BaseDataFetcher<TrainId, L
     }
 
     @Override
-    public DataFetcher<CompletableFuture<List<TrainLocationTO>>> createFetcher() {
-        return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTO parent) -> new TrainId(parent.getTrainNumber().longValue(), parent.getDepartureDate()));
+    public TrainId createKeyFromParent(TrainTO trainTO) {
+        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
     }
 
     @Override
-    public BatchLoader<TrainId, List<TrainLocationTO>> createLoader() {
-        return dataFetcherFactory.createOneToManyDataLoader(parentIds -> trainLocationRepository.findAllByTrainIds(parentIds), child -> new TrainId(child.trainLocationId.trainNumber, child.trainLocationId.departureDate), trainLocationTOConverter::convert);
+    public TrainId createKeyFromChild(TrainLocation child) {
+        return new TrainId(child.trainLocationId.trainNumber, child.trainLocationId.departureDate);
+    }
+
+    @Override
+    public TrainLocationTO createChildTOToFromChild(TrainLocation child) {
+        return trainLocationTOConverter.convert(child);
+    }
+
+    @Override
+    public List<TrainLocation> findChildrenByKeys(List<TrainId> keys) {
+        return trainLocationRepository.findAllByTrainIds(keys);
     }
 }

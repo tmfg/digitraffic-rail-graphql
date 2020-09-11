@@ -1,4 +1,4 @@
-package graphqlscope.graphql.fetchers;
+package graphqlscope.graphql.fetchers.base;
 
 import java.util.ArrayList;
 import java.util.HashMap;

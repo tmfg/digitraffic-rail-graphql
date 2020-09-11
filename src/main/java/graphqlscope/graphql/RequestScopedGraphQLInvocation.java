@@ -17,7 +17,9 @@ import graphql.GraphQL;
 import graphql.Internal;
 import graphql.spring.web.servlet.GraphQLInvocation;
 import graphql.spring.web.servlet.GraphQLInvocationData;
-import graphqlscope.graphql.fetchers.BaseDataFetcher;
+import graphqlscope.graphql.fetchers.base.BaseDataFetcher;
+import graphqlscope.graphql.fetchers.base.OneToManyDataFetcher;
+import graphqlscope.graphql.fetchers.base.OneToOneDataFetcher;
 
 @Component
 @Internal
@@ -40,8 +42,15 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
         for (BaseDataFetcher fetcher : fetchers) {
-            DataLoader timeTableRowLoader = DataLoader.newDataLoader(fetcher.createLoader());
-            dataLoaderRegistry.register(fetcher.getFieldName(), timeTableRowLoader);
+            if (fetcher instanceof OneToOneDataFetcher) {
+                DataLoader loader = DataLoader.newDataLoader(((OneToOneDataFetcher) fetcher).createLoader());
+                dataLoaderRegistry.register(fetcher.getFieldName(), loader);
+            } else if (fetcher instanceof OneToManyDataFetcher) {
+                DataLoader timeTableRowLoader = DataLoader.newDataLoader(((OneToManyDataFetcher) fetcher).createLoader());
+                dataLoaderRegistry.register(fetcher.getFieldName(), timeTableRowLoader);
+            } else {
+                throw new IllegalArgumentException("Loader was not of known type");
+            }
         }
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);

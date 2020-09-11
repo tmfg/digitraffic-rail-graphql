@@ -1,23 +1,19 @@
 package graphqlscope.graphql.fetchers;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
-import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.schema.DataFetcher;
+import graphqlscope.graphql.entities.TrainType;
+import graphqlscope.graphql.fetchers.base.OneToOneDataFetcher;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.model.TrainTypeTO;
 import graphqlscope.graphql.repositories.TrainTypeRepository;
 import graphqlscope.graphql.to.TrainTypeTOConverter;
 
 @Component
-public class TrainToTrainTypeDataFetcher extends BaseDataFetcher<Long, TrainTypeTO> {
-
-    @Autowired
-    private DataFetcherFactory dataFetcherFactory;
-
+public class TrainToTrainTypeDataFetcher extends OneToOneDataFetcher<Long, TrainTO, TrainType, TrainTypeTO> {
     @Autowired
     private TrainTypeTOConverter trainTypeTOConverter;
 
@@ -35,15 +31,22 @@ public class TrainToTrainTypeDataFetcher extends BaseDataFetcher<Long, TrainType
     }
 
     @Override
-    public DataFetcher<CompletableFuture<TrainTypeTO>> createFetcher() {
-        return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTO parent) -> parent.getTrainTypeId().longValue());
+    public Long createKeyFromParent(TrainTO trainTO) {
+        return trainTO.getTrainTypeId().longValue();
     }
 
     @Override
-    public BatchLoader<Long, TrainTypeTO> createLoader() {
-        return dataFetcherFactory.createOneToOneDataLoader(
-                parentIds -> trainTypeRepository.findAllById(parentIds),
-                child -> child.id,
-                trainTypeTOConverter::convert);
+    public Long createKeyFromChild(TrainType child) {
+        return child.id;
+    }
+
+    @Override
+    public TrainTypeTO createChildTOToFromChild(TrainType child) {
+        return trainTypeTOConverter.convert(child);
+    }
+
+    @Override
+    public List<TrainType> findChildrenByKeys(List<Long> keys) {
+        return trainTypeRepository.findAllById(keys);
     }
 }

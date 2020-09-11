@@ -1,25 +1,20 @@
 package graphqlscope.graphql.fetchers;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
-import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.schema.DataFetcher;
+import graphqlscope.graphql.entities.TimeTableRow;
 import graphqlscope.graphql.entities.TrainId;
+import graphqlscope.graphql.fetchers.base.OneToManyDataFetcher;
 import graphqlscope.graphql.model.TimeTableRowTO;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.TimeTableRowRepository;
 import graphqlscope.graphql.to.TimeTableRowTOConverter;
 
 @Component
-public class TrainToTimeTableRowDataFetcher extends BaseDataFetcher<TrainId, List<TimeTableRowTO>> {
-
-    @Autowired
-    private DataFetcherFactory dataFetcherFactory;
-
+public class TrainToTimeTableRowDataFetcher extends OneToManyDataFetcher<TrainId, TrainTO, TimeTableRow, TimeTableRowTO> {
     @Autowired
     private TimeTableRowRepository timeTableRowRepository;
 
@@ -37,12 +32,22 @@ public class TrainToTimeTableRowDataFetcher extends BaseDataFetcher<TrainId, Lis
     }
 
     @Override
-    public DataFetcher<CompletableFuture<List<TimeTableRowTO>>> createFetcher() {
-        return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTO parent) -> new TrainId(parent.getTrainNumber().longValue(), parent.getDepartureDate()));
+    public TrainId createKeyFromParent(TrainTO trainTO) {
+        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
     }
 
     @Override
-    public BatchLoader<TrainId, List<TimeTableRowTO>> createLoader() {
-        return dataFetcherFactory.createOneToManyDataLoader(parentIds -> timeTableRowRepository.findAllByTrainIds(parentIds), child -> new TrainId(child.id.trainNumber, child.id.departureDate), timeTableRowTOConverter::convert);
+    public TrainId createKeyFromChild(TimeTableRow child) {
+        return new TrainId(child.id.trainNumber, child.id.departureDate);
+    }
+
+    @Override
+    public TimeTableRowTO createChildTOToFromChild(TimeTableRow child) {
+        return timeTableRowTOConverter.convert(child);
+    }
+
+    @Override
+    public List<TimeTableRow> findChildrenByKeys(List<TrainId> keys) {
+        return timeTableRowRepository.findAllByTrainIds(keys);
     }
 }

@@ -1,23 +1,19 @@
 package graphqlscope.graphql.fetchers;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
-import org.dataloader.BatchLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.schema.DataFetcher;
+import graphqlscope.graphql.entities.TrainCategory;
+import graphqlscope.graphql.fetchers.base.OneToOneDataFetcher;
 import graphqlscope.graphql.model.TrainCategoryTO;
 import graphqlscope.graphql.model.TrainTypeTO;
 import graphqlscope.graphql.repositories.TrainCategoryRepository;
 import graphqlscope.graphql.to.TrainCategoryTOConverter;
 
 @Component
-public class TrainTypeToTrainCategoryDataFetcher extends BaseDataFetcher<Long, TrainCategoryTO> {
-
-    @Autowired
-    private DataFetcherFactory dataFetcherFactory;
-
+public class TrainTypeToTrainCategoryDataFetcher extends OneToOneDataFetcher<Long, TrainTypeTO, TrainCategory, TrainCategoryTO> {
     @Autowired
     private TrainCategoryRepository trainCategoryRepository;
 
@@ -35,15 +31,22 @@ public class TrainTypeToTrainCategoryDataFetcher extends BaseDataFetcher<Long, T
     }
 
     @Override
-    public DataFetcher<CompletableFuture<TrainCategoryTO>> createFetcher() {
-        return dataFetcherFactory.createDataFetcher(getFieldName(), (TrainTypeTO parent) -> parent.getTrainCategoryId().longValue());
+    public Long createKeyFromParent(TrainTypeTO trainTypeTO) {
+        return trainTypeTO.getTrainCategoryId().longValue();
     }
 
     @Override
-    public BatchLoader<Long, TrainCategoryTO> createLoader() {
-        return dataFetcherFactory.createOneToOneDataLoader(
-                parentIds -> trainCategoryRepository.findAllById(parentIds),
-                child -> child.id,
-                trainCategoryTOConverter::convert);
+    public Long createKeyFromChild(TrainCategory child) {
+        return child.id;
+    }
+
+    @Override
+    public TrainCategoryTO createChildTOToFromChild(TrainCategory child) {
+        return trainCategoryTOConverter.convert(child);
+    }
+
+    @Override
+    public List<TrainCategory> findChildrenByKeys(List<Long> keys) {
+        return trainCategoryRepository.findAllById(keys);
     }
 }

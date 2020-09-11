@@ -33,7 +33,7 @@ import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
-import graphqlscope.graphql.fetchers.BaseDataFetcher;
+import graphqlscope.graphql.fetchers.base.BaseDataFetcher;
 
 @Component
 public class GraphQLProvider {
