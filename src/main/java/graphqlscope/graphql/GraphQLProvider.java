@@ -61,12 +61,14 @@ public class GraphQLProvider {
             "Composition.departureDate",
             "Composition.operatorShortCode",
             "Composition.operatorUicCode",
-//            "Composition.trainCategoryId",
-//            "Composition.trainTypeId",
+            "Composition.trainCategoryId",
+            "Composition.trainTypeId",
 
             "JourneySection.id",
             "JourneySection.trainNumber",
             "JourneySection.departureDate",
+//            "JourneySection.beginTimeTableRowId",
+//            "JourneySection.endTimeTableRowId",
 
             "Locomotive.id",
             "Locomotive.journeysectionId",
@@ -154,6 +156,7 @@ public class GraphQLProvider {
                         .dataFetcher("trainLocation", graphQLDataFetchers.trainLocationFetcher())
                         .dataFetcher("composition", graphQLDataFetchers.compositionFetcher())
                         .dataFetcher("compositions", graphQLDataFetchers.compositionsFetcher())
+                        .dataFetcher("compositionsGreaterThanVersion", graphQLDataFetchers.compositionsGreaterThanVersionFetcher())
                 );
 
         for (BaseDataFetcher fetcher : this.fetchers) {

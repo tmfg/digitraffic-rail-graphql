@@ -31,6 +31,7 @@ import graphqlscope.graphql.to.TrainTOConverter;
 @Component
 public class GraphQLDataFetchers {
 
+    public static final int MAX_RESULTS = 250;
     @Autowired
     private TrainRepository trainRepository;
 
@@ -73,7 +74,7 @@ public class GraphQLDataFetchers {
         return dataFetchingEnvironment -> {
             String version = dataFetchingEnvironment.getArgument("version");
 
-            List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, 2500));
+            List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }
@@ -107,6 +108,15 @@ public class GraphQLDataFetchers {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
             List<Composition> compositions = compositionRepository.findByDepartureDate(departureDate);
+            return compositions.stream().map(compositionTOConverter::convert).collect(Collectors.toList());
+        };
+    }
+
+    public DataFetcher<List<CompositionTO>> compositionsGreaterThanVersionFetcher() {
+        return dataFetchingEnvironment -> {
+            String version = dataFetchingEnvironment.getArgument("version");
+
+            List<Composition> compositions = compositionRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
             return compositions.stream().map(compositionTOConverter::convert).collect(Collectors.toList());
         };
     }
