@@ -103,6 +103,10 @@ type JourneySection {
     endTimeTableRowId : Int
     maximumSpeed : Int
     totalLength : Int
+    startStation : Station
+    endStation : Station
+    startTimeTableRow : TimeTableRow
+    endTimeTableRow : TimeTableRow
     wagons : [Wagon]
     locomotives : [Locomotive]
 }

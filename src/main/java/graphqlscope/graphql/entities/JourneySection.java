@@ -11,9 +11,8 @@ public class JourneySection {
     @Embedded
     public TrainId trainId;
 
-    public Long beginTimeTableRowId;
-    public Long endTimeTableRowId;
-
+    public Long attapId;
+    public Long saapAttapId;
 
     public int totalLength;
     public int maximumSpeed;

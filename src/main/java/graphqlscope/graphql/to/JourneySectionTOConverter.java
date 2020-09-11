@@ -12,10 +12,12 @@ public class JourneySectionTOConverter {
                 entity.id.intValue(),
                 entity.trainId.departureDate,
                 entity.trainId.trainNumber.intValue(),
-                entity.beginTimeTableRowId.intValue(),
-                entity.endTimeTableRowId.intValue(),
+                entity.attapId.intValue(),
+                entity.saapAttapId.intValue(),
                 entity.maximumSpeed,
                 entity.totalLength,
+                null,
+                null,
                 null,
                 null
         );
