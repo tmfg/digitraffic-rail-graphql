@@ -23,6 +23,7 @@ public class TimeTableRowTOConverter {
                 entity.id.attapId.intValue(),
                 entity.id.trainNumber.intValue(),
                 entity.id.departureDate,
+                null,
                 null);
     }
 }

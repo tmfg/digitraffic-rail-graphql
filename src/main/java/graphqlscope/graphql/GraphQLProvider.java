@@ -45,9 +45,9 @@ public class GraphQLProvider {
             "TimeTableRow.id",
             "TimeTableRow.trainNumber",
             "TimeTableRow.departureDate",
-//            "TimeTableRow.stationShortCode",
-//            "TimeTableRow.stationUICCode",
-//            "TimeTableRow.countryCode",
+            "TimeTableRow.stationShortCode",
+            "TimeTableRow.stationUICCode",
+            "TimeTableRow.countryCode",
 
             "Cause.timeTableRowId",
             "Cause.trainNumber",
@@ -61,8 +61,8 @@ public class GraphQLProvider {
             "Composition.departureDate",
             "Composition.operatorShortCode",
             "Composition.operatorUicCode",
-            "Composition.trainCategoryId",
-            "Composition.trainTypeId",
+//            "Composition.trainCategoryId",
+//            "Composition.trainTypeId",
 
             "JourneySection.id",
             "JourneySection.trainNumber",
@@ -73,6 +73,8 @@ public class GraphQLProvider {
 
             "Wagon.id",
             "Wagon.journeysectionId",
+
+            "Station.id",
 
             "TrainCategory.id",
 

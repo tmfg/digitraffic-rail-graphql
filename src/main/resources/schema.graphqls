@@ -3,10 +3,10 @@ type Query {
     trainsGreaterThanVersion(version : String) : [Train]
     trains(departureDate : Date) : [Train]
 
-    #    trainLocation(trainNumber : Int, departureDate : Date) : [TrainLocation]
+    # trainLocation(trainNumber : Int, departureDate : Date) : [TrainLocation]
     #
-    #    composition(trainNumber : Int, departureDate : Date) : Composition
-    #    compositions(departureDate : Date) : [Composition]
+    # composition(trainNumber : Int, departureDate : Date) : Composition
+    # compositions(departureDate : Date) : [Composition]
 }
 
 type Train {
@@ -57,6 +57,7 @@ type TimeTableRow {
     trainNumber : Int
     departureDate : Date
 
+    station: Station
     causes : [Cause]
 }
 
@@ -104,8 +105,8 @@ type JourneySection {
     endTimeTableRowId : Int
     maximumSpeed : Int
     totalLength : Int
-    locomotives : [Locomotive]
     wagons : [Wagon]
+    locomotives : [Locomotive]
 }
 
 type Locomotive {
@@ -134,6 +135,17 @@ type Wagon {
     vehicleNumber : String
 }
 
+type Station {
+    id : Int
+    passengerTraffic : Boolean
+    countryCode : String
+    location : [Float]
+    name : String
+    shortCode : String
+    uicCode : Int
+    type : StationTypeEnum
+}
+
 scalar Date
 scalar DateTime
 
@@ -144,4 +156,8 @@ enum TimetableType {
 enum TimeTableRowType {
     ARRIVAL
     DEPARTURE
+}
+
+enum StationTypeEnum {
+    STATION, STOPPING_POINT, TURNOUT_IN_THE_OPEN_LINE
 }

@@ -12,6 +12,6 @@ import graphqlscope.graphql.entities.Locomotive;
 @Repository
 @Transactional
 public interface LocomotiveRepository extends JpaRepository<Locomotive, Long> {
-    @Query("select e from Locomotive e where e.journeysectionId in ?1")
+    @Query("select e from Locomotive e where e.journeysectionId in ?1 order by e.journeysectionId,e.location asc")
     List<Locomotive> findAllByJourneySectionIds(List<Long> journeySectionIds);
 }

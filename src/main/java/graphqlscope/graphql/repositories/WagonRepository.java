@@ -12,6 +12,6 @@ import graphqlscope.graphql.entities.Wagon;
 @Repository
 @Transactional
 public interface WagonRepository extends JpaRepository<Wagon, Long> {
-    @Query("select e from Wagon e where e.journeysectionId in ?1")
+    @Query("select e from Wagon e where e.journeysectionId in ?1 order by e.journeysectionId,e.location asc")
     List<Wagon> findAllByJourneySectionIds(List<Long> journeySectionIds);
 }
