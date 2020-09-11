@@ -52,7 +52,18 @@ public class GraphQLProvider {
             "Cause.timeTableRowId",
             "Cause.trainNumber",
             "Cause.departureDate",
+            "Cause.categoryCodeId",
+            "Cause.detailedCategoryCodeId",
+            "Cause.thirdCategoryCodeId",
             "Cause.id",
+
+            "CategoryCode.id",
+
+            "DetailedCategoryCode.id",
+            "DetailedCategoryCode.categoryCodeId",
+
+            "ThirdCategoryCode.id",
+            "ThirdCategoryCode.detailedCategoryCodeId",
 
             "TrainLocation.departureDate",
             "TrainLocation.trainNumber",

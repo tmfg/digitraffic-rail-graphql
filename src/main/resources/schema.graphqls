@@ -67,6 +67,9 @@ type Cause {
     categoryCodeId : Int
     detailedCategoryCodeId : Int
     thirdCategoryCodeId : Int
+    categoryCode : CategoryCode
+    detailedCategoryCode : DetailedCategoryCode
+    thirdCategoryCode : ThirdCategoryCode
 }
 
 type Operator {
@@ -103,8 +106,6 @@ type JourneySection {
     endTimeTableRowId : Int
     maximumSpeed : Int
     totalLength : Int
-    startStation : Station
-    endStation : Station
     startTimeTableRow : TimeTableRow
     endTimeTableRow : TimeTableRow
     wagons : [Wagon]
@@ -146,6 +147,33 @@ type Station {
     shortCode : String
     uicCode : Int
     type : StationTypeEnum
+}
+
+type CategoryCode {
+    code : String
+    name : String
+    id : Int
+    validFrom : Date
+    validTo : Date
+}
+
+type DetailedCategoryCode {
+    code : String
+    name : String
+    id : Int
+    categoryCodeId : Int
+    validFrom : Date
+    validTo : Date
+}
+
+type ThirdCategoryCode {
+    code : String
+    name : String
+    description : String
+    id : Int
+    validFrom : Date
+    validTo : Date
+    detailedCategoryCodeId : Int
 }
 
 scalar Date

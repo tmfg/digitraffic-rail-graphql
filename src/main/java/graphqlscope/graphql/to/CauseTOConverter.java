@@ -13,9 +13,20 @@ public class CauseTOConverter {
                 entity.timeTableRowId.trainNumber.intValue(),
                 entity.timeTableRowId.departureDate,
                 entity.id.intValue(),
-                entity.categoryCodeId.intValue(),
-                entity.detailedCategoryCodeId.intValue(),
-                entity.thirdCategoryCodeId.intValue()
+                longToNullableInteger(entity.categoryCodeId),
+                longToNullableInteger(entity.detailedCategoryCodeId),
+                longToNullableInteger(entity.thirdCategoryCodeId),
+                null,
+                null,
+                null
         );
+    }
+
+    public Integer longToNullableInteger(Long value) {
+        if (value == null) {
+            return null;
+        } else {
+            return value.intValue();
+        }
     }
 }
