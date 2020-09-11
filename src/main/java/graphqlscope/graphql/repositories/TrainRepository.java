@@ -16,8 +16,8 @@ import graphqlscope.graphql.entities.TrainId;
 @Transactional
 public interface TrainRepository extends JpaRepository<Train, TrainId> {
 
-    @Query("select train from Train train where train.id.departureDate = ?1")
-    List<Train> findByDepartureDate(LocalDate departureDate);
+    @Query("select train from Train train where train.id.departureDate = ?1 order by train.id.trainNumber")
+    List<Train> findByDepartureDate(LocalDate departureDate, Pageable pageable);
 
     List<Train> findByVersionGreaterThanOrderByVersionAsc(Long version, Pageable pageable);
 }

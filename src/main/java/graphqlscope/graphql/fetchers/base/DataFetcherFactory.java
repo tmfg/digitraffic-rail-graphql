@@ -13,6 +13,7 @@ import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import graphql.schema.DataFetcher;
 
 @Component
@@ -34,16 +35,20 @@ public class DataFetcherFactory {
             Function<Child, ParentId> parentIdProvider,
             Function<Child, ChildTO> childTOConverter) {
         return parentIds -> CompletableFuture.supplyAsync(() -> {
-                    List<Child> children = childProvider.apply(parentIds);
+            List<List<ParentId>> partitions = Lists.partition(parentIds, 999);
+            List<Child> children = new ArrayList<>(parentIds.size());
+            for (List<ParentId> partition : partitions) {
+                children.addAll(childProvider.apply(partition));
+            }
 
-                    Map<ParentId, List<ChildTO>> childrenGroupedBy = new HashMap<>();
-                    for (Child child : children) {
-                        ParentId parentId = parentIdProvider.apply(child);
-                        List<ChildTO> childTOs = childrenGroupedBy.get(parentId);
-                        if (childTOs == null) {
-                            childTOs = new ArrayList<>();
-                            childrenGroupedBy.put(parentId, childTOs);
-                        }
+            Map<ParentId, List<ChildTO>> childrenGroupedBy = new HashMap<>();
+            for (Child child : children) {
+                ParentId parentId = parentIdProvider.apply(child);
+                List<ChildTO> childTOs = childrenGroupedBy.get(parentId);
+                if (childTOs == null) {
+                    childTOs = new ArrayList<>();
+                    childrenGroupedBy.put(parentId, childTOs);
+                }
 
                         childTOs.add(childTOConverter.apply(child));
                     }
@@ -58,7 +63,11 @@ public class DataFetcherFactory {
             Function<Child, ParentId> parentIdProvider,
             Function<Child, ChildTO> childTOConverter) {
         return parentIds -> CompletableFuture.supplyAsync(() -> {
-                    List<Child> children = childProvider.apply(parentIds);
+                    List<List<ParentId>> partitions = Lists.partition(parentIds, 999);
+                    List<Child> children = new ArrayList<>(parentIds.size());
+                    for (List<ParentId> partition : partitions) {
+                        children.addAll(childProvider.apply(partition));
+                    }
 
                     Map<ParentId, ChildTO> childrenMap = new HashMap<>();
                     for (Child child : children) {

@@ -67,8 +67,8 @@ public class GraphQLProvider {
             "JourneySection.id",
             "JourneySection.trainNumber",
             "JourneySection.departureDate",
-//            "JourneySection.beginTimeTableRowId",
-//            "JourneySection.endTimeTableRowId",
+            "JourneySection.beginTimeTableRowId",
+            "JourneySection.endTimeTableRowId",
 
             "Locomotive.id",
             "Locomotive.journeysectionId",

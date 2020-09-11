@@ -65,7 +65,7 @@ public class GraphQLDataFetchers {
         return dataFetchingEnvironment -> {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
-            List<Train> trains = trainRepository.findByDepartureDate(departureDate);
+            List<Train> trains = trainRepository.findByDepartureDate(departureDate, PageRequest.of(0, MAX_RESULTS));
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }
