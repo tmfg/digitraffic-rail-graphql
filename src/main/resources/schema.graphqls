@@ -72,9 +72,9 @@ type Cause {
 }
 
 type Operator {
-    operatorName : String
-    operatorShortCode : String
-    operatorUicCode : Int
+    name : String
+    shortCode : String
+    uicCode : Int
 }
 
 type TrainLocation {
@@ -119,19 +119,19 @@ type Locomotive {
 
 type Wagon {
     id : Int
-    catering : Boolean
-    disabled : Boolean
     length : Int
     location : Int
+    salesNumber : Int
+    journeysectionId : Int
+    catering : Boolean
+    disabled : Boolean
     luggage : Boolean
     pet : Boolean
     playground : Boolean
-    salesNumber : Int
     smoking : Boolean
     video : Boolean
     wagonType : String
     vehicleNumber : String
-    journeysectionId : Int
 }
 
 scalar Date

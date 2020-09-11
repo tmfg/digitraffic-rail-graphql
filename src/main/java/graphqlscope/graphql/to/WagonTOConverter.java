@@ -10,19 +10,19 @@ public class WagonTOConverter {
     public WagonTO convert(Wagon entity) {
         return new WagonTO(
                 entity.id.intValue(),
-                entity.catering,
-                entity.disabled,
                 entity.length,
                 entity.location,
+                entity.salesNumber,
+                entity.journeysectionId.intValue(),
+                entity.catering,
+                entity.disabled,
                 entity.luggage,
                 entity.pet,
                 entity.playground,
-                entity.salesNumber,
                 entity.smoking,
                 entity.video,
                 entity.wagonType,
-                entity.vehicleNumber,
-                entity.journeysectionId.intValue()
+                entity.vehicleNumber
         );
     }
 }
