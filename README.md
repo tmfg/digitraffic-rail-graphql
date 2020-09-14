@@ -1,6 +1,4 @@
-# Spring Boot based GraphQL project showing different DataLoader scopes
-
-This application is part of [this blog post](https://blog.softwaremill.com/graphql-dataloader-in-spring-boot-singleton-or-request-scoped-16699436f680) about the possible scopes of the GraphQL's DataLoader pattern.
+# GraphlQL implementation for rata.digitraffic.fi
 
 Build:
 ```
