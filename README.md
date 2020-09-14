@@ -13,12 +13,32 @@ Sample query to be run:
 
 ```
 {
-  animals {
-    name
-    color
-    countries {
+  train(trainNumber: 51, departureDate: "2020-06-29") {
+    cancelled
+    commuterLineid
+    deleted
+    departureDate
+    runningCurrently
+    timetableAcceptanceDate
+    timetableType
+    trainNumber
+    version
+    operator {
       name
+    }
+    timeTableRows {
+      scheduledTime
+      actualTime
+      station {
+        shortCode
+      }
+      causes {
+        categoryCode {
+          code
+        }
+      }
     }
   }
 }
+
 ```
