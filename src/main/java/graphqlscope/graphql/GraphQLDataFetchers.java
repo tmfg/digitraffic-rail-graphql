@@ -1,5 +1,7 @@
 package graphqlscope.graphql;
 
+import java.math.BigInteger;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import graphql.schema.DataFetcher;
 import graphqlscope.graphql.entities.Composition;
 import graphqlscope.graphql.entities.Train;
@@ -22,6 +25,7 @@ import graphqlscope.graphql.model.CompositionTO;
 import graphqlscope.graphql.model.TrainLocationTO;
 import graphqlscope.graphql.model.TrainTO;
 import graphqlscope.graphql.repositories.CompositionRepository;
+import graphqlscope.graphql.repositories.TrainCategoryRepository;
 import graphqlscope.graphql.repositories.TrainLocationRepository;
 import graphqlscope.graphql.repositories.TrainRepository;
 import graphqlscope.graphql.to.CompositionTOConverter;
@@ -50,6 +54,9 @@ public class GraphQLDataFetchers {
     @Autowired
     private CompositionTOConverter compositionTOConverter;
 
+    @Autowired
+    private TrainCategoryRepository trainCategoryRepository;
+
     private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
 
     public DataFetcher<Optional<TrainTO>> trainFetcher() {
@@ -70,13 +77,72 @@ public class GraphQLDataFetchers {
         };
     }
 
-    public DataFetcher<List<TrainTO>> trainsGreaterThanVersionFetcher() {
+    public DataFetcher<List<TrainTO>> trainsWithVersionGreaterThanFetcher() {
         return dataFetchingEnvironment -> {
             String version = dataFetchingEnvironment.getArgument("version");
 
             List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
+    }
+
+    public DataFetcher trainsWithTrainNumberGreaterThenFetcher() {
+        return dataFetchingEnvironment -> {
+            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
+            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
+
+            List<Train> trains = trainRepository.findByDepartureDateWithTrainNumberGreaterThan(departureDate, trainNumber.longValue(), PageRequest.of(0, MAX_RESULTS));
+            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
+        };
+    }
+
+    public DataFetcher trainsByStationAndQuantityFetcher() {
+        return dataFetchingEnvironment -> {
+            String station = dataFetchingEnvironment.getArgument("station");
+            Integer arrivedTrains = dataFetchingEnvironment.getArgument("arrivedTrains");
+            Integer arrivingTrains = dataFetchingEnvironment.getArgument("arrivingTrains");
+            Integer departedTrains = dataFetchingEnvironment.getArgument("departedTrains");
+            Integer departingTrains = dataFetchingEnvironment.getArgument("departingTrains");
+
+            if (arrivedTrains == null) {
+                arrivedTrains = 5;
+            }
+            if (arrivingTrains == null) {
+                arrivingTrains = 5;
+            }
+            if (departedTrains == null) {
+                departedTrains = 5;
+            }
+            if (departingTrains == null) {
+                departingTrains = 5;
+            }
+
+            List<Long> trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
+            List<Train> trains = getLiveTrainsUsingQuantityFiltering(station, -1L, arrivedTrains, arrivingTrains, departedTrains, departingTrains, false, trainCategoryIds);
+            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
+        };
+    }
+
+    private List<Train> getLiveTrainsUsingQuantityFiltering(String station, long version, int arrived_trains, int arriving_trains,
+                                                            int departedTrains, int departingTrains, Boolean includeNonstopping, List<Long> trainCategoryIds) {
+        List<Object[]> liveTrains = trainRepository.findLiveTrainsIds(station, departedTrains, departingTrains, arrived_trains,
+                arriving_trains, !includeNonstopping, trainCategoryIds);
+
+        List<TrainId> trainsToRetrieve = extractNewerTrainIds(version, liveTrains);
+
+        if (!trainsToRetrieve.isEmpty()) {
+            return trainRepository.findAllById(trainsToRetrieve);
+        } else {
+            return Lists.newArrayList();
+        }
+    }
+
+    private List<TrainId> extractNewerTrainIds(long version, List<Object[]> liveTrains) {
+        return liveTrains.stream().filter(train -> ((BigInteger) train[3]).longValue() > version).map(tuple -> {
+            LocalDate departureDate = LocalDate.from(((Date) tuple[1]).toLocalDate());
+            BigInteger trainNumber = (BigInteger) tuple[2];
+            return new TrainId(trainNumber.longValue(), departureDate);
+        }).collect(Collectors.toList());
     }
 
 

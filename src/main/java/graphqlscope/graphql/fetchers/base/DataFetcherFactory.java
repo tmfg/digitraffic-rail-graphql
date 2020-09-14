@@ -30,52 +30,49 @@ public class DataFetcherFactory {
         };
     }
 
-    public <ParentId, Child, ChildTO> BatchLoader<ParentId, List<ChildTO>> createOneToManyDataLoader(
-            Function<List<ParentId>, List<Child>> childProvider,
-            Function<Child, ParentId> parentIdProvider,
-            Function<Child, ChildTO> childTOConverter) {
-        return parentIds -> CompletableFuture.supplyAsync(() -> {
-            List<List<ParentId>> partitions = Lists.partition(parentIds, 999);
-            List<Child> children = new ArrayList<>(parentIds.size());
-            for (List<ParentId> partition : partitions) {
-                children.addAll(childProvider.apply(partition));
-            }
-
-            Map<ParentId, List<ChildTO>> childrenGroupedBy = new HashMap<>();
-            for (Child child : children) {
-                ParentId parentId = parentIdProvider.apply(child);
-                List<ChildTO> childTOs = childrenGroupedBy.get(parentId);
-                if (childTOs == null) {
-                    childTOs = new ArrayList<>();
-                    childrenGroupedBy.put(parentId, childTOs);
-                }
+    public <ParentId, Child, ChildTO> BatchLoader<ParentId, List<ChildTO>> createOneToManyDataLoader(Function<List<ParentId>, List<Child>> childProvider, Function<Child, ParentId> parentIdProvider, Function<Child, ChildTO> childTOConverter) {
+        return createDataLoader(childProvider, (children) -> {
+                    Map<ParentId, List<ChildTO>> childrenGroupedBy = new HashMap<>();
+                    for (Child child : children) {
+                        ParentId parentId = parentIdProvider.apply(child);
+                        List<ChildTO> childTOs = childrenGroupedBy.get(parentId);
+                        if (childTOs == null) {
+                            childTOs = new ArrayList<>();
+                            childrenGroupedBy.put(parentId, childTOs);
+                        }
 
                         childTOs.add(childTOConverter.apply(child));
                     }
 
-                    return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
+                    return childrenGroupedBy;
                 }
         );
     }
 
-    public <ParentId, Child, ChildTO> BatchLoader<ParentId, ChildTO> createOneToOneDataLoader(
-            Function<List<ParentId>, List<Child>> childProvider,
-            Function<Child, ParentId> parentIdProvider,
-            Function<Child, ChildTO> childTOConverter) {
-        return parentIds -> CompletableFuture.supplyAsync(() -> {
-                    List<List<ParentId>> partitions = Lists.partition(parentIds, 999);
-                    List<Child> children = new ArrayList<>(parentIds.size());
-                    for (List<ParentId> partition : partitions) {
-                        children.addAll(childProvider.apply(partition));
-                    }
-
+    public <ParentId, Child, ChildTO> BatchLoader<ParentId, ChildTO> createOneToOneDataLoader(Function<List<ParentId>, List<Child>> childProvider, Function<Child, ParentId> parentIdProvider, Function<Child, ChildTO> childTOConverter) {
+        return createDataLoader(childProvider, (children) -> {
                     Map<ParentId, ChildTO> childrenMap = new HashMap<>();
                     for (Child child : children) {
                         ParentId parentId = parentIdProvider.apply(child);
                         childrenMap.put(parentId, childTOConverter.apply(child));
                     }
 
-                    return parentIds.stream().map(s -> childrenMap.get(s)).collect(Collectors.toList());
+                    return childrenMap;
+                }
+        );
+    }
+
+    private <ParentId, Child, ResultType> BatchLoader<ParentId, ResultType> createDataLoader(Function<List<ParentId>, List<Child>> childProvider, Function<List<Child>, Map<ParentId, ResultType>> childGroupFunction) {
+        return parentIds -> CompletableFuture.supplyAsync(() -> {
+                    List<List<ParentId>> partitions = Lists.partition(parentIds, 2499);
+                    List<Child> children = new ArrayList<>(parentIds.size());
+                    for (List<ParentId> partition : partitions) {
+                        children.addAll(childProvider.apply(partition));
+                    }
+
+                    Map<ParentId, ResultType> childrenGroupedBy = childGroupFunction.apply(children);
+
+                    return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
                 }
         );
     }
