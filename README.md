@@ -6,16 +6,6 @@ Build:
 ```
 $ ./gradlew clean build
 ```
-Run to test the `global` scope:
-```
-$ java -jar build/libs/graphql-springboot-scope-0.0.1-SNAPSHOT.jar --spring.profiles.active=global
-```
-
-Run to test the `request` scope:
-```
-$ java -jar build/libs/graphql-springboot-scope-0.0.1-SNAPSHOT.jar --spring.profiles.active=request
-```
-
 GraphiQL, an in-browser IDE for exploring GraphQL, is embedded through `graphiql-spring-boot-starter`
 and available at `http://localhost:8081/graphiql`.
 

@@ -5,7 +5,7 @@ plugins {
     id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
 }
 
-group = 'graphqlscope-graphql'
+group = 'fi.digitraffic'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '12'
 
