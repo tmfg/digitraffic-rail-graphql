@@ -27,6 +27,8 @@ public abstract class BaseDataFetcher<KeyType, ParentTOType, ChildEntityType, Ch
 
     public abstract List<ChildEntityType> findChildrenByKeys(List<KeyType> keys);
 
+    public abstract BatchLoader<KeyType, ChildFieldType> createLoader();
+
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
             ParentTOType parent = dataFetchingEnvironment.getSource();
@@ -37,8 +39,6 @@ public abstract class BaseDataFetcher<KeyType, ParentTOType, ChildEntityType, Ch
             return timeTableRowLoader.load(createKeyFromParent(parent));
         };
     }
-
-    public abstract BatchLoader<KeyType, ChildFieldType> createLoader();
 
     protected <ParentId, Child, ResultType> BatchLoader<ParentId, ResultType> createDataLoader(Function<List<ParentId>, List<Child>> childProvider, Function<List<Child>, Map<ParentId, ResultType>> childGroupFunction) {
         return parentIds -> CompletableFuture.supplyAsync(() -> {
