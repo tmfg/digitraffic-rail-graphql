@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
 import fi.digitraffic.graphql.rail.fetchers.base.BaseDataFetcher;
-import fi.digitraffic.graphql.rail.fetchers.base.OneToManyDataFetcher;
-import fi.digitraffic.graphql.rail.fetchers.base.OneToOneDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -42,15 +40,8 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
         for (BaseDataFetcher fetcher : fetchers) {
-            if (fetcher instanceof OneToOneDataFetcher) {
-                DataLoader loader = DataLoader.newDataLoader(((OneToOneDataFetcher) fetcher).createLoader());
+                DataLoader loader = DataLoader.newDataLoader(fetcher.createLoader());
                 dataLoaderRegistry.register(fetcher.getFieldName(), loader);
-            } else if (fetcher instanceof OneToManyDataFetcher) {
-                DataLoader timeTableRowLoader = DataLoader.newDataLoader(((OneToManyDataFetcher) fetcher).createLoader());
-                dataLoaderRegistry.register(fetcher.getFieldName(), timeTableRowLoader);
-            } else {
-                throw new IllegalArgumentException("Loader was not of known type");
-            }
         }
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);
