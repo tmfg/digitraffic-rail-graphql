@@ -56,8 +56,8 @@ compileJava.dependsOn graphqlCodegen
 graphqlCodegen {
     graphqlSchemaPaths = ["$projectDir/src/main/resources/schema.graphqls".toString()]
     outputDir = new File("$projectDir/src/main/graphqlGen")
-    apiPackageName = "graphqlscope.graphql.api"
-    modelPackageName = "graphqlscope.graphql.model"
+    apiPackageName = "fi.digitraffic.graphql.rail.api"
+    modelPackageName = "fi.digitraffic.graphql.rail.model"
     customTypesMapping = [
             DateTime: "java.time.ZonedDateTime",
             Date    : "java.time.LocalDate"
