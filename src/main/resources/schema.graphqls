@@ -3,7 +3,7 @@ type Query {
     trains(departureDate : Date) : [Train]
     trainsWithVersionGreaterThan(version : String) : [Train]
     trainsWithTrainNumberGreaterThan(departureDate : Date, trainNumber : Int) : [Train]
-    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int) : [Train]
+    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
     compositionsGreaterThanVersion(version : String) : [Composition]
 }
 

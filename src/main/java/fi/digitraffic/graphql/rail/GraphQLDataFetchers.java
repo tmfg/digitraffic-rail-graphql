@@ -103,6 +103,8 @@ public class GraphQLDataFetchers {
             Integer arrivingTrains = dataFetchingEnvironment.getArgument("arrivingTrains");
             Integer departedTrains = dataFetchingEnvironment.getArgument("departedTrains");
             Integer departingTrains = dataFetchingEnvironment.getArgument("departingTrains");
+            Boolean includeNonStopping = dataFetchingEnvironment.getArgument("includeNonStopping");
+            List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
 
             if (arrivedTrains == null) {
                 arrivedTrains = 5;
@@ -116,9 +118,18 @@ public class GraphQLDataFetchers {
             if (departingTrains == null) {
                 departingTrains = 5;
             }
+            if (includeNonStopping == null) {
+                includeNonStopping = false;
+            }
 
-            List<Long> trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
-            List<Train> trains = getLiveTrainsUsingQuantityFiltering(station, -1L, arrivedTrains, arrivingTrains, departedTrains, departingTrains, false, trainCategoryIds);
+            List<Long> trainCategoryIds;
+            if (trainCategoryNames == null) {
+                trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
+            } else {
+                trainCategoryIds = trainCategoryRepository.findAllByNameIn(trainCategoryNames);
+            }
+
+            List<Train> trains = getLiveTrainsUsingQuantityFiltering(station, -1L, arrivedTrains, arrivingTrains, departedTrains, departingTrains, includeNonStopping, trainCategoryIds);
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }
