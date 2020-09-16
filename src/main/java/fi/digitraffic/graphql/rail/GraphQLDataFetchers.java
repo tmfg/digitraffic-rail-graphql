@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +18,7 @@ import fi.digitraffic.graphql.rail.config.CustomException;
 import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.entities.TrainLocation;
-import fi.digitraffic.graphql.rail.entities.TrainLocationId;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
-import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.repositories.CompositionRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
@@ -69,7 +65,7 @@ public class GraphQLDataFetchers {
         };
     }
 
-    public DataFetcher<List<TrainTO>> trainsFetcher() {
+    public DataFetcher<List<TrainTO>> trainsByDepartureDateFetcher() {
         return dataFetchingEnvironment -> {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
@@ -78,7 +74,7 @@ public class GraphQLDataFetchers {
         };
     }
 
-    public DataFetcher<List<TrainTO>> trainsWithVersionGreaterThanFetcher() {
+    public DataFetcher<List<TrainTO>> trainsByVersionGreaterThanFetcher() {
         return dataFetchingEnvironment -> {
             String version = dataFetchingEnvironment.getArgument("version");
 
@@ -87,10 +83,10 @@ public class GraphQLDataFetchers {
         };
     }
 
-    public DataFetcher trainsWithTrainNumberGreaterThenFetcher() {
+    public DataFetcher trainsByDepartureDateAndTrainNumberGreaterThanFetcher() {
         return dataFetchingEnvironment -> {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
+            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumberGreaterThan");
 
             List<Train> trains = trainRepository.findByDepartureDateWithTrainNumberGreaterThan(departureDate, trainNumber.longValue(), PageRequest.of(0, MAX_RESULTS));
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
@@ -161,39 +157,6 @@ public class GraphQLDataFetchers {
         }).collect(Collectors.toList());
     }
 
-
-    public DataFetcher<List<TrainLocationTO>> trainLocationFetcher() {
-        return dataFetchingEnvironment -> {
-            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-
-            TrainLocation trainLocation = new TrainLocation();
-            trainLocation.trainLocationId = new TrainLocationId(trainNumber.longValue(), departureDate, null);
-
-            List<TrainLocation> trainLocations = trainLocationRepository.findAll(Example.of(trainLocation));
-            return trainLocations.stream().map(trainLocationTOConverter::convert).collect(Collectors.toList());
-        };
-    }
-
-    public DataFetcher<Optional<CompositionTO>> compositionFetcher() {
-        return dataFetchingEnvironment -> {
-            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-
-            Optional<Composition> composition = compositionRepository.findById(new TrainId(trainNumber.longValue(), departureDate));
-            return composition.map(compositionTOConverter::convert);
-        };
-    }
-
-    public DataFetcher<List<CompositionTO>> compositionsFetcher() {
-        return dataFetchingEnvironment -> {
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-
-            List<Composition> compositions = compositionRepository.findByDepartureDate(departureDate);
-            return compositions.stream().map(compositionTOConverter::convert).collect(Collectors.toList());
-        };
-    }
-
     public DataFetcher<List<CompositionTO>> compositionsGreaterThanVersionFetcher() {
         return dataFetchingEnvironment -> {
             String version = dataFetchingEnvironment.getArgument("version");
@@ -201,5 +164,9 @@ public class GraphQLDataFetchers {
             List<Composition> compositions = compositionRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
             return compositions.stream().map(compositionTOConverter::convert).collect(Collectors.toList());
         };
+    }
+
+    public DataFetcher trainLocationsFetcher() {
+        return null;
     }
 }

@@ -162,13 +162,11 @@ public class GraphQLProvider {
                 .scalar(ExtendedScalars.DateTime)
                 .type(newTypeWiring("Query")
                         .dataFetcher("train", graphQLDataFetchers.trainFetcher())
-                        .dataFetcher("trains", graphQLDataFetchers.trainsFetcher())
-                        .dataFetcher("trainsWithTrainNumberGreaterThan", graphQLDataFetchers.trainsWithTrainNumberGreaterThenFetcher())
-                        .dataFetcher("trainsWithVersionGreaterThan", graphQLDataFetchers.trainsWithVersionGreaterThanFetcher())
+                        .dataFetcher("trainsByDepartureDate", graphQLDataFetchers.trainsByDepartureDateFetcher())
+                        .dataFetcher("trainsByVersionGreaterThan", graphQLDataFetchers.trainsByVersionGreaterThanFetcher())
+                        .dataFetcher("trainsByDepartureDateAndTrainNumberGreaterThan", graphQLDataFetchers.trainsByDepartureDateAndTrainNumberGreaterThanFetcher())
                         .dataFetcher("trainsByStationAndQuantity", graphQLDataFetchers.trainsByStationAndQuantityFetcher())
-                        .dataFetcher("trainLocation", graphQLDataFetchers.trainLocationFetcher())
-                        .dataFetcher("composition", graphQLDataFetchers.compositionFetcher())
-                        .dataFetcher("compositions", graphQLDataFetchers.compositionsFetcher())
+                        .dataFetcher("trainLocations", graphQLDataFetchers.trainLocationsFetcher())
                         .dataFetcher("compositionsGreaterThanVersion", graphQLDataFetchers.compositionsGreaterThanVersionFetcher())
                 );
 
