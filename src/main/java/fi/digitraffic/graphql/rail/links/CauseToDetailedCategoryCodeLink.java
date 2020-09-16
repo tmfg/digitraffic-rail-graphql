@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.DetailedCategoryCode;
-import fi.digitraffic.graphql.rail.links.base.OneToOneDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.DetailedCategoryCodeTO;
 import fi.digitraffic.graphql.rail.repositories.DetailedCategoryCodeRepository;
 import fi.digitraffic.graphql.rail.to.DetailedCategoryCodeTOConverter;
 
 @Component
-public class CauseToDetailedCategoryCodeDataFetcher extends OneToOneDataFetcher<Long, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
+public class CauseToDetailedCategoryCodeLink extends OneToOneLink<Long, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
     @Autowired
     private DetailedCategoryCodeRepository detailedCategoryCodeRepository;
 

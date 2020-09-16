@@ -6,7 +6,7 @@ import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 
 @Component
-public class JourneySectionToEndTimeTableRowDataFetcher extends JourneySectionToStartTimeTableRowDataFetcher {
+public class JourneySectionToEndTimeTableRowLink extends JourneySectionToStartTimeTableRowLink {
 
     @Override
     public String getFieldName() {

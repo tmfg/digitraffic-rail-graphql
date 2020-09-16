@@ -15,7 +15,7 @@ import fi.digitraffic.graphql.rail.to.CompositionTOConverter;
 import graphql.schema.DataFetcher;
 
 @Component
-public class CompositionsGreaterThanVersionRootFetcher extends BaseRootFetcher<List<CompositionTO>> {
+public class CompositionsGreaterThanVersionQuery extends BaseQuery<List<CompositionTO>> {
 
     @Autowired
     private CompositionRepository compositionRepository;

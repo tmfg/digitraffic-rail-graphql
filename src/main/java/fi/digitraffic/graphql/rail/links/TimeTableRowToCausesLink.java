@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.Cause;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
-import fi.digitraffic.graphql.rail.links.base.OneToManyDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.repositories.CauseRepository;
 import fi.digitraffic.graphql.rail.to.CauseTOConverter;
 
 @Component
-public class TimeTableRowToCausesDataFetcher extends OneToManyDataFetcher<TimeTableRowId, TimeTableRowTO, Cause, CauseTO> {
+public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, TimeTableRowTO, Cause, CauseTO> {
     @Autowired
     private CauseRepository causeRepository;
 

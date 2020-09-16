@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
-import fi.digitraffic.graphql.rail.links.base.OneToManyDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 
 @Component
-public class TrainToTrainLocationsDataFetcher extends OneToManyDataFetcher<TrainId, TrainTO, TrainLocation, TrainLocationTO> {
+public class TrainToTrainLocationsLink extends OneToManyLink<TrainId, TrainTO, TrainLocation, TrainLocationTO> {
     @Autowired
     private TrainLocationTOConverter trainLocationTOConverter;
 

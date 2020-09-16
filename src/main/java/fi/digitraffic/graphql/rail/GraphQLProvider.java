@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import fi.digitraffic.graphql.rail.links.base.BaseDataFetcher;
-import fi.digitraffic.graphql.rail.queries.BaseRootFetcher;
+import fi.digitraffic.graphql.rail.links.base.BaseLink;
+import fi.digitraffic.graphql.rail.queries.BaseQuery;
 import graphql.GraphQL;
 import graphql.language.FieldDefinition;
 import graphql.language.ObjectTypeDefinition;
@@ -101,10 +101,10 @@ public class GraphQLProvider {
     private GraphQL graphQL;
 
     @Autowired
-    private List<BaseDataFetcher> fetchers;
+    private List<BaseLink> fetchers;
 
     @Autowired
-    private List<BaseRootFetcher> rootFetchers;
+    private List<BaseQuery> rootFetchers;
 
     @Bean
     public GraphQL graphQL() {
@@ -160,12 +160,12 @@ public class GraphQLProvider {
                 .scalar(ExtendedScalars.DateTime);
 
         TypeRuntimeWiring.Builder query = newTypeWiring("Query");
-        for (BaseRootFetcher fetcher : rootFetchers) {
+        for (BaseQuery fetcher : rootFetchers) {
             query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
         }
         builder = builder.type(query);
 
-        for (BaseDataFetcher fetcher : this.fetchers) {
+        for (BaseLink fetcher : this.fetchers) {
             builder = builder.type(newTypeWiring(fetcher.getTypeName())
                     .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
         }

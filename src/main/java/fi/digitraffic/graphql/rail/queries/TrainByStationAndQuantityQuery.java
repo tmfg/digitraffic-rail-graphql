@@ -20,7 +20,7 @@ import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetcher;
 
 @Component
-public class TrainByStationAndQuantityRootFetcher extends BaseRootFetcher<List<TrainTO>> {
+public class TrainByStationAndQuantityQuery extends BaseQuery<List<TrainTO>> {
     @Autowired
     private TrainRepository trainRepository;
 

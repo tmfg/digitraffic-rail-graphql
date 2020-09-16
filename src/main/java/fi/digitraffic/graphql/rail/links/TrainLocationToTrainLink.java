@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.links.base.OneToOneDataFetcher;
-import fi.digitraffic.graphql.rail.model.CompositionTO;
+import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
+import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
 @Component
-public class CompositionToTrainDataFetcher extends OneToOneDataFetcher<TrainId, CompositionTO, Train, TrainTO> {
+public class TrainLocationToTrainLink extends OneToOneLink<TrainId, TrainLocationTO, Train, TrainTO> {
     @Autowired
     private TrainTOConverter trainTOConverter;
 
@@ -23,7 +23,7 @@ public class CompositionToTrainDataFetcher extends OneToOneDataFetcher<TrainId, 
 
     @Override
     public String getTypeName() {
-        return "Composition";
+        return "TrainLocation";
     }
 
     @Override
@@ -32,8 +32,8 @@ public class CompositionToTrainDataFetcher extends OneToOneDataFetcher<TrainId, 
     }
 
     @Override
-    public TrainId createKeyFromParent(CompositionTO compositionTO) {
-        return new TrainId(compositionTO.getTrainNumber().longValue(), compositionTO.getDepartureDate());
+    public TrainId createKeyFromParent(TrainLocationTO trainLocationTO) {
+        return new TrainId(trainLocationTO.getTrainNumber().longValue(), trainLocationTO.getDepartureDate());
     }
 
     @Override
@@ -50,5 +50,6 @@ public class CompositionToTrainDataFetcher extends OneToOneDataFetcher<TrainId, 
     public List<Train> findChildrenByKeys(List<TrainId> keys) {
         return trainRepository.findAllById(keys);
     }
+
 
 }

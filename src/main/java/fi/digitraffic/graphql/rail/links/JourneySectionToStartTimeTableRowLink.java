@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
-import fi.digitraffic.graphql.rail.links.base.OneToOneDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.repositories.TimeTableRowRepository;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
-public class JourneySectionToStartTimeTableRowDataFetcher extends OneToOneDataFetcher<TimeTableRowId, JourneySectionTO, TimeTableRow, TimeTableRowTO> {
+public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTableRowId, JourneySectionTO, TimeTableRow, TimeTableRowTO> {
     @Autowired
     private TimeTableRowRepository timeTableRowRepository;
 

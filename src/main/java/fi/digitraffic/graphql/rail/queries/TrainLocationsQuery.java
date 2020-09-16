@@ -14,7 +14,7 @@ import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 import graphql.schema.DataFetcher;
 
 @Component
-public class TrainLocationsRootFetcher extends BaseRootFetcher<List<TrainLocationTO>> {
+public class TrainLocationsQuery extends BaseQuery<List<TrainLocationTO>> {
 
     @Autowired
     private TrainLocationRepository trainLocationRepository;

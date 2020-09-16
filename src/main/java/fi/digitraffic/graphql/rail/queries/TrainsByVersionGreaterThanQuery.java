@@ -1,6 +1,5 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,7 @@ import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetcher;
 
 @Component
-public class TrainsByDepartureDateAndTrainNumberGreaterThanRootFetcher extends BaseRootFetcher<List<TrainTO>> {
+public class TrainsByVersionGreaterThanQuery extends BaseQuery<List<TrainTO>> {
 
     @Autowired
     private TrainRepository trainRepository;
@@ -29,15 +28,14 @@ public class TrainsByDepartureDateAndTrainNumberGreaterThanRootFetcher extends B
 
     @Override
     public String getQueryName() {
-        return "trainsByDepartureDateAndTrainNumberGreaterThan";
+        return "trainsByVersionGreaterThan";
     }
 
     public DataFetcher<List<TrainTO>> createFetcher() {
         return dataFetchingEnvironment -> {
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumberGreaterThan");
+            String version = dataFetchingEnvironment.getArgument("version");
 
-            List<Train> trains = trainRepository.findByDepartureDateWithTrainNumberGreaterThan(departureDate, trainNumber.longValue(), PageRequest.of(0, MAX_RESULTS));
+            List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }

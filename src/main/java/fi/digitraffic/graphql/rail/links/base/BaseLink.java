@@ -14,7 +14,7 @@ import org.dataloader.DataLoaderRegistry;
 import com.google.common.collect.Lists;
 import graphql.schema.DataFetcher;
 
-public abstract class BaseDataFetcher<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
+public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     public abstract String getTypeName();
 
     public abstract String getFieldName();

@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TrainType;
-import fi.digitraffic.graphql.rail.links.base.OneToOneDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
 import fi.digitraffic.graphql.rail.repositories.TrainTypeRepository;
 import fi.digitraffic.graphql.rail.to.TrainTypeTOConverter;
 
 @Component
-public class TrainToTrainTypeDataFetcher extends OneToOneDataFetcher<Long, TrainTO, TrainType, TrainTypeTO> {
+public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType, TrainTypeTO> {
     @Autowired
     private TrainTypeTOConverter trainTypeTOConverter;
 

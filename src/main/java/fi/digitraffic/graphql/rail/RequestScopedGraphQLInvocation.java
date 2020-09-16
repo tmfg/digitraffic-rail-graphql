@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import fi.digitraffic.graphql.rail.links.base.BaseDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.BaseLink;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -25,7 +25,7 @@ import graphql.spring.web.servlet.GraphQLInvocationData;
 @Profile({"request", "default"})
 public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
     @Autowired
-    private List<BaseDataFetcher> fetchers;
+    private List<BaseLink> fetchers;
 
     @Autowired
     private GraphQL graphQL;
@@ -39,9 +39,9 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
 
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
-        for (BaseDataFetcher fetcher : fetchers) {
-                DataLoader loader = DataLoader.newDataLoader(fetcher.createLoader());
-                dataLoaderRegistry.register(fetcher.getFieldName(), loader);
+        for (BaseLink fetcher : fetchers) {
+            DataLoader loader = DataLoader.newDataLoader(fetcher.createLoader());
+            dataLoaderRegistry.register(fetcher.getFieldName(), loader);
         }
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);

@@ -52,10 +52,10 @@ Sample query to be run:
     * Spring Boot config etc
 * entities
     * Classes modeling rows returned from database
-* fetchers
-    * Logic implementing "jumps" between Graphql types
-* repositories
-    * Logic for fetching data from database
+* links
+    * Logic implementing "links" in GraphQL graph
+* queries
+    * Logic implementing queries in GraphQL graph
 * to
     * Logic for converting entities to GraphQL objects (=TOs)
 
