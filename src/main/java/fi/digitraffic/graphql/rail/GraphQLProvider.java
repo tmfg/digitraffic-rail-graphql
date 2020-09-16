@@ -8,6 +8,7 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import com.google.common.io.Resources;
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
 import fi.digitraffic.graphql.rail.queries.BaseQuery;
 import graphql.GraphQL;
+import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.language.FieldDefinition;
 import graphql.language.ObjectTypeDefinition;
 import graphql.language.TypeDefinition;
@@ -116,7 +118,10 @@ public class GraphQLProvider {
         URL url = Resources.getResource("schema.graphqls");
         String sdl = Resources.toString(url, Charsets.UTF_8);
         GraphQLSchema graphQLSchema = buildSchema(sdl);
-        this.graphQL = GraphQL.newGraphQL(graphQLSchema).build();
+        this.graphQL = GraphQL.newGraphQL(graphQLSchema).instrumentation(new ChainedInstrumentation(Arrays.asList(
+//                new ExecutionTimeInstrumentation()
+                new NoCircularQueriesInstrumentation()
+        ))).build();
     }
 
     private GraphQLSchema buildSchema(String sdl) {

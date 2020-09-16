@@ -3,6 +3,7 @@ package fi.digitraffic.graphql.rail;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.dataloader.BatchLoader;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,8 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
         for (BaseLink fetcher : fetchers) {
-            DataLoader loader = DataLoader.newDataLoader(fetcher.createLoader());
+            BatchLoader<?, ?> dataLoader = fetcher.createLoader();
+            DataLoader<?, ?> loader = DataLoader.newDataLoader(dataLoader);
             dataLoaderRegistry.register(fetcher.getFieldName(), loader);
         }
 
