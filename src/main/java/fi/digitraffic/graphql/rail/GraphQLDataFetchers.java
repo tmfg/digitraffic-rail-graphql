@@ -3,6 +3,8 @@ package fi.digitraffic.graphql.rail;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
+import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.repositories.CompositionRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
@@ -166,7 +169,10 @@ public class GraphQLDataFetchers {
         };
     }
 
-    public DataFetcher trainLocationsFetcher() {
-        return null;
+    public DataFetcher<List<TrainLocationTO>> trainLocationsFetcher() {
+        return dataFetchingEnvironment -> {
+            List<Long> ids = trainLocationRepository.findLatest(ZonedDateTime.now(ZoneId.of("Europe/Helsinki")).minusMinutes(15));
+            return trainLocationRepository.findAllById(ids).stream().map(s -> trainLocationTOConverter.convert(s)).collect(Collectors.toList());
+        };
     }
 }

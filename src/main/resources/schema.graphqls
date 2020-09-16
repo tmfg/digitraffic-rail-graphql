@@ -86,6 +86,7 @@ type TrainLocation {
     timestamp : DateTime
     trainNumber : Int
     location : [Float]
+    train: Train
 }
 
 type Composition {
