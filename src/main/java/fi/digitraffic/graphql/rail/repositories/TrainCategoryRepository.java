@@ -13,7 +13,11 @@ import fi.digitraffic.graphql.rail.entities.TrainCategory;
 @Repository
 @Transactional
 public interface TrainCategoryRepository extends JpaRepository<TrainCategory, Long> {
-    @Cacheable("trainCategoriesByName")
+    @Cacheable("trainCategories")
     @Query("select t.id from TrainCategory  t where t.name in ?1")
     List<Long> findAllByNameIn(List<String> names);
+
+    @Override
+    @Cacheable("trainCategories")
+    List<TrainCategory> findAll();
 }
