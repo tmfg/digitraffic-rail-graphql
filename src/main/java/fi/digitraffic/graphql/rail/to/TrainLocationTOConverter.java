@@ -15,7 +15,8 @@ public class TrainLocationTOConverter {
                 entity.speed,
                 entity.trainLocationId.timestamp,
                 entity.trainLocationId.trainNumber.intValue(),
-                List.of((float) entity.location.getX(), (float) entity.location.getY())
+                List.of((float) entity.location.getX(), (float) entity.location.getY()),
+                null
         );
     }
 }
