@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import fi.digitraffic.graphql.rail.fetchers.base.BaseDataFetcher;
+import fi.digitraffic.graphql.rail.rootfetchers.BaseRootFetcher;
 import graphql.GraphQL;
 import graphql.language.FieldDefinition;
 import graphql.language.ObjectTypeDefinition;
@@ -34,6 +35,7 @@ import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import graphql.schema.idl.TypeRuntimeWiring;
 
 @Component
 public class GraphQLProvider {
@@ -96,16 +98,13 @@ public class GraphQLProvider {
     );
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private final GraphQLDataFetchers graphQLDataFetchers;
-
     private GraphQL graphQL;
-
-    public GraphQLProvider(GraphQLDataFetchers graphQLDataFetchers) {
-        this.graphQLDataFetchers = graphQLDataFetchers;
-    }
 
     @Autowired
     private List<BaseDataFetcher> fetchers;
+
+    @Autowired
+    private List<BaseRootFetcher> rootFetchers;
 
     @Bean
     public GraphQL graphQL() {
@@ -133,11 +132,11 @@ public class GraphQLProvider {
                     String fieldKey = entry.getKey() + "." + fieldDefinition.getName();
                     if (BLACKLISTED_ID_FIELDS.contains(fieldKey)) {
                         toBeRemoved.add(fieldDefinition);
-                        log.info("Removed {}: {}", fieldKey, fieldDefinition);
                     }
                 }
                 if (!toBeRemoved.isEmpty()) {
                     newDefinitions.removeAll(toBeRemoved);
+                    log.info("Removed from schema: {}", toBeRemoved);
                 }
 
                 ObjectTypeDefinition newObjectTypeDefiniton = objectTypeDefinition.withNewChildren(newNodeChildrenContainer()
@@ -159,16 +158,13 @@ public class GraphQLProvider {
     private RuntimeWiring buildWiring() {
         RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring()
                 .scalar(ExtendedScalars.Date)
-                .scalar(ExtendedScalars.DateTime)
-                .type(newTypeWiring("Query")
-                        .dataFetcher("train", graphQLDataFetchers.trainFetcher())
-                        .dataFetcher("trainsByDepartureDate", graphQLDataFetchers.trainsByDepartureDateFetcher())
-                        .dataFetcher("trainsByVersionGreaterThan", graphQLDataFetchers.trainsByVersionGreaterThanFetcher())
-                        .dataFetcher("trainsByDepartureDateAndTrainNumberGreaterThan", graphQLDataFetchers.trainsByDepartureDateAndTrainNumberGreaterThanFetcher())
-                        .dataFetcher("trainsByStationAndQuantity", graphQLDataFetchers.trainsByStationAndQuantityFetcher())
-                        .dataFetcher("trainLocations", graphQLDataFetchers.trainLocationsFetcher())
-                        .dataFetcher("compositionsGreaterThanVersion", graphQLDataFetchers.compositionsGreaterThanVersionFetcher())
-                );
+                .scalar(ExtendedScalars.DateTime);
+
+        TypeRuntimeWiring.Builder query = newTypeWiring("Query");
+        for (BaseRootFetcher fetcher : rootFetchers) {
+            query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
+        }
+        builder = builder.type(query);
 
         for (BaseDataFetcher fetcher : this.fetchers) {
             builder = builder.type(newTypeWiring(fetcher.getTypeName())

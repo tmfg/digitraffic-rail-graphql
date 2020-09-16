@@ -1,7 +1,6 @@
 package fi.digitraffic.graphql.rail.repositories;
 
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
@@ -24,23 +23,6 @@ public interface TrainRepository extends JpaRepository<Train, TrainId> {
     List<Train> findByDepartureDateWithTrainNumberGreaterThan(LocalDate departureDate, Long trainNumber, Pageable pageable);
 
     List<Train> findByVersionGreaterThanOrderByVersionAsc(Long version, Pageable pageable);
-
-    @Query("select t.id from LiveTimeTableTrain t where " +
-            " t.stationShortCode = ?1 and" +
-            " t.trainCategoryId in ?8 and" +
-            " t.version > ?5 and" +
-            " (" +
-            " ((t.trainStopping = true or t.trainStopping = ?4) and t.type = 1 and ((t.actualTime BETWEEN ?2 AND ?3) " +
-            "   OR (t.actualTime IS NULL AND t.liveEstimateTime BETWEEN ?2 AND ?3)" +
-            "   OR (t.actualTime IS NULL AND t.liveEstimateTime IS NULL AND t.scheduledTime BETWEEN ?2 AND ?3)))" +
-            " OR " +
-            " ((t.trainStopping = true or t.trainStopping = ?4) and t.type = 0 and ((t.actualTime BETWEEN ?6 AND ?7) " +
-            "   OR (t.actualTime IS NULL AND t.liveEstimateTime BETWEEN ?6 AND ?7)" +
-            "   OR (t.actualTime IS NULL AND t.liveEstimateTime IS NULL AND t.scheduledTime BETWEEN ?6 AND ?7)) " +
-            " ) " +
-            ")")
-    List<TrainId> findLiveTrains(String station, ZonedDateTime startDeparture, ZonedDateTime endDeparture,
-                                 Boolean excludeNonstopping, Long version, ZonedDateTime startArrival, ZonedDateTime endArrival, List<Long> trainCategoryIds);
 
     @Query(value = "select * from ((SELECT " +
             "    '1', t.departure_date, t.train_number, t.version" +

@@ -1,41 +1,26 @@
-package fi.digitraffic.graphql.rail;
+package fi.digitraffic.graphql.rail.rootfetchers;
 
 import java.math.BigInteger;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import fi.digitraffic.graphql.rail.config.CustomException;
-import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.model.CompositionTO;
-import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.CompositionRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
-import fi.digitraffic.graphql.rail.to.CompositionTOConverter;
-import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetcher;
 
 @Component
-public class GraphQLDataFetchers {
-
-    public static final int MAX_RESULTS = 250;
+public class TrainByStationAndQuantityRootFetcher extends BaseRootFetcher<List<TrainTO>> {
     @Autowired
     private TrainRepository trainRepository;
 
@@ -43,60 +28,14 @@ public class GraphQLDataFetchers {
     private TrainTOConverter trainTOConverter;
 
     @Autowired
-    private TrainLocationRepository trainLocationRepository;
-
-    @Autowired
-    private TrainLocationTOConverter trainLocationTOConverter;
-
-    @Autowired
-    private CompositionRepository compositionRepository;
-
-    @Autowired
-    private CompositionTOConverter compositionTOConverter;
-
-    @Autowired
     private TrainCategoryRepository trainCategoryRepository;
 
-    private static final Logger LOG = LoggerFactory.getLogger(GraphQLDataFetchers.class);
-
-    public DataFetcher<Optional<TrainTO>> trainFetcher() {
-        return dataFetchingEnvironment -> {
-            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-
-            return trainRepository.findById(new TrainId(trainNumber, departureDate)).map(trainTOConverter::convert);
-        };
+    @Override
+    public String getQueryName() {
+        return "trainsByStationAndQuantity";
     }
 
-    public DataFetcher<List<TrainTO>> trainsByDepartureDateFetcher() {
-        return dataFetchingEnvironment -> {
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-
-            List<Train> trains = trainRepository.findByDepartureDate(departureDate, PageRequest.of(0, MAX_RESULTS));
-            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
-        };
-    }
-
-    public DataFetcher<List<TrainTO>> trainsByVersionGreaterThanFetcher() {
-        return dataFetchingEnvironment -> {
-            String version = dataFetchingEnvironment.getArgument("version");
-
-            List<Train> trains = trainRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
-            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
-        };
-    }
-
-    public DataFetcher trainsByDepartureDateAndTrainNumberGreaterThanFetcher() {
-        return dataFetchingEnvironment -> {
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-            Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumberGreaterThan");
-
-            List<Train> trains = trainRepository.findByDepartureDateWithTrainNumberGreaterThan(departureDate, trainNumber.longValue(), PageRequest.of(0, MAX_RESULTS));
-            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
-        };
-    }
-
-    public DataFetcher trainsByStationAndQuantityFetcher() {
+    public DataFetcher<List<TrainTO>> createFetcher() {
         return dataFetchingEnvironment -> {
             String station = dataFetchingEnvironment.getArgument("station");
             Integer arrivedTrains = dataFetchingEnvironment.getArgument("arrivedTrains");
@@ -158,21 +97,5 @@ public class GraphQLDataFetchers {
             BigInteger trainNumber = (BigInteger) tuple[2];
             return new TrainId(trainNumber.longValue(), departureDate);
         }).collect(Collectors.toList());
-    }
-
-    public DataFetcher<List<CompositionTO>> compositionsGreaterThanVersionFetcher() {
-        return dataFetchingEnvironment -> {
-            String version = dataFetchingEnvironment.getArgument("version");
-
-            List<Composition> compositions = compositionRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
-            return compositions.stream().map(compositionTOConverter::convert).collect(Collectors.toList());
-        };
-    }
-
-    public DataFetcher<List<TrainLocationTO>> trainLocationsFetcher() {
-        return dataFetchingEnvironment -> {
-            List<Long> ids = trainLocationRepository.findLatest(ZonedDateTime.now(ZoneId.of("Europe/Helsinki")).minusMinutes(15));
-            return trainLocationRepository.findAllById(ids).stream().map(s -> trainLocationTOConverter.convert(s)).collect(Collectors.toList());
-        };
     }
 }
