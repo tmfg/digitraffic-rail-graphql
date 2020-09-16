@@ -10,13 +10,13 @@ public abstract class OneToOneLink<KeyType, ParentTOType, ChildEntityType, Child
     public BatchLoader<KeyType, ChildTOType> createLoader() {
         Function<ChildEntityType, ChildTOType> childTOConverter = s -> createChildTOToFromChild(s);
         return createDataLoader(parentIds -> findChildrenByKeys(parentIds), (children) -> {
-            Map<KeyType, ChildTOType> childrenMap = new HashMap<>();
-            for (ChildEntityType child1 : children) {
-                KeyType parentId = ((Function<ChildEntityType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
-                childrenMap.put(parentId, childTOConverter.apply(child1));
-            }
+                    Map<KeyType, ChildTOType> childrenMap = new HashMap<>();
+                    for (ChildEntityType child1 : children) {
+                        KeyType parentId = ((Function<ChildEntityType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
+                        childrenMap.put(parentId, childTOConverter.apply(child1));
+                    }
 
-            return childrenMap;
+                    return childrenMap;
                 }
         );
     }

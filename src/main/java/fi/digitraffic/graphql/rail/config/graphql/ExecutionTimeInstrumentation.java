@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail;
+package fi.digitraffic.graphql.rail.config.graphql;
 
 import java.time.Duration;
 import java.util.HashMap;

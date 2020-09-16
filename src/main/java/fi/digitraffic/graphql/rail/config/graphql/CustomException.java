@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.config;
+package fi.digitraffic.graphql.rail.config.graphql;
 
 import java.util.LinkedHashMap;
 import java.util.List;

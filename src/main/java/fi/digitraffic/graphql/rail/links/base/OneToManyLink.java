@@ -12,15 +12,14 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
     public BatchLoader<KeyType, List<ChildTOType>> createLoader() {
         Function<ChildEntityType, ChildTOType> childTOConverter = s -> createChildTOToFromChild(s);
         return createDataLoader(parentIds -> findChildrenByKeys(parentIds), (children) -> {
-            Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
-            for (ChildEntityType child1 : children) {
-                KeyType parentId = ((Function<ChildEntityType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
-                List<ChildTOType> childTOs = childrenGroupedBy.get(parentId);
-                if (childTOs == null) {
-                    childTOs = new ArrayList<>();
-                    childrenGroupedBy.put(parentId, childTOs);
+                    Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
+                    for (ChildEntityType child1 : children) {
+                        KeyType parentId = ((Function<ChildEntityType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
+                        List<ChildTOType> childTOs = childrenGroupedBy.get(parentId);
+                        if (childTOs == null) {
+                            childTOs = new ArrayList<>();
+                            childrenGroupedBy.put(parentId, childTOs);
                         }
-
                         childTOs.add(childTOConverter.apply(child1));
                     }
 

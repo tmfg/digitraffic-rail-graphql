@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail;
+package fi.digitraffic.graphql.rail.config.graphql;
 
 import static graphql.language.NodeChildrenContainer.newNodeChildrenContainer;
 import static graphql.language.ObjectTypeDefinition.CHILD_DIRECTIVES;

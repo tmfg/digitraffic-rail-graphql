@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail;
+package fi.digitraffic.graphql.rail.config.graphql;
 
 import static graphql.execution.instrumentation.SimpleInstrumentationContext.whenCompleted;
 
@@ -23,7 +23,6 @@ import graphql.validation.ValidationError;
 public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
-
 
     @Override
     public InstrumentationContext<List<ValidationError>> beginValidation(InstrumentationValidationParameters parameters) {

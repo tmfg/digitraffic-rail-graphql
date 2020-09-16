@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail;
+package fi.digitraffic.graphql.rail.config.graphql;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
