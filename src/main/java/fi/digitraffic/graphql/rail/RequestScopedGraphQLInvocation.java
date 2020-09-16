@@ -7,7 +7,6 @@ import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
@@ -22,7 +21,6 @@ import graphql.spring.web.servlet.GraphQLInvocationData;
 @Component
 @Internal
 @Primary
-@Profile({"request", "default"})
 public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
     @Autowired
     private List<BaseLink> fetchers;
