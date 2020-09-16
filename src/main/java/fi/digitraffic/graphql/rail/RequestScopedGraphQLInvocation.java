@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.WebRequest;
 
-import fi.digitraffic.graphql.rail.fetchers.base.BaseDataFetcher;
+import fi.digitraffic.graphql.rail.links.base.BaseDataFetcher;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;

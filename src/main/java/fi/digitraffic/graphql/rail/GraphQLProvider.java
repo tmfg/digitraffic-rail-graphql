@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import fi.digitraffic.graphql.rail.fetchers.base.BaseDataFetcher;
-import fi.digitraffic.graphql.rail.rootfetchers.BaseRootFetcher;
+import fi.digitraffic.graphql.rail.links.base.BaseDataFetcher;
+import fi.digitraffic.graphql.rail.queries.BaseRootFetcher;
 import graphql.GraphQL;
 import graphql.language.FieldDefinition;
 import graphql.language.ObjectTypeDefinition;
@@ -136,7 +136,6 @@ public class GraphQLProvider {
                 }
                 if (!toBeRemoved.isEmpty()) {
                     newDefinitions.removeAll(toBeRemoved);
-                    log.info("Removed from schema: {}", toBeRemoved);
                 }
 
                 ObjectTypeDefinition newObjectTypeDefiniton = objectTypeDefinition.withNewChildren(newNodeChildrenContainer()
