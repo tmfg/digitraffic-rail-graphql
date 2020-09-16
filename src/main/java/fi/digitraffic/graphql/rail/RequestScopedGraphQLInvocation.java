@@ -48,6 +48,7 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         executionInputBuilder.context(dataLoaderRegistry);
 
         ExecutionInput executionInput = executionInputBuilder.build();
+
         return graphQL.executeAsync(executionInput);
     }
 

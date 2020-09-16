@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import fi.digitraffic.graphql.rail.config.CustomException;
 import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
@@ -120,6 +121,10 @@ public class GraphQLDataFetchers {
             }
             if (includeNonStopping == null) {
                 includeNonStopping = false;
+            }
+
+            if (arrivedTrains + arrivingTrains + departedTrains + departingTrains > 250) {
+                throw new CustomException(400, "Can not return more than 250 trains");
             }
 
             List<Long> trainCategoryIds;

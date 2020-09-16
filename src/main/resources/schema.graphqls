@@ -4,6 +4,7 @@ type Query {
     trainsWithVersionGreaterThan(version : String) : [Train]
     trainsWithTrainNumberGreaterThan(departureDate : Date, trainNumber : Int) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
+    trainLocations: [TrainLocation]
     compositionsGreaterThanVersion(version : String) : [Composition]
 }
 
