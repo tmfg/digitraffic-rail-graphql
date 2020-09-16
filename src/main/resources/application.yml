@@ -22,6 +22,9 @@ graphql:
     mapping: /graphql
     enabled: true
 
+graphiql:
+  pageTitle: Local GraphiQL
+
 cache:
   expiryInSeconds: 15
   maxCacheSize: 5
