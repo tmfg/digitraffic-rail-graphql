@@ -31,13 +31,14 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
     @Override
     public CompletableFuture<ExecutionResult> instrumentExecutionResult(ExecutionResult executionResult, InstrumentationExecutionParameters parameters) {
-        Map<String, List<HashMap<String, Object>>> executionResultData = executionResult.getData();
-        for (Map.Entry<String, List<HashMap<String, Object>>> resultDataEntries : executionResultData.entrySet()) {
-            if (!resultDataEntries.getKey().equals("__schema")) {
+        ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
+
+        if (this.filterValue.containsKey(executionId)) {
+            Map<String, List<HashMap<String, Object>>> executionResultData = executionResult.getData();
+            for (Map.Entry<String, List<HashMap<String, Object>>> resultDataEntries : executionResultData.entrySet()) {
                 List<Integer> filteredIndexes = new ArrayList<>();
                 for (int i = 0; i < resultDataEntries.getValue().size(); i++) {
                     HashMap<String, Object> entityEntry = resultDataEntries.getValue().get(i);
-                    ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
                     for (Map.Entry<String, Object> filterEntry : filterValue.get(executionId).entrySet()) {
                         String fieldName = filterEntry.getKey();
                         GraphQLArgument graphQlFilterType = this.filterType.get(executionId);
