@@ -16,7 +16,7 @@ logging:
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-digitraffic.max-returned-trains: 250
+digitraffic.max-returned-trains: 2500
 
 graphql:
   servlet:

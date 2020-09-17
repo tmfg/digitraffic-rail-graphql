@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 public interface TrainRepository extends JpaRepository<Train, TrainId> {
 
     @Query("select train from Train train where train.id.departureDate = ?1 order by train.id.trainNumber")
-    List<Train> findByDepartureDate(LocalDate departureDate, Pageable pageable);
+    List<Train> findByDepartureDate(LocalDate departureDate);
 
     @Query("select train from Train train where train.id.departureDate = ?1 and train.id.trainNumber > ?2 order by train.id.trainNumber")
     List<Train> findByDepartureDateWithTrainNumberGreaterThan(LocalDate departureDate, Long trainNumber, Pageable pageable);

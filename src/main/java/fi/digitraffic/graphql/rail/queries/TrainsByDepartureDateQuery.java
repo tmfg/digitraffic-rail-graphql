@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.Train;
@@ -37,7 +36,7 @@ public class TrainsByDepartureDateQuery extends BaseQuery<List<TrainTO>> {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
             Object filter = dataFetchingEnvironment.getArgument("filter");
 
-            List<Train> trains = trainRepository.findByDepartureDate(departureDate, PageRequest.of(0, MAX_RESULTS));
+            List<Train> trains = trainRepository.findByDepartureDate(departureDate);
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
         };
     }

@@ -1,7 +1,7 @@
 type Query {
     train(trainNumber : Int, departureDate : Date) : Train
     trainsByDepartureDate(departureDate : Date, filter : TrainFilter) : [Train]
-    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, filter : TrainFilter) : [Train]
+#    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, filter : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, filter : TrainFilter) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], filter : TrainFilter) : [Train]
     trainLocations: [TrainLocation]
