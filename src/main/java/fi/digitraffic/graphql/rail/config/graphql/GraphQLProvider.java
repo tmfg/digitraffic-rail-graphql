@@ -108,6 +108,9 @@ public class GraphQLProvider {
     @Autowired
     private List<BaseQuery> rootFetchers;
 
+    @Autowired
+    private FilterTypeFactory filterTypeFactory;
+
     @Bean
     public GraphQL graphQL() {
         return graphQL;
@@ -118,16 +121,43 @@ public class GraphQLProvider {
         URL url = Resources.getResource("schema.graphqls");
         String sdl = Resources.toString(url, Charsets.UTF_8);
         GraphQLSchema graphQLSchema = buildSchema(sdl);
-        this.graphQL = GraphQL.newGraphQL(graphQLSchema).instrumentation(new ChainedInstrumentation(Arrays.asList(
+        this.graphQL = GraphQL.newGraphQL(graphQLSchema)
+                .instrumentation(new ChainedInstrumentation(Arrays.asList(
 //                new ExecutionTimeInstrumentation()
-                new NoCircularQueriesInstrumentation()
-        ))).build();
+                        new NoCircularQueriesInstrumentation(),
+                        new FilterInstrumentation()
+                ))).build();
     }
 
     private GraphQLSchema buildSchema(String sdl) {
         TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
 
+        removeBlacklistedFields(typeRegistry);
 
+
+//        List<ObjectTypeDefinition> newTypes = new ArrayList<>();
+//        for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
+//            if (typeEntry.getValue() instanceof ObjectTypeDefinition) {
+//                if (typeEntry.getKey().equals("Query")) {
+//
+//                } else {
+//                    ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) typeEntry.getValue();
+//                    ObjectTypeDefinition filterType = filterTypeFactory.createType(typeEntry.getKey(), objectTypeDefinition);
+//                    newTypes.add(filterType);
+//                }
+//            }
+//        }
+//
+//        for (ObjectTypeDefinition newType : newTypes) {
+//            typeRegistry.add(newType);
+//        }
+
+        RuntimeWiring runtimeWiring = buildWiring();
+        SchemaGenerator schemaGenerator = new SchemaGenerator();
+        return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
+    }
+
+    private void removeBlacklistedFields(TypeDefinitionRegistry typeRegistry) {
         for (Map.Entry<String, TypeDefinition> entry : typeRegistry.types().entrySet()) {
             if (entry.getValue() instanceof ObjectTypeDefinition) {
                 ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) entry.getValue();
@@ -153,10 +183,6 @@ public class GraphQLProvider {
                 typeRegistry.add(newObjectTypeDefiniton);
             }
         }
-
-        RuntimeWiring runtimeWiring = buildWiring();
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
-        return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
     }
 
     private RuntimeWiring buildWiring() {

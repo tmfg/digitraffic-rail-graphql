@@ -35,6 +35,7 @@ public class TrainsByDepartureDateQuery extends BaseQuery<List<TrainTO>> {
     public DataFetcher<List<TrainTO>> createFetcher() {
         return dataFetchingEnvironment -> {
             LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
+            Object filter = dataFetchingEnvironment.getArgument("filter");
 
             List<Train> trains = trainRepository.findByDepartureDate(departureDate, PageRequest.of(0, MAX_RESULTS));
             return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
