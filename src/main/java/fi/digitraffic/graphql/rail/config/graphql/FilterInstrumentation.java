@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.config.graphql;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,8 +10,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.filters.BooleanFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.digitraffic.graphql.rail.filters.BaseFilter;
+import fi.digitraffic.graphql.rail.filters.FilterRegistry;
 import graphql.ExecutionResult;
 import graphql.execution.ExecutionId;
 import graphql.execution.ExecutionStepInfo;
@@ -19,9 +24,8 @@ import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionStrategyParameters;
 import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLInputObjectField;
-import graphql.schema.GraphQLInputObjectType;
 
+@Component
 public class FilterInstrumentation extends SimpleInstrumentation {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -29,36 +33,44 @@ public class FilterInstrumentation extends SimpleInstrumentation {
     private Map<ExecutionId, Map<String, Object>> filterValue = new HashMap<>();
     private Map<ExecutionId, GraphQLArgument> filterType = new HashMap<>();
 
+    @Autowired
+    private FilterRegistry filterRegistry;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
     public CompletableFuture<ExecutionResult> instrumentExecutionResult(ExecutionResult executionResult, InstrumentationExecutionParameters parameters) {
+        long start = System.currentTimeMillis();
         ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
 
-        if (this.filterValue.containsKey(executionId)) {
-            Map<String, List<HashMap<String, Object>>> executionResultData = executionResult.getData();
-            for (Map.Entry<String, List<HashMap<String, Object>>> resultDataEntries : executionResultData.entrySet()) {
+        Map<String, Object> filter = this.filterValue.get(executionId);
+
+        if (filter != null) {
+            GraphQLArgument filterType = this.filterType.get(executionId);
+            BaseFilter baseFilter = filterRegistry.getFilterFor(filterType.getType());
+            Object filterAsPOJO = objectMapper.convertValue(filter, baseFilter.getFilterTOType());
+
+            Map<String, List<HashMap<String, Object>>> queryResult = executionResult.getData();
+            for (Map.Entry<String, List<HashMap<String, Object>>> resultDataEntries : queryResult.entrySet()) {
                 List<Integer> filteredIndexes = new ArrayList<>();
-                for (int i = 0; i < resultDataEntries.getValue().size(); i++) {
-                    HashMap<String, Object> entityEntry = resultDataEntries.getValue().get(i);
-                    for (Map.Entry<String, Object> filterEntry : filterValue.get(executionId).entrySet()) {
-                        String fieldName = filterEntry.getKey();
-                        GraphQLArgument graphQlFilterType = this.filterType.get(executionId);
-                        if (graphQlFilterType.getType() instanceof GraphQLInputObjectType) {
-                            GraphQLInputObjectField filterType = ((GraphQLInputObjectType) graphQlFilterType.getType()).getField(fieldName);
-                            if (filterType.getType().getName().equals("BooleanFilter")) {
-                                if (new BooleanFilter().filter(entityEntry, filterEntry)) {
-                                    filteredIndexes.add(i);
-                                }
-                            }
-                        }
+                List<HashMap<String, Object>> queryResultList = resultDataEntries.getValue();
+                for (int i = 0; i < queryResultList.size(); i++) {
+                    HashMap<String, Object> entity = queryResultList.get(i);
+
+                    Object entityAsPOJO = objectMapper.convertValue(entity, baseFilter.getEntityTOType());
+                    if (baseFilter.isFiltered(entityAsPOJO, filterAsPOJO)) {
+                        filteredIndexes.add(i);
                     }
                 }
                 Collections.reverse(filteredIndexes);
                 for (int filteredIndex : filteredIndexes) {
-                    resultDataEntries.getValue().remove(filteredIndex);
+                    queryResultList.remove(filteredIndex);
                 }
             }
         }
 
+        log.info("Filtering took {}", Duration.ofMillis(System.currentTimeMillis() - start));
         return super.instrumentExecutionResult(executionResult, parameters);
     }
 

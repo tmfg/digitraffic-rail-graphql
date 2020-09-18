@@ -1,7 +1,7 @@
 type Query {
     train(trainNumber : Int, departureDate : Date) : Train
     trainsByDepartureDate(departureDate : Date, filter : TrainFilter) : [Train]
-#    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, filter : TrainFilter) : [Train]
+    #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, filter : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, filter : TrainFilter) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], filter : TrainFilter) : [Train]
     trainLocations: [TrainLocation]
@@ -196,13 +196,32 @@ enum StationTypeEnum {
 }
 
 input TrainFilter {
-    AND: [TrainFilter]
-    OR: [TrainFilter]
+    and: [TrainFilter]
+    or: [TrainFilter]
+
     cancelled : BooleanFilter
-    deleted: BooleanFilter
-    runningCurrently: BooleanFilter
+    commuterLineid : StringFilter
+    deleted : BooleanFilter
+    #    departureDate : Date
+    #    operatorShortCode : StringFilter
+    runningCurrently : BooleanFilter
+    #    timetableAcceptanceDate : DateTime
+    #    timetableType : TimetableType
+    #    trainNumber : Int
+    version : StringFilter
+    #    trainTypeId : Int
+    #    trainCategoryId : Int
+    #    operator : Operator
+    #    trainType : TrainType
+    #    timeTableRows : [TimeTableRow]
+    #    trainLocations : [TrainLocation]
+    #    compositions : [Composition]
 }
 
 input BooleanFilter {
     eq : Boolean
+}
+
+input StringFilter {
+    eq : String
 }

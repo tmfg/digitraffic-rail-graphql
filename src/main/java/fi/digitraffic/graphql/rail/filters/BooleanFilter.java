@@ -1,17 +1,31 @@
 package fi.digitraffic.graphql.rail.filters;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.stereotype.Component;
 
-public class BooleanFilter extends BaseFilter {
+import fi.digitraffic.graphql.rail.model.BooleanFilterTO;
 
-    public boolean filter(HashMap<String, Object> entityEntry, Map.Entry<String, Object> filterEntry) {
-        Boolean value = (Boolean) entityEntry.get(filterEntry.getKey());
-        Map<String, Boolean> filterValue = (Map<String, Boolean>) filterEntry.getValue();
-        if (value != filterValue.get("eq")) {
+@Component
+public class BooleanFilter extends BaseFilter<Boolean, BooleanFilterTO> {
+
+    @Override
+    public boolean isFiltered(Boolean aBoolean, BooleanFilterTO booleanFilterTO) {
+        if (aBoolean == null) {
+            return false;
+        }
+        if (aBoolean != booleanFilterTO.getEq()) {
             return true;
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Class getFilterTOType() {
+        return BooleanFilterTO.class;
+    }
+
+    @Override
+    public Class getEntityTOType() {
+        return Boolean.class;
     }
 }

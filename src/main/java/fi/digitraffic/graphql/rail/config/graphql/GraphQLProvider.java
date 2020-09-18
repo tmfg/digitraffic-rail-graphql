@@ -109,7 +109,7 @@ public class GraphQLProvider {
     private List<BaseQuery> rootFetchers;
 
     @Autowired
-    private FilterTypeFactory filterTypeFactory;
+    private FilterInstrumentation filterInstrumentation;
 
     @Bean
     public GraphQL graphQL() {
@@ -125,7 +125,7 @@ public class GraphQLProvider {
                 .instrumentation(new ChainedInstrumentation(Arrays.asList(
 //                new ExecutionTimeInstrumentation()
                         new NoCircularQueriesInstrumentation(),
-                        new FilterInstrumentation()
+                        filterInstrumentation
                 ))).build();
     }
 
