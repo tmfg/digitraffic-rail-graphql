@@ -6,6 +6,4 @@ public abstract class BaseFilter<EntityTOType, EntityFilterTOType> {
     public abstract Class<EntityFilterTOType> getFilterTOType();
 
     public abstract Class<EntityTOType> getEntityTOType();
-
-
 }

@@ -79,7 +79,7 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
         return false;
     }
 
-    protected boolean isChildFiltered(Object entity, Object filter) {
+    private boolean isChildFiltered(Object entity, Object filter) {
         if (filter != null) {
             boolean filtered = filterRegistry.getFilterFor(filter.getClass()).isFiltered(entity, filter);
             if (filtered) {
@@ -89,7 +89,7 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
         return false;
     }
 
-    protected boolean filterByOr(Collection<EntityFilterTOType> filters, EntityTOType entity) {
+    private boolean filterByOr(Collection<EntityFilterTOType> filters, EntityTOType entity) {
         if (filters == null) {
             return false;
         }
@@ -103,7 +103,7 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
         return true;
     }
 
-    protected Boolean filterByAnd(Collection<EntityFilterTOType> filters, EntityTOType entity) {
+    private Boolean filterByAnd(Collection<EntityFilterTOType> filters, EntityTOType entity) {
         if (filters == null) {
             return false;
         }

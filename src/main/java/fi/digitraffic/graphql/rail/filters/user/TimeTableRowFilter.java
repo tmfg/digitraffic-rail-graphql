@@ -1,7 +1,8 @@
-package fi.digitraffic.graphql.rail.filters;
+package fi.digitraffic.graphql.rail.filters.user;
 
 import org.springframework.stereotype.Component;
 
+import fi.digitraffic.graphql.rail.filters.FilterWithChildren;
 import fi.digitraffic.graphql.rail.model.TimeTableRowFilterTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 

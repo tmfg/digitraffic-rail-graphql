@@ -218,20 +218,13 @@ input TrainFilter {
 input TimeTableRowFilter {
     and: [TimeTableRowFilter]
     or: [TimeTableRowFilter]
-    #    stationShortCode : String
-    #    stationUICCode : Int
-    #    countryCode : String
     type : EnumFilter
-    #    trainStopping : Boolean
-    #    commercialStop : Boolean
+    trainStopping : BooleanFilter
+    commercialStop : BooleanFilter
     commercialTrack : StringFilter
-    #    cancelled : Boolean
+    cancelled : BooleanFilter
     #    scheduledTime : DateTime
     #    actualTime : DateTime
-
-    #    id : Int
-    #    trainNumber : Int
-    #    departureDate : Date
 
     station: StationFilter
     #    causes : [Cause]

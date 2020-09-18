@@ -1,7 +1,8 @@
-package fi.digitraffic.graphql.rail.filters;
+package fi.digitraffic.graphql.rail.filters.primitive;
 
 import org.springframework.stereotype.Component;
 
+import fi.digitraffic.graphql.rail.filters.BaseFilter;
 import fi.digitraffic.graphql.rail.model.IntegerFilterTO;
 
 @Component
