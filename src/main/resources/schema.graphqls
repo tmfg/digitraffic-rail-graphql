@@ -210,15 +210,59 @@ input TrainFilter {
     version : StringFilter
     operator : OperatorFilter
     #    trainType : TrainType
-    #    timeTableRows : [TimeTableRow]
+    timeTableRows : TimeTableRowFilter
     #    trainLocations : [TrainLocation]
     #    compositions : [Composition]
 }
+
+input TimeTableRowFilter {
+    and: [TimeTableRowFilter]
+    or: [TimeTableRowFilter]
+    #    stationShortCode : String
+    #    stationUICCode : Int
+    #    countryCode : String
+    type : EnumFilter
+    #    trainStopping : Boolean
+    #    commercialStop : Boolean
+    commercialTrack : StringFilter
+    #    cancelled : Boolean
+    #    scheduledTime : DateTime
+    #    actualTime : DateTime
+
+    #    id : Int
+    #    trainNumber : Int
+    #    departureDate : Date
+
+    station: StationFilter
+    #    causes : [Cause]
+}
+
+#input TimeTableRowCollectionFilter {
+#    logic: FilteringLogic
+#    filter: TimeTableRowFilter
+#}
+#
+#enum FilteringLogic {
+#    ALL_ROWS_MATCH
+#    ATLEAST_ONE_ROW_MATCHES
+#}
+
 
 input OperatorFilter {
     name : StringFilter
     shortCode : StringFilter
     uicCode : IntegerFilter
+}
+
+input StationFilter {
+    #    id : Int
+    passengerTraffic : BooleanFilter
+    countryCode : StringFilter
+    #    location : [Float]
+    name : StringFilter
+    shortCode : StringFilter
+    uicCode : IntegerFilter
+    type : EnumFilter
 }
 
 input BooleanFilter {

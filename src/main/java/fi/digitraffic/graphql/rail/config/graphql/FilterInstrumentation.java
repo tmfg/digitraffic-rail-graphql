@@ -67,10 +67,12 @@ public class FilterInstrumentation extends SimpleInstrumentation {
                 for (int filteredIndex : filteredIndexes) {
                     queryResultList.remove(filteredIndex);
                 }
+
+                log.info("Filtering took {}. Filtered entries: {}", Duration.ofMillis(System.currentTimeMillis() - start), filteredIndexes.size());
             }
+
         }
 
-        log.info("Filtering took {}", Duration.ofMillis(System.currentTimeMillis() - start));
         return super.instrumentExecutionResult(executionResult, parameters);
     }
 

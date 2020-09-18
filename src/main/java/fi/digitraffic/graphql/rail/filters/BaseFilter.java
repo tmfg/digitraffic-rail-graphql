@@ -24,7 +24,7 @@ public abstract class BaseFilter<EntityTOType, EntityFilterTOType> {
         return false;
     }
 
-    protected boolean filterByOR(Collection<EntityFilterTOType> filters, EntityTOType entity) {
+    protected boolean filterByOr(Collection<EntityFilterTOType> filters, EntityTOType entity) {
         if (filters == null) {
             return false;
         }
@@ -38,7 +38,7 @@ public abstract class BaseFilter<EntityTOType, EntityFilterTOType> {
         return true;
     }
 
-    protected Boolean filterByAND(Collection<EntityFilterTOType> filters, EntityTOType entity) {
+    protected Boolean filterByAnd(Collection<EntityFilterTOType> filters, EntityTOType entity) {
         if (filters == null) {
             return false;
         }
