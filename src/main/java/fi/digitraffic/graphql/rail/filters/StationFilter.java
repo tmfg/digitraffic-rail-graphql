@@ -6,7 +6,7 @@ import fi.digitraffic.graphql.rail.model.StationFilterTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
 
 @Component
-public class StationFilter extends BaseFilter<StationTO, StationFilterTO> {
+public class StationFilter extends FilterWithChildren<StationTO, StationFilterTO> {
     public Class<StationFilterTO> getFilterTOType() {
         return StationFilterTO.class;
     }

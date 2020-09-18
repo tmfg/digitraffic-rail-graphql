@@ -36,11 +36,6 @@ public class IntegerFilter extends BaseFilter<Integer, IntegerFilterTO> {
     }
 
     @Override
-    public boolean isAutoconfigured() {
-        return false;
-    }
-
-    @Override
     public Class getFilterTOType() {
         return IntegerFilterTO.class;
     }

@@ -6,7 +6,7 @@ import fi.digitraffic.graphql.rail.model.TimeTableRowFilterTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 
 @Component
-public class TimeTableRowFilter extends BaseFilter<TimeTableRowTO, TimeTableRowFilterTO> {
+public class TimeTableRowFilter extends FilterWithChildren<TimeTableRowTO, TimeTableRowFilterTO> {
     public Class<TimeTableRowFilterTO> getFilterTOType() {
         return TimeTableRowFilterTO.class;
     }

@@ -6,7 +6,7 @@ import fi.digitraffic.graphql.rail.model.OperatorFilterTO;
 import fi.digitraffic.graphql.rail.model.OperatorTO;
 
 @Component
-public class OperatorFilter extends BaseFilter<OperatorTO, OperatorFilterTO> {
+public class OperatorFilter extends FilterWithChildren<OperatorTO, OperatorFilterTO> {
     public Class<OperatorFilterTO> getFilterTOType() {
         return OperatorFilterTO.class;
     }

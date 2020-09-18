@@ -19,11 +19,6 @@ public class StringFilter extends BaseFilter<String, StringFilterTO> {
     }
 
     @Override
-    public boolean isAutoconfigured() {
-        return false;
-    }
-
-    @Override
     public Class getFilterTOType() {
         return StringFilterTO.class;
     }
