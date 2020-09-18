@@ -20,6 +20,11 @@ public class BooleanFilter extends BaseFilter<Boolean, BooleanFilterTO> {
     }
 
     @Override
+    public boolean isAutoconfigured() {
+        return false;
+    }
+
+    @Override
     public Class getFilterTOType() {
         return BooleanFilterTO.class;
     }

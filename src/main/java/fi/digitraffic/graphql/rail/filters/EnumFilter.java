@@ -24,6 +24,11 @@ public class EnumFilter extends BaseFilter<Enum, EnumFilterTO> {
     }
 
     @Override
+    public boolean isAutoconfigured() {
+        return false;
+    }
+
+    @Override
     public Class getFilterTOType() {
         return EnumFilterTO.class;
     }

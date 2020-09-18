@@ -6,7 +6,6 @@ import fi.digitraffic.graphql.rail.model.StringFilterTO;
 
 @Component
 public class StringFilter extends BaseFilter<String, StringFilterTO> {
-
     @Override
     public boolean isFiltered(String value, StringFilterTO filterTO) {
         if (value == null) {
@@ -17,6 +16,11 @@ public class StringFilter extends BaseFilter<String, StringFilterTO> {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean isAutoconfigured() {
+        return false;
     }
 
     @Override
