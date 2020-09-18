@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
 import fi.digitraffic.graphql.rail.model.StationTO;
-import fi.digitraffic.graphql.rail.model.StationTypeEnumTO;
+import fi.digitraffic.graphql.rail.model.StationTypeTO;
 
 @Component
 public class StationTOConverter {
@@ -24,13 +24,13 @@ public class StationTOConverter {
         );
     }
 
-    private StationTypeEnumTO parseStationType(StationTypeEnum type) {
+    private StationTypeTO parseStationType(StationTypeEnum type) {
         if (type == StationTypeEnum.STATION) {
-            return StationTypeEnumTO.STATION;
+            return StationTypeTO.STATION;
         } else if (type == StationTypeEnum.STOPPING_POINT) {
-            return StationTypeEnumTO.STOPPING_POINT;
+            return StationTypeTO.STOPPING_POINT;
         } else if (type == StationTypeEnum.TURNOUT_IN_THE_OPEN_LINE) {
-            return StationTypeEnumTO.TURNOUT_IN_THE_OPEN_LINE;
+            return StationTypeTO.TURNOUT_IN_THE_OPEN_LINE;
         } else {
             throw new IllegalArgumentException("Could not parse station type: " + type);
         }

@@ -149,7 +149,7 @@ type Station {
     name : String
     shortCode : String
     uicCode : Int
-    type : StationTypeEnum
+    type : StationType
 }
 
 type CategoryCode {
@@ -191,7 +191,7 @@ enum TimeTableRowType {
     DEPARTURE
 }
 
-enum StationTypeEnum {
+enum StationType {
     STATION, STOPPING_POINT, TURNOUT_IN_THE_OPEN_LINE
 }
 
@@ -203,19 +203,22 @@ input TrainFilter {
     commuterLineid : StringFilter
     deleted : BooleanFilter
     #    departureDate : Date
-    #    operatorShortCode : StringFilter
     runningCurrently : BooleanFilter
     #    timetableAcceptanceDate : DateTime
-    #    timetableType : TimetableType
-    #    trainNumber : Int
+    timetableType : EnumFilter
+    trainNumber : IntegerFilter
     version : StringFilter
-    #    trainTypeId : Int
-    #    trainCategoryId : Int
-    #    operator : Operator
+    operator : OperatorFilter
     #    trainType : TrainType
     #    timeTableRows : [TimeTableRow]
     #    trainLocations : [TrainLocation]
     #    compositions : [Composition]
+}
+
+input OperatorFilter {
+    name : StringFilter
+    shortCode : StringFilter
+    uicCode : IntegerFilter
 }
 
 input BooleanFilter {
@@ -223,5 +226,15 @@ input BooleanFilter {
 }
 
 input StringFilter {
+    eq : String
+}
+
+input IntegerFilter {
+    eq : Int
+    gt : Int
+    lt : Int
+}
+
+input EnumFilter {
     eq : String
 }

@@ -13,6 +13,9 @@ public class TrainFilter extends BaseFilter<TrainTO, TrainFilterTO> {
         if (this.isChildFiltered(entity.getDeleted(), filter.getDeleted())) return true;
         if (this.isChildFiltered(entity.getRunningCurrently(), filter.getRunningCurrently())) return true;
         if (this.isChildFiltered(entity.getCommuterLineid(), filter.getCommuterLineid())) return true;
+        if (this.isChildFiltered(entity.getTimetableType(), filter.getTimetableType())) return true;
+        if (this.isChildFiltered(entity.getTrainNumber(), filter.getTrainNumber())) return true;
+        if (this.isChildFiltered(entity.getOperator(), filter.getOperator())) return true;
         if (this.filterByAND(filter.getAnd(), entity)) return true;
         if (this.filterByOR(filter.getOr(), entity)) return true;
 
