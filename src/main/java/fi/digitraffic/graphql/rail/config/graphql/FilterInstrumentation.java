@@ -80,9 +80,9 @@ public class FilterInstrumentation extends SimpleInstrumentation {
     public ExecutionStrategyInstrumentationContext beginExecutionStrategy(InstrumentationExecutionStrategyParameters parameters) {
         ExecutionStepInfo executionStepInfo = parameters.getExecutionStrategyParameters().getExecutionStepInfo();
         Map<String, Object> arguments = executionStepInfo.getArguments();
-        if (arguments != null && !arguments.isEmpty() && arguments.containsKey("filter")) {
-            this.filterType.put(parameters.getExecutionContext().getExecutionId(), executionStepInfo.getFieldDefinition().getArgument("filter"));
-            this.filterValue.put(parameters.getExecutionContext().getExecutionId(), (Map<String, Object>) arguments.get("filter"));
+        if (arguments != null && !arguments.isEmpty() && arguments.containsKey("where")) {
+            this.filterType.put(parameters.getExecutionContext().getExecutionId(), executionStepInfo.getFieldDefinition().getArgument("where"));
+            this.filterValue.put(parameters.getExecutionContext().getExecutionId(), (Map<String, Object>) arguments.get("where"));
         }
         return super.beginExecutionStrategy(parameters);
     }

@@ -1,9 +1,9 @@
 type Query {
     train(trainNumber : Int, departureDate : Date) : Train
-    trainsByDepartureDate(departureDate : Date, filter : TrainFilter) : [Train]
-    #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, filter : TrainFilter) : [Train]
-    trainsByVersionGreaterThan(version : String, filter : TrainFilter) : [Train]
-    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], filter : TrainFilter) : [Train]
+    trainsByDepartureDate(departureDate : Date, where : TrainFilter) : [Train]
+    #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainFilter) : [Train]
+    trainsByVersionGreaterThan(version : String, where : TrainFilter) : [Train]
+    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainFilter) : [Train]
     trainLocations: [TrainLocation]
     compositionsGreaterThanVersion(version : String) : [Composition]
 }
@@ -232,7 +232,7 @@ input TimeTableRowFilter {
 
 #input TimeTableRowCollectionFilter {
 #    logic: FilteringLogic
-#    filter: TimeTableRowFilter
+#    where: TimeTableRowFilter
 #}
 #
 #enum FilteringLogic {
@@ -248,7 +248,6 @@ input OperatorFilter {
 }
 
 input StationFilter {
-    #    id : Int
     passengerTraffic : BooleanFilter
     countryCode : StringFilter
     #    location : [Float]
