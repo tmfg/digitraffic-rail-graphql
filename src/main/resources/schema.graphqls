@@ -4,7 +4,7 @@ type Query {
     #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, where : TrainFilter) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainFilter) : [Train]
-    trainLocations: [TrainLocation]
+    latestTrainLocations(where:TrainLocationFilter): [TrainLocation]
     compositionsGreaterThanVersion(version : String) : [Composition]
 }
 
@@ -211,7 +211,7 @@ input TrainFilter {
     operator : OperatorFilter
     trainType : TrainTypeFilter
     timeTableRows : TimeTableRowFilter
-    #    trainLocations : [TrainLocation]
+    trainLocations : TrainLocationFilter
     #    compositions : [Composition]
 }
 
@@ -226,34 +226,33 @@ input TimeTableRowFilter {
     scheduledTime : DateTimeFilter
     actualTime : DateTimeFilter
     station: StationFilter
-    #    causes : [Cause]
+    causes : CauseFilter
 }
 
 input TrainTypeFilter {
     and: [TrainTypeFilter]
     or: [TrainTypeFilter]
     name : StringFilter
-    #    trainCategory : TrainCategory
+    trainCategory : TrainCategoryFilter
 }
 
-#input TimeTableRowCollectionFilter {
-#    logic: FilteringLogic
-#    where: TimeTableRowFilter
-#}
-#
-#enum FilteringLogic {
-#    ALL_ROWS_MATCH
-#    ATLEAST_ONE_ROW_MATCHES
-#}
-
+input TrainCategoryFilter {
+    and: [TrainCategoryFilter]
+    or: [TrainCategoryFilter]
+    name : StringFilter
+}
 
 input OperatorFilter {
+    and: [OperatorFilter]
+    or: [OperatorFilter]
     name : StringFilter
     shortCode : StringFilter
     uicCode : IntegerFilter
 }
 
 input StationFilter {
+    and: [StationFilter]
+    or: [StationFilter]
     passengerTraffic : BooleanFilter
     countryCode : StringFilter
     #    location : [Float]
@@ -261,6 +260,51 @@ input StationFilter {
     shortCode : StringFilter
     uicCode : IntegerFilter
     type : EnumFilter
+}
+
+input CauseFilter {
+    and: [CauseFilter]
+    or: [CauseFilter]
+    categoryCode : CategoryCodeFilter
+    detailedCategoryCode : DetailedCategoryCodeFilter
+    thirdCategoryCode : ThirdCategoryCodeFilter
+}
+
+input CategoryCodeFilter {
+    and: [CategoryCodeFilter]
+    or: [CategoryCodeFilter]
+    code : StringFilter
+    name : StringFilter
+    validFrom : DateFilter
+    validTo : DateFilter
+}
+
+input DetailedCategoryCodeFilter {
+    and: [DetailedCategoryCodeFilter]
+    or: [DetailedCategoryCodeFilter]
+    code : StringFilter
+    name : StringFilter
+    validFrom : DateFilter
+    validTo : DateFilter
+}
+
+input ThirdCategoryCodeFilter {
+    and: [ThirdCategoryCodeFilter]
+    or: [ThirdCategoryCodeFilter]
+    code : StringFilter
+    name : StringFilter
+    description : StringFilter
+    validFrom : DateFilter
+    validTo : DateFilter
+}
+
+input TrainLocationFilter {
+    and: [TrainLocationFilter]
+    or: [TrainLocationFilter]
+    speed : IntegerFilter
+    timestamp : DateTimeFilter
+    #    location : [Float]
+    train: TrainFilter
 }
 
 input BooleanFilter {

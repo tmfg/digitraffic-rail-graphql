@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.GraphqlApplication;
 import fi.digitraffic.graphql.rail.repositories.StationRepository;
+import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 
 @SpringBootTest(classes = GraphqlApplication.class)
@@ -31,10 +32,14 @@ public abstract class BaseWebMVCTest {
     @Autowired
     protected StationRepository stationRepository;
 
+    @Autowired
+    private TrainLocationRepository trainLocationRepository;
+
     @BeforeEach()
     private void setup() {
         trainRepository.deleteAll();
         stationRepository.deleteAll();
+        trainLocationRepository.deleteAll();
     }
 
     public ResultActions query(String query) throws Exception {

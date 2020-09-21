@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.model.TrainFilterTO;
+import fi.digitraffic.graphql.rail.model.TrainLocationFilterTO;
 import graphql.schema.GraphQLInputType;
 
 @Component
@@ -39,7 +40,10 @@ public class FilterRegistry {
 
         if (typeName.equals("TrainFilter")) {
             return this.getFilterFor(TrainFilterTO.class);
-        } else {
+        } else if (typeName.equals("TrainLocationFilter")) {
+            return this.getFilterFor(TrainLocationFilterTO.class);
+        }
+        {
             throw new IllegalArgumentException("Could not find filter implementation for type " + typeName);
         }
     }

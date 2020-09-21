@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.factory.TrainFactory;
 
 
-public class TrainFilterQueriesTest extends BaseWebMVCTest {
+public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
     @Autowired
     private TrainFactory trainFactory;
 
@@ -44,8 +44,6 @@ public class TrainFilterQueriesTest extends BaseWebMVCTest {
 
         ResultActions result3 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{lt:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train69.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
         result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
-
-
     }
 
     @Test

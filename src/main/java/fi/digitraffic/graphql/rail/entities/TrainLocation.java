@@ -29,6 +29,8 @@ public class TrainLocation {
 
     public Integer speed;
 
+    public TrainLocationConnectionQuality connectionQuality;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),
