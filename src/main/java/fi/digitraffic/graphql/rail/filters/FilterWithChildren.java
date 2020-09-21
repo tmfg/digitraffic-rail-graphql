@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> extends BaseFilter<EntityTOType, EntityFilterTOType> {
@@ -15,6 +17,8 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
     private List<List<Method>> collections = new ArrayList<>();
     private Method and = null;
     private Method or = null;
+
+    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private FilterRegistry filterRegistry;
@@ -58,7 +62,7 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
                 if (this.filterCollection(entityFieldValue, filterFieldValue)) return true;
             }
         } catch (Exception e) {
-
+            log.error("Error filtering", e);
         }
 
         return false;

@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class TrainFactory {
     private StationFactory stationFactory;
 
     @Transactional
-    public Train createBaseTrain(TrainId id) {
+    public Pair<Train, List<TimeTableRow>> createBaseTrain(TrainId id) {
         final String operatorShortCode = "test";
         final long trainCategoryId = 1;
         final long trainTypeId = 1;
@@ -79,6 +80,6 @@ public class TrainFactory {
         timeTableRowList.add(
                 ttrf.create(train, now.plusHours(8), null, olStation, TimeTableRow.TimeTableRowType.ARRIVAL));
 
-        return train;
+        return Pair.of(train, timeTableRowList);
     }
 }
