@@ -25,7 +25,7 @@ public abstract class BaseWebMVCTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private TrainRepository trainRepository;
+    protected TrainRepository trainRepository;
 
     @BeforeEach()
     private void setup() {
