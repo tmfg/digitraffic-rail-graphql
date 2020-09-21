@@ -202,14 +202,14 @@ input TrainFilter {
     cancelled : BooleanFilter
     commuterLineid : StringFilter
     deleted : BooleanFilter
-    #    departureDate : Date
+    departureDate : DateFilter
     runningCurrently : BooleanFilter
-    #    timetableAcceptanceDate : DateTime
+    timetableAcceptanceDate : DateTimeFilter
     timetableType : EnumFilter
     trainNumber : IntegerFilter
     version : StringFilter
     operator : OperatorFilter
-    #    trainType : TrainType
+    trainType : TrainTypeFilter
     timeTableRows : TimeTableRowFilter
     #    trainLocations : [TrainLocation]
     #    compositions : [Composition]
@@ -223,11 +223,17 @@ input TimeTableRowFilter {
     commercialStop : BooleanFilter
     commercialTrack : StringFilter
     cancelled : BooleanFilter
-    #    scheduledTime : DateTime
-    #    actualTime : DateTime
-
+    scheduledTime : DateTimeFilter
+    actualTime : DateTimeFilter
     station: StationFilter
     #    causes : [Cause]
+}
+
+input TrainTypeFilter {
+    and: [TrainTypeFilter]
+    or: [TrainTypeFilter]
+    name : StringFilter
+    #    trainCategory : TrainCategory
 }
 
 #input TimeTableRowCollectionFilter {
@@ -273,4 +279,16 @@ input IntegerFilter {
 
 input EnumFilter {
     eq : String
+}
+
+input DateTimeFilter {
+    eq: DateTime
+    gt: DateTime
+    lt: DateTime
+}
+
+input DateFilter {
+    eq: Date
+    gt: Date
+    lt: Date
 }

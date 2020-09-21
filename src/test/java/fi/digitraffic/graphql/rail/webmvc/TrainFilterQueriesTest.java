@@ -3,6 +3,10 @@ package fi.digitraffic.graphql.rail.webmvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +20,33 @@ import fi.digitraffic.graphql.rail.factory.TrainFactory;
 public class TrainFilterQueriesTest extends BaseWebMVCTest {
     @Autowired
     private TrainFactory trainFactory;
+
+    @Test
+    public void dateTimeFilterShouldWork() throws Exception {
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getLeft();
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getLeft();
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getLeft();
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getLeft();
+
+        ZonedDateTime baseTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Helsinki"));
+        train66.timetableAcceptanceDate = baseTime;
+        train67.timetableAcceptanceDate = baseTime.plusDays(1);
+        train68.timetableAcceptanceDate = baseTime.plusDays(2);
+        train69.timetableAcceptanceDate = baseTime.plusDays(3);
+
+        trainRepository.saveAll(List.of(train66, train67, train68, train69));
+
+        ResultActions result = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{eq:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train66.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+
+        ResultActions result2 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{gt:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train67.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(2));
+
+        ResultActions result3 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{lt:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train69.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
+
+
+    }
 
     @Test
     public void integerFilterShouldWork() throws Exception {

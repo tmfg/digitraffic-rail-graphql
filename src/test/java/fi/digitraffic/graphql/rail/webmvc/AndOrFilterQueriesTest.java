@@ -35,8 +35,6 @@ public class AndOrFilterQueriesTest extends BaseWebMVCTest {
 
         ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      and: [    {deleted: {eq: false}},     {or: [{runningCurrently: {eq: false}}, {cancelled: {eq: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
         result4.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
-
-
     }
 
     private void createTestData() {
