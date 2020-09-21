@@ -1,5 +1,7 @@
 package fi.digitraffic.graphql.rail.filters.primitive;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.filters.BaseFilter;
@@ -10,18 +12,7 @@ public class EnumFilter extends BaseFilter<Enum, EnumFilterTO> {
 
     @Override
     public boolean isFiltered(Enum value, EnumFilterTO filterTO) {
-        if (value == null) {
-            return false;
-        }
-        if (filterTO.getEq() != null) {
-            if (!value.name().equals(filterTO.getEq())) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        return false;
+        return !Objects.equals(value.toString(), filterTO.getEq());
     }
 
     @Override

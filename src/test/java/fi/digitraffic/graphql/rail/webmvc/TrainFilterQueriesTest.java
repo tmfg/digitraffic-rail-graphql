@@ -64,7 +64,7 @@ public class TrainFilterQueriesTest extends BaseWebMVCTest {
         train67.commuterLineID = "B";
         trainRepository.save(train67);
 
-        train68.commuterLineID = "C";
+        train68.commuterLineID = null;
         trainRepository.save(train68);
 
         train69.commuterLineID = null;
@@ -74,6 +74,35 @@ public class TrainFilterQueriesTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
         ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{eq:\\\"B\\\"}}) {   trainNumber, version, commuterLineid  }}");
+        result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+
+        ResultActions result3 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{eq:null}}) {   trainNumber, version, commuterLineid  }}");
+        result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(2));
+    }
+
+    @Test
+    public void booleanFilterShouldWork() throws Exception {
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17)));
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17)));
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17)));
+
+        train66.deleted = true;
+        trainRepository.save(train66);
+
+        train67.deleted = true;
+        trainRepository.save(train67);
+
+        train68.deleted = false;
+        trainRepository.save(train68);
+
+        train69.deleted = null;
+        trainRepository.save(train69);
+
+        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{eq:true}}) {   trainNumber, version, deleted  }}");
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(2));
+
+        ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{eq:false}}) {   trainNumber, version, deleted  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
     }
 }
