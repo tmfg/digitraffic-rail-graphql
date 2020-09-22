@@ -255,7 +255,7 @@ input StationFilter {
     or: [StationFilter]
     passengerTraffic : BooleanFilter
     countryCode : StringFilter
-    #    location : [Float]
+    location : CoordinateFilter
     name : StringFilter
     shortCode : StringFilter
     uicCode : IntegerFilter
@@ -303,7 +303,7 @@ input TrainLocationFilter {
     or: [TrainLocationFilter]
     speed : IntegerFilter
     timestamp : DateTimeFilter
-    #    location : [Float]
+    location : CoordinateFilter
     train: TrainFilter
 }
 
@@ -335,4 +335,8 @@ input DateFilter {
     eq: Date
     gt: Date
     lt: Date
+}
+
+input CoordinateFilter {
+    inside : [Float]
 }

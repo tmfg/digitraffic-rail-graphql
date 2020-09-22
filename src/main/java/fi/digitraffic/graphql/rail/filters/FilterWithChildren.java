@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import fi.digitraffic.graphql.rail.model.CoordinateFilterTO;
+
 public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> extends BaseFilter<EntityTOType, EntityFilterTOType> {
     private List<List<Method>> fields = new ArrayList<>();
     private List<List<Method>> collections = new ArrayList<>();
@@ -35,6 +37,8 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
                 this.and = getMethod;
             } else if (methodName.equals("getOr")) {
                 this.or = getMethod;
+            } else if (getMethod.getReturnType().equals(CoordinateFilterTO.class)) {
+                fields.add(List.of(entityTOType.getDeclaredMethod(methodName), filterTOType.getDeclaredMethod(methodName)));
             } else if (entityTOType.getDeclaredMethod(methodName).getReturnType().equals(Collection.class)) {
                 collections.add(List.of(entityTOType.getDeclaredMethod(methodName), filterTOType.getDeclaredMethod(methodName)));
             } else {
