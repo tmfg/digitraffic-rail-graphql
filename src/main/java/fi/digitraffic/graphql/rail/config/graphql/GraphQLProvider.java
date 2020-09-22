@@ -134,24 +134,6 @@ public class GraphQLProvider {
 
         removeBlacklistedFields(typeRegistry);
 
-
-//        List<ObjectTypeDefinition> newTypes = new ArrayList<>();
-//        for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
-//            if (typeEntry.getValue() instanceof ObjectTypeDefinition) {
-//                if (typeEntry.getKey().equals("Query")) {
-//
-//                } else {
-//                    ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) typeEntry.getValue();
-//                    ObjectTypeDefinition filterType = filterTypeFactory.createType(typeEntry.getKey(), objectTypeDefinition);
-//                    newTypes.add(filterType);
-//                }
-//            }
-//        }
-//
-//        for (ObjectTypeDefinition newType : newTypes) {
-//            typeRegistry.add(newType);
-//        }
-
         RuntimeWiring runtimeWiring = buildWiring();
         SchemaGenerator schemaGenerator = new SchemaGenerator();
         return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);

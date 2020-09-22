@@ -212,7 +212,7 @@ input TrainFilter {
     trainType : TrainTypeFilter
     timeTableRows : TimeTableRowFilter
     trainLocations : TrainLocationFilter
-    #    compositions : [Composition]
+    compositions : CompositionFilter
 }
 
 input TimeTableRowFilter {
@@ -306,6 +306,53 @@ input TrainLocationFilter {
     location : CoordinateFilter
     train: TrainFilter
 }
+
+input CompositionFilter {
+    and: [CompositionFilter]
+    or: [CompositionFilter]
+    version : StringFilter
+    train : TrainFilter
+    journeySections : JourneySectionFilter
+}
+
+input JourneySectionFilter {
+    and: [JourneySectionFilter]
+    or: [JourneySectionFilter]
+    maximumSpeed : IntegerFilter
+    totalLength : IntegerFilter
+    startTimeTableRow : TimeTableRowFilter
+    endTimeTableRow : TimeTableRowFilter
+    wagons : WagonFilter
+    locomotives : LocomotiveFilter
+}
+
+input LocomotiveFilter {
+    and: [LocomotiveFilter]
+    or: [LocomotiveFilter]
+    location : IntegerFilter
+    locomotiveType : StringFilter
+    powerTypeAbbreviation : StringFilter
+    vehicleNumber : StringFilter
+}
+
+input WagonFilter {
+    and: [WagonFilter]
+    or: [WagonFilter]
+    id : IntegerFilter
+    length : IntegerFilter
+    location : IntegerFilter
+    salesNumber : IntegerFilter
+    catering : BooleanFilter
+    disabled : BooleanFilter
+    luggage : BooleanFilter
+    pet : BooleanFilter
+    playground : BooleanFilter
+    smoking : BooleanFilter
+    video : BooleanFilter
+    wagonType : StringFilter
+    vehicleNumber : StringFilter
+}
+
 
 input BooleanFilter {
     eq : Boolean

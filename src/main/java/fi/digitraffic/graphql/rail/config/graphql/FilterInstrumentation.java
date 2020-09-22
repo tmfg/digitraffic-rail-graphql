@@ -41,13 +41,19 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
     @Override
     public CompletableFuture<ExecutionResult> instrumentExecutionResult(ExecutionResult executionResult, InstrumentationExecutionParameters parameters) {
-        long start = System.currentTimeMillis();
         ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
 
         Map<String, Object> filter = this.filterValue.get(executionId);
+        GraphQLArgument filterType = this.filterType.get(executionId);
 
+        doFiltering(executionResult, filter, filterType);
+
+        return super.instrumentExecutionResult(executionResult, parameters);
+    }
+
+    private void doFiltering(ExecutionResult executionResult, Map<String, Object> filter, GraphQLArgument filterType) {
         if (filter != null) {
-            GraphQLArgument filterType = this.filterType.get(executionId);
+            long start = System.currentTimeMillis();
             BaseFilter baseFilter = filterRegistry.getFilterFor(filterType.getType());
             Object filterAsPOJO = objectMapper.convertValue(filter, baseFilter.getFilterTOType());
 
@@ -70,10 +76,7 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
                 log.info("Filtering took {}. Filtered entries: {}", Duration.ofMillis(System.currentTimeMillis() - start), filteredIndexes.size());
             }
-
         }
-
-        return super.instrumentExecutionResult(executionResult, parameters);
     }
 
     @Override

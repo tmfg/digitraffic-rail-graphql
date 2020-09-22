@@ -14,22 +14,18 @@ public class CoordinateFilter extends BaseFilter<List<Float>, CoordinateFilterTO
 
     @Override
     public boolean isFiltered(List<Float> value, CoordinateFilterTO filterTO) {
-        if (filterTO.getInside() != null) {
-            List<Float> coordinates = Lists.newArrayList(filterTO.getInside());
-            Pair<Float, Float> coordinate1 = Pair.of(coordinates.get(0), coordinates.get(1));
-            Pair<Float, Float> coordinate2 = Pair.of(coordinates.get(2), coordinates.get(3));
+        List<Float> coordinates = Lists.newArrayList(filterTO.getInside());
+        Pair<Float, Float> coordinate1 = Pair.of(coordinates.get(0), coordinates.get(1));
+        Pair<Float, Float> coordinate2 = Pair.of(coordinates.get(2), coordinates.get(3));
 
-            if (value.get(0) >= coordinate1.getLeft() &&
-                    value.get(1) >= coordinate1.getRight() &&
-                    value.get(0) <= coordinate2.getLeft() &&
-                    value.get(1) <= coordinate2.getRight()) {
-                return false;
-            } else {
-                return true;
-            }
+        if (value.get(0) >= coordinate1.getLeft() &&
+                value.get(1) >= coordinate1.getRight() &&
+                value.get(0) <= coordinate2.getLeft() &&
+                value.get(1) <= coordinate2.getRight()) {
+            return false;
+        } else {
+            return true;
         }
-
-        return false;
     }
 
     @Override
