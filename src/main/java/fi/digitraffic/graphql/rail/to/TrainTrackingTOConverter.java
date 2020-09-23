@@ -12,6 +12,8 @@ public class TrainTrackingTOConverter {
     public TrainTrackingMessageTO convert(TrainTrackingMessage entity) {
         return new TrainTrackingMessageTO(
                 entity.id.intValue(),
+                entity.trainId.trainNumber,
+                entity.trainId.virtualDepartureDate,
                 entity.station,
                 entity.nextStation,
                 entity.previousStation,
