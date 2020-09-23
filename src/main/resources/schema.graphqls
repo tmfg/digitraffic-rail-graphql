@@ -7,7 +7,7 @@ type Query {
     latestTrainLocations(where : TrainLocationFilter) : [TrainLocation]
     compositionsGreaterThanVersion(version : String, where : CompositionFilter) : [Composition]
     trainTrackingMessagesByVersionGreaterThan(version : String, where : TrainTrackingMessageFilter) : [TrainTrackingMessage]
-    #    routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageFilter) : [RoutesetMessage]
+    routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageFilter) : [RoutesetMessage]
 }
 
 type Train {
@@ -215,8 +215,7 @@ type RoutesetMessage {
 }
 
 type Routesection {
-    sectionId : Int
-    sectionOrder : Int
+    sectionId : String
     commercialTrackId : String
     stationCode : String
     station : Station
@@ -413,6 +412,29 @@ input TrainTrackingMessageFilter {
     nextStation : StationFilter
     previousStation : StationFilter
     train : TrainFilter
+}
+
+input RoutesetMessageFilter {
+    and : [RoutesetMessageFilter]
+    or : [RoutesetMessageFilter]
+    id : IntegerFilter
+    version : StringFilter
+    messageTime : DateTimeFilter
+    trainNumber : StringFilter
+    departureDate : DateFilter
+    routeType : StringFilter
+    clientSystem : StringFilter
+    routesections : RoutesectionFilter
+    train : TrainFilter
+}
+
+input RoutesectionFilter {
+    and : [RoutesectionFilter]
+    or : [RoutesectionFilter]
+    sectionId : StringFilter
+    commercialTrackId : StringFilter
+    stationCode : StringFilter
+    station : StationFilter
 }
 
 input BooleanFilter {
