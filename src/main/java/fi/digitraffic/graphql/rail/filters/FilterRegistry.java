@@ -9,8 +9,11 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import fi.digitraffic.graphql.rail.model.CompositionFilterTO;
+import fi.digitraffic.graphql.rail.model.RoutesetMessageFilterTO;
 import fi.digitraffic.graphql.rail.model.TrainFilterTO;
 import fi.digitraffic.graphql.rail.model.TrainLocationFilterTO;
+import fi.digitraffic.graphql.rail.model.TrainTrackingMessageFilterTO;
 import graphql.schema.GraphQLInputType;
 
 @Component
@@ -42,8 +45,13 @@ public class FilterRegistry {
             return this.getFilterFor(TrainFilterTO.class);
         } else if (typeName.equals("TrainLocationFilter")) {
             return this.getFilterFor(TrainLocationFilterTO.class);
-        }
-        {
+        } else if (typeName.equals("RoutesetMessageFilter")) {
+            return this.getFilterFor(RoutesetMessageFilterTO.class);
+        } else if (typeName.equals("TrainTrackingMessageFilterFilter")) {
+            return this.getFilterFor(TrainTrackingMessageFilterTO.class);
+        } else if (typeName.equals("CompositionFilter")) {
+            return this.getFilterFor(CompositionFilterTO.class);
+        } else {
             throw new IllegalArgumentException("Could not find filter implementation for type " + typeName);
         }
     }

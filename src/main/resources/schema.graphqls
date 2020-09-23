@@ -252,7 +252,7 @@ input TrainFilter {
     timetableAcceptanceDate : DateTimeFilter
     timetableType : EnumFilter
     trainNumber : IntegerFilter
-    version : StringFilter
+    version : VersionFilter
     operator : OperatorFilter
     trainType : TrainTypeFilter
     timeTableRows : TimeTableRowFilter
@@ -355,7 +355,7 @@ input TrainLocationFilter {
 input CompositionFilter {
     and : [CompositionFilter]
     or : [CompositionFilter]
-    version : StringFilter
+    version : VersionFilter
     train : TrainFilter
     journeySections : JourneySectionFilter
 }
@@ -402,7 +402,7 @@ input TrainTrackingMessageFilter {
     and : [TrainTrackingMessageFilter]
     or : [TrainTrackingMessageFilter]
     id : IntegerFilter
-    version : StringFilter
+    version : VersionFilter
     timestamp : DateTimeFilter
     trackSection : StringFilter
     nextTrackSection : StringFilter
@@ -418,7 +418,7 @@ input RoutesetMessageFilter {
     and : [RoutesetMessageFilter]
     or : [RoutesetMessageFilter]
     id : IntegerFilter
-    version : StringFilter
+    version : VersionFilter
     messageTime : DateTimeFilter
     trainNumber : StringFilter
     departureDate : DateFilter
@@ -469,4 +469,10 @@ input DateFilter {
 
 input CoordinateFilter {
     inside : [Float]
+}
+
+input VersionFilter {
+    eq : String
+    gt : String
+    lt : String
 }
