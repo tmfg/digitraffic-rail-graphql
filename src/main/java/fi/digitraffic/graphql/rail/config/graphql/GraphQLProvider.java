@@ -96,7 +96,10 @@ public class GraphQLProvider {
             "TrainCategory.id",
 
             "TrainType.id",
-            "TrainType.trainCategoryId"
+            "TrainType.trainCategoryId",
+            "TrainTrackingMessage.stationShortCode",
+            "TrainTrackingMessage.previousStationShortCode",
+            "TrainTrackingMessage.nextStationShortCode"
     );
     private Logger log = LoggerFactory.getLogger(this.getClass());
 

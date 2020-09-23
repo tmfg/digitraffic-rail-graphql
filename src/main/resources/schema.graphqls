@@ -26,6 +26,7 @@ type Train {
     timeTableRows : [TimeTableRow]
     trainLocations : [TrainLocation]
     compositions : [Composition]
+    trainTrackingMessages : [TrainTrackingMessage]
 }
 
 type TrainType {
@@ -179,6 +180,23 @@ type ThirdCategoryCode {
     detailedCategoryCodeId : Int
 }
 
+type TrainTrackingMessage {
+    id : Int
+    stationShortCode : String
+    nextStationShortCode : String
+    previousStationShortCode : String
+    version : String
+    timestamp : DateTime
+    trackSection : String
+    nextTrackSection : String
+    previousTrackSection : String
+    type : TrainTrackingMessageType
+    station : Station
+    nextStation : Station
+    previousStation : Station
+    train : Train
+}
+
 scalar Date
 scalar DateTime
 
@@ -193,6 +211,9 @@ enum TimeTableRowType {
 
 enum StationType {
     STATION, STOPPING_POINT, TURNOUT_IN_THE_OPEN_LINE
+}
+enum TrainTrackingMessageType {
+    OCCUPY,RELEASE
 }
 
 input TrainFilter {
