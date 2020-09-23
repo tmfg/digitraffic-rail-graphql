@@ -41,69 +41,12 @@ import graphql.schema.idl.TypeRuntimeWiring;
 
 @Component
 public class GraphQLProvider {
-    private static Set<String> BLACKLISTED_ID_FIELDS = Set.of(
-            "Train.trainTypeId",
-            "Train.operatorShortCode",
-            "Train.trainCategoryId",
-
-            "TimeTableRow.id",
-            "TimeTableRow.trainNumber",
-            "TimeTableRow.departureDate",
-            "TimeTableRow.stationShortCode",
-            "TimeTableRow.stationUICCode",
-            "TimeTableRow.countryCode",
-
-            "Cause.timeTableRowId",
-            "Cause.trainNumber",
-            "Cause.departureDate",
-            "Cause.categoryCodeId",
-            "Cause.detailedCategoryCodeId",
-            "Cause.thirdCategoryCodeId",
-            "Cause.id",
-
-            "CategoryCode.id",
-
-            "DetailedCategoryCode.id",
-            "DetailedCategoryCode.categoryCodeId",
-
-            "ThirdCategoryCode.id",
-            "ThirdCategoryCode.detailedCategoryCodeId",
-
-            "TrainLocation.departureDate",
-            "TrainLocation.trainNumber",
-
-            "Composition.trainNumber",
-            "Composition.departureDate",
-            "Composition.operatorShortCode",
-            "Composition.operatorUicCode",
-            "Composition.trainCategoryId",
-            "Composition.trainTypeId",
-
-            "JourneySection.id",
-            "JourneySection.trainNumber",
-            "JourneySection.departureDate",
-            "JourneySection.beginTimeTableRowId",
-            "JourneySection.endTimeTableRowId",
-
-            "Locomotive.id",
-            "Locomotive.journeysectionId",
-
-            "Wagon.id",
-            "Wagon.journeysectionId",
-
-            "Station.id",
-
-            "TrainCategory.id",
-
-            "TrainType.id",
-            "TrainType.trainCategoryId",
-            "TrainTrackingMessage.stationShortCode",
-            "TrainTrackingMessage.previousStationShortCode",
-            "TrainTrackingMessage.nextStationShortCode"
-    );
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     private GraphQL graphQL;
+
+    @Autowired
+    private DigitrafficConfig digitrafficConfig;
 
     @Autowired
     private List<BaseLink> fetchers;
@@ -150,7 +93,7 @@ public class GraphQLProvider {
                 Set<FieldDefinition> toBeRemoved = new HashSet<>();
                 for (FieldDefinition fieldDefinition : newDefinitions) {
                     String fieldKey = entry.getKey() + "." + fieldDefinition.getName();
-                    if (BLACKLISTED_ID_FIELDS.contains(fieldKey)) {
+                    if (digitrafficConfig.getHiddenFields().contains(fieldKey)) {
                         toBeRemoved.add(fieldDefinition);
                     }
                 }

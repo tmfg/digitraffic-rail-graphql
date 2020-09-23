@@ -4,8 +4,10 @@ type Query {
     #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, where : TrainFilter) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainFilter) : [Train]
-    latestTrainLocations(where:TrainLocationFilter): [TrainLocation]
-    compositionsGreaterThanVersion(version : String) : [Composition]
+    latestTrainLocations(where : TrainLocationFilter) : [TrainLocation]
+    compositionsGreaterThanVersion(version : String, where : CompositionFilter) : [Composition]
+    trainTrackingMessagesByVersionGreaterThan(version : String, where : TrainTrackingMessageFilter) : [TrainTrackingMessage]
+    #    routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageFilter) : [RoutesetMessage]
 }
 
 type Train {
@@ -27,6 +29,7 @@ type Train {
     trainLocations : [TrainLocation]
     compositions : [Composition]
     trainTrackingMessages : [TrainTrackingMessage]
+    routesetMessages: [RoutesetMessage]
 }
 
 type TrainType {
@@ -57,7 +60,7 @@ type TimeTableRow {
     trainNumber : Int
     departureDate : Date
 
-    station: Station
+    station : Station
     causes : [Cause]
 }
 
@@ -87,7 +90,7 @@ type TrainLocation {
     timestamp : DateTime
     trainNumber : Int
     location : [Float]
-    train: Train
+    train : Train
 }
 
 type Composition {
@@ -182,6 +185,8 @@ type ThirdCategoryCode {
 
 type TrainTrackingMessage {
     id : Int
+    trainNumber : String
+    departureDate : Date
     stationShortCode : String
     nextStationShortCode : String
     previousStationShortCode : String
@@ -195,6 +200,26 @@ type TrainTrackingMessage {
     nextStation : Station
     previousStation : Station
     train : Train
+}
+
+type RoutesetMessage {
+    id : Int
+    version : String
+    messageTime : DateTime
+    trainNumber : String
+    departureDate : Date
+    routeType : String
+    clientSystem : String
+    routesections : [Routesection]
+    train : Train
+}
+
+type Routesection {
+    sectionId : Int
+    sectionOrder : Int
+    commercialTrackId : String
+    stationCode : String
+    station : Station
 }
 
 scalar Date
@@ -217,8 +242,8 @@ enum TrainTrackingMessageType {
 }
 
 input TrainFilter {
-    and: [TrainFilter]
-    or: [TrainFilter]
+    and : [TrainFilter]
+    or : [TrainFilter]
 
     cancelled : BooleanFilter
     commuterLineid : StringFilter
@@ -237,8 +262,8 @@ input TrainFilter {
 }
 
 input TimeTableRowFilter {
-    and: [TimeTableRowFilter]
-    or: [TimeTableRowFilter]
+    and : [TimeTableRowFilter]
+    or : [TimeTableRowFilter]
     type : EnumFilter
     trainStopping : BooleanFilter
     commercialStop : BooleanFilter
@@ -246,34 +271,34 @@ input TimeTableRowFilter {
     cancelled : BooleanFilter
     scheduledTime : DateTimeFilter
     actualTime : DateTimeFilter
-    station: StationFilter
+    station : StationFilter
     causes : CauseFilter
 }
 
 input TrainTypeFilter {
-    and: [TrainTypeFilter]
-    or: [TrainTypeFilter]
+    and : [TrainTypeFilter]
+    or : [TrainTypeFilter]
     name : StringFilter
     trainCategory : TrainCategoryFilter
 }
 
 input TrainCategoryFilter {
-    and: [TrainCategoryFilter]
-    or: [TrainCategoryFilter]
+    and : [TrainCategoryFilter]
+    or : [TrainCategoryFilter]
     name : StringFilter
 }
 
 input OperatorFilter {
-    and: [OperatorFilter]
-    or: [OperatorFilter]
+    and : [OperatorFilter]
+    or : [OperatorFilter]
     name : StringFilter
     shortCode : StringFilter
     uicCode : IntegerFilter
 }
 
 input StationFilter {
-    and: [StationFilter]
-    or: [StationFilter]
+    and : [StationFilter]
+    or : [StationFilter]
     passengerTraffic : BooleanFilter
     countryCode : StringFilter
     location : CoordinateFilter
@@ -284,16 +309,16 @@ input StationFilter {
 }
 
 input CauseFilter {
-    and: [CauseFilter]
-    or: [CauseFilter]
+    and : [CauseFilter]
+    or : [CauseFilter]
     categoryCode : CategoryCodeFilter
     detailedCategoryCode : DetailedCategoryCodeFilter
     thirdCategoryCode : ThirdCategoryCodeFilter
 }
 
 input CategoryCodeFilter {
-    and: [CategoryCodeFilter]
-    or: [CategoryCodeFilter]
+    and : [CategoryCodeFilter]
+    or : [CategoryCodeFilter]
     code : StringFilter
     name : StringFilter
     validFrom : DateFilter
@@ -301,8 +326,8 @@ input CategoryCodeFilter {
 }
 
 input DetailedCategoryCodeFilter {
-    and: [DetailedCategoryCodeFilter]
-    or: [DetailedCategoryCodeFilter]
+    and : [DetailedCategoryCodeFilter]
+    or : [DetailedCategoryCodeFilter]
     code : StringFilter
     name : StringFilter
     validFrom : DateFilter
@@ -310,8 +335,8 @@ input DetailedCategoryCodeFilter {
 }
 
 input ThirdCategoryCodeFilter {
-    and: [ThirdCategoryCodeFilter]
-    or: [ThirdCategoryCodeFilter]
+    and : [ThirdCategoryCodeFilter]
+    or : [ThirdCategoryCodeFilter]
     code : StringFilter
     name : StringFilter
     description : StringFilter
@@ -320,25 +345,25 @@ input ThirdCategoryCodeFilter {
 }
 
 input TrainLocationFilter {
-    and: [TrainLocationFilter]
-    or: [TrainLocationFilter]
+    and : [TrainLocationFilter]
+    or : [TrainLocationFilter]
     speed : IntegerFilter
     timestamp : DateTimeFilter
     location : CoordinateFilter
-    train: TrainFilter
+    train : TrainFilter
 }
 
 input CompositionFilter {
-    and: [CompositionFilter]
-    or: [CompositionFilter]
+    and : [CompositionFilter]
+    or : [CompositionFilter]
     version : StringFilter
     train : TrainFilter
     journeySections : JourneySectionFilter
 }
 
 input JourneySectionFilter {
-    and: [JourneySectionFilter]
-    or: [JourneySectionFilter]
+    and : [JourneySectionFilter]
+    or : [JourneySectionFilter]
     maximumSpeed : IntegerFilter
     totalLength : IntegerFilter
     startTimeTableRow : TimeTableRowFilter
@@ -348,8 +373,8 @@ input JourneySectionFilter {
 }
 
 input LocomotiveFilter {
-    and: [LocomotiveFilter]
-    or: [LocomotiveFilter]
+    and : [LocomotiveFilter]
+    or : [LocomotiveFilter]
     location : IntegerFilter
     locomotiveType : StringFilter
     powerTypeAbbreviation : StringFilter
@@ -357,8 +382,8 @@ input LocomotiveFilter {
 }
 
 input WagonFilter {
-    and: [WagonFilter]
-    or: [WagonFilter]
+    and : [WagonFilter]
+    or : [WagonFilter]
     id : IntegerFilter
     length : IntegerFilter
     location : IntegerFilter
@@ -374,6 +399,21 @@ input WagonFilter {
     vehicleNumber : StringFilter
 }
 
+input TrainTrackingMessageFilter {
+    and : [TrainTrackingMessageFilter]
+    or : [TrainTrackingMessageFilter]
+    id : IntegerFilter
+    version : StringFilter
+    timestamp : DateTimeFilter
+    trackSection : StringFilter
+    nextTrackSection : StringFilter
+    previousTrackSection : StringFilter
+    type : EnumFilter
+    station : StationFilter
+    nextStation : StationFilter
+    previousStation : StationFilter
+    train : TrainFilter
+}
 
 input BooleanFilter {
     eq : Boolean
@@ -394,15 +434,15 @@ input EnumFilter {
 }
 
 input DateTimeFilter {
-    eq: DateTime
-    gt: DateTime
-    lt: DateTime
+    eq : DateTime
+    gt : DateTime
+    lt : DateTime
 }
 
 input DateFilter {
-    eq: Date
-    gt: Date
-    lt: Date
+    eq : Date
+    gt : Date
+    lt : Date
 }
 
 input CoordinateFilter {

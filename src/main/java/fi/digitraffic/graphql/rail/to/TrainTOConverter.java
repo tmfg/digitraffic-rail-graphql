@@ -22,12 +22,7 @@ public class TrainTOConverter {
                 entity.version.toString(),
                 entity.trainTypeId.intValue(),
                 entity.trainCategoryId.intValue(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+                null, null, null, null, null, null, null
         );
     }
 }
