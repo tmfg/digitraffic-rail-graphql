@@ -11,6 +11,10 @@ sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
+
+    maven {
+        url "https://dl.bintray.com/dicetechnology/dice-fairlink"
+    }
 }
 
 dependencies {
@@ -76,3 +80,4 @@ graphqlCodegen {
 test {
     useJUnitPlatform()
 }
+
