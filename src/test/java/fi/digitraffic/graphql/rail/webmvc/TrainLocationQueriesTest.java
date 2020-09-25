@@ -54,6 +54,4 @@ public class TrainLocationQueriesTest extends BaseWebMVCTest {
         ResultActions result = this.query("{   latestTrainLocations(where: {location: {inside: [3,2,5,4]}}) {    location    train {      trainNumber      departureDate    }  }}");
         result.andExpect(jsonPath("$.data.latestTrainLocations.length()").value(3));
     }
-
-
 }

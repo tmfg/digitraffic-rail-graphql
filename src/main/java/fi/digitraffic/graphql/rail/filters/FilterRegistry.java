@@ -9,50 +9,51 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.model.CompositionFilterTO;
-import fi.digitraffic.graphql.rail.model.RoutesetMessageFilterTO;
-import fi.digitraffic.graphql.rail.model.TrainFilterTO;
-import fi.digitraffic.graphql.rail.model.TrainLocationFilterTO;
-import fi.digitraffic.graphql.rail.model.TrainTrackingMessageFilterTO;
-import graphql.schema.GraphQLInputType;
-
 @Component
 public class FilterRegistry {
     @Autowired
     private List<BaseFilter> baseFilters;
 
-    private Map<Class, BaseFilter> registry = new HashMap<>();
+    private Map<String, BaseFilter> registry = new HashMap<>();
 
     @PostConstruct
     public void setup() {
         for (BaseFilter baseFilter : baseFilters) {
-            registry.put(baseFilter.getFilterTOType(), baseFilter);
+            registry.put(baseFilter.getFilterTOType().getSimpleName(), baseFilter);
         }
     }
 
-    public BaseFilter getFilterFor(Class entityFilterTOClass) {
-        BaseFilter baseFilter = registry.get(entityFilterTOClass);
+    public BaseFilter getFilterFor(String filterName) {
+        BaseFilter baseFilter = registry.get(filterName);
         if (baseFilter == null) {
-            throw new IllegalArgumentException("Could not find filter implementation for type " + entityFilterTOClass);
+            throw new IllegalArgumentException("Could not find filter implementation for type " + filterName);
         }
         return baseFilter;
     }
 
-    public BaseFilter getFilterFor(GraphQLInputType type) {
-        String typeName = type.getName();
-
-        if (typeName.equals("TrainFilter")) {
-            return this.getFilterFor(TrainFilterTO.class);
-        } else if (typeName.equals("TrainLocationFilter")) {
-            return this.getFilterFor(TrainLocationFilterTO.class);
-        } else if (typeName.equals("RoutesetMessageFilter")) {
-            return this.getFilterFor(RoutesetMessageFilterTO.class);
-        } else if (typeName.equals("TrainTrackingMessageFilterFilter")) {
-            return this.getFilterFor(TrainTrackingMessageFilterTO.class);
-        } else if (typeName.equals("CompositionFilter")) {
-            return this.getFilterFor(CompositionFilterTO.class);
-        } else {
-            throw new IllegalArgumentException("Could not find filter implementation for type " + typeName);
-        }
-    }
+//    public BaseFilter getFilterFor(Class entityFilterTOClass) {
+//        BaseFilter baseFilter = registry.get(entityFilterTOClass);
+//        if (baseFilter == null) {
+//            throw new IllegalArgumentException("Could not find filter implementation for type " + entityFilterTOClass);
+//        }
+//        return baseFilter;
+//    }
+//
+//    public BaseFilter getFilterFor(GraphQLInputType type) {
+//        String typeName = type.getName();
+//
+//        if (typeName.equals("TrainFilter")) {
+//            return this.getFilterFor(TrainFilterTO.class);
+//        } else if (typeName.equals("TrainLocationFilter")) {
+//            return this.getFilterFor(TrainLocationFilterTO.class);
+//        } else if (typeName.equals("RoutesetMessageFilter")) {
+//            return this.getFilterFor(RoutesetMessageFilterTO.class);
+//        } else if (typeName.equals("TrainTrackingMessageFilterFilter")) {
+//            return this.getFilterFor(TrainTrackingMessageFilterTO.class);
+//        } else if (typeName.equals("CompositionFilter")) {
+//            return this.getFilterFor(CompositionFilterTO.class);
+//        } else {
+//            throw new IllegalArgumentException("Could not find filter implementation for type " + typeName);
+//        }
+//    }
 }

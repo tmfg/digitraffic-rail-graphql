@@ -18,6 +18,7 @@ import fi.digitraffic.graphql.rail.filters.BaseFilter;
 import fi.digitraffic.graphql.rail.filters.FilterRegistry;
 import graphql.ExecutionResult;
 import graphql.execution.ExecutionId;
+import graphql.execution.ExecutionPath;
 import graphql.execution.ExecutionStepInfo;
 import graphql.execution.instrumentation.ExecutionStrategyInstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentation;
@@ -27,11 +28,17 @@ import graphql.schema.GraphQLArgument;
 
 @Component
 public class FilterInstrumentation extends SimpleInstrumentation {
+    private class FilteredExecution {
+        public ExecutionPath executionPath;
+        public GraphQLArgument filterType;
+        public Object filterTO;
+    }
+
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Map<ExecutionId, Map<String, Object>> filterValue = new HashMap<>();
-    private Map<ExecutionId, GraphQLArgument> filterType = new HashMap<>();
+    private Map<ExecutionId, List<FilteredExecution>> filters = new HashMap<>();
+    private Map<ExecutionId, Map<Class, Object>> filterTOCache = new HashMap<>();
 
     @Autowired
     private FilterRegistry filterRegistry;
@@ -41,52 +48,115 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
     @Override
     public CompletableFuture<ExecutionResult> instrumentExecutionResult(ExecutionResult executionResult, InstrumentationExecutionParameters parameters) {
-        ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
+        long start = System.currentTimeMillis();
+        Map<String, List<Object>> executionResultData = executionResult.getData();
 
-        Map<String, Object> filter = this.filterValue.get(executionId);
-        GraphQLArgument filterType = this.filterType.get(executionId);
+        List<ExecutionPath> filteredExecutionPaths = doFilter(parameters, executionResultData);
+        removeFilteredRows(executionResultData, filteredExecutionPaths);
 
-        doFiltering(executionResult, filter, filterType);
+        log.info("Filtering took: {}", Duration.ofMillis(System.currentTimeMillis() - start));
 
         return super.instrumentExecutionResult(executionResult, parameters);
     }
 
-    private void doFiltering(ExecutionResult executionResult, Map<String, Object> filter, GraphQLArgument filterType) {
-        if (filter != null) {
-            long start = System.currentTimeMillis();
-            BaseFilter baseFilter = filterRegistry.getFilterFor(filterType.getType());
-            Object filterAsPOJO = objectMapper.convertValue(filter, baseFilter.getFilterTOType());
+    private List<ExecutionPath> doFilter(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
+        ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
+        List<FilteredExecution> filters = this.filters.get(executionId);
+        List<ExecutionPath> filteredExecutionPaths = new ArrayList<>();
+        if (filters != null) {
+            for (FilteredExecution filter : filters) {
+                BaseFilter baseFilter = filterRegistry.getFilterFor(filter.filterType.getType().getName() + "TO");
+                Object entityTO = objectMapper.convertValue(getExecutionResultDataByExecutionPath(executionResultData, filter.executionPath), baseFilter.getEntityTOType());
+                Object filterTO = getFilterTO(executionId, filter.filterTO, baseFilter.getFilterTOType());
 
-            Map<String, List<HashMap<String, Object>>> queryResult = executionResult.getData();
-            for (Map.Entry<String, List<HashMap<String, Object>>> resultDataEntries : queryResult.entrySet()) {
-                List<Integer> filteredIndexes = new ArrayList<>();
-                List<HashMap<String, Object>> queryResultList = resultDataEntries.getValue();
-                for (int i = 0; i < queryResultList.size(); i++) {
-                    HashMap<String, Object> entity = queryResultList.get(i);
+                if (baseFilter.isFiltered(entityTO, filterTO)) {
+                    filteredExecutionPaths.add(filter.executionPath);
+                }
+            }
+            Collections.reverse(filteredExecutionPaths);
+        }
+        return filteredExecutionPaths;
+    }
 
-                    Object entityAsPOJO = objectMapper.convertValue(entity, baseFilter.getEntityTOType());
-                    if (baseFilter.isFiltered(entityAsPOJO, filterAsPOJO)) {
-                        filteredIndexes.add(i);
+    private void removeFilteredRows(Map<String, List<Object>> executionResultData, List<ExecutionPath> filteredExecutionPaths) {
+        for (ExecutionPath filteredExecutionPath : filteredExecutionPaths) {
+            Object resultObject = executionResultData;
+            for (int i = 0; i < filteredExecutionPath.toList().size(); i++) {
+                Object o = filteredExecutionPath.toList().get(i);
+                if (i == filteredExecutionPath.toList().size() - 1) {
+                    ((List) resultObject).remove((int) o);
+                } else {
+                    if (o instanceof String) {
+                        resultObject = ((Map) resultObject).get(o);
+                    } else if (o instanceof Integer) {
+                        resultObject = ((List) resultObject).get((Integer) o);
                     }
                 }
-                Collections.reverse(filteredIndexes);
-                for (int filteredIndex : filteredIndexes) {
-                    queryResultList.remove(filteredIndex);
-                }
-
-                log.info("Filtering took {}. Filtered entries: {}", Duration.ofMillis(System.currentTimeMillis() - start), filteredIndexes.size());
             }
         }
+    }
+
+    private Object getFilterTO(ExecutionId executionId, Object rawFilterTO, Class filterTOType) {
+        Map<Class, Object> filterTOsByClass = this.filterTOCache.get(executionId);
+        if (filterTOsByClass != null) {
+            Object filterTO = filterTOsByClass.get(filterTOType);
+            if (filterTO != null) {
+                return filterTO;
+            } else {
+                filterTO = objectMapper.convertValue(rawFilterTO, filterTOType);
+                filterTOsByClass.put(filterTOType, filterTO);
+                return filterTO;
+            }
+        } else {
+            filterTOsByClass = new HashMap<>();
+            this.filterTOCache.put(executionId, filterTOsByClass);
+            Object filterTO = objectMapper.convertValue(rawFilterTO, filterTOType);
+            filterTOsByClass.put(filterTOType, filterTO);
+            return filterTO;
+        }
+    }
+
+    private Object getExecutionResultDataByExecutionPath(Map<String, List<Object>> executionResultData, ExecutionPath executionPath) {
+        Object resultObject = executionResultData;
+        for (Object o : executionPath.toList()) {
+            if (o instanceof String) {
+                resultObject = ((Map) resultObject).get(o);
+            } else if (o instanceof Integer) {
+                resultObject = ((List) resultObject).get((Integer) o);
+            }
+        }
+
+        return resultObject;
     }
 
     @Override
     public ExecutionStrategyInstrumentationContext beginExecutionStrategy(InstrumentationExecutionStrategyParameters parameters) {
         ExecutionStepInfo executionStepInfo = parameters.getExecutionStrategyParameters().getExecutionStepInfo();
         Map<String, Object> arguments = executionStepInfo.getArguments();
+
         if (arguments != null && !arguments.isEmpty() && arguments.containsKey("where")) {
-            this.filterType.put(parameters.getExecutionContext().getExecutionId(), executionStepInfo.getFieldDefinition().getArgument("where"));
-            this.filterValue.put(parameters.getExecutionContext().getExecutionId(), (Map<String, Object>) arguments.get("where"));
+            ExecutionId executionId = parameters.getExecutionContext().getExecutionId();
+
+            List<FilteredExecution> filteredExecutions = initializeFilteredExecutionsList(executionId);
+
+            FilteredExecution filteredExecution = new FilteredExecution();
+            filteredExecution.executionPath = executionStepInfo.getPath();
+            filteredExecution.filterTO = arguments.get("where");
+            filteredExecution.filterType = executionStepInfo.getFieldDefinition().getArgument("where");
+
+            filteredExecutions.add(filteredExecution);
         }
         return super.beginExecutionStrategy(parameters);
+    }
+
+    private List<FilteredExecution> initializeFilteredExecutionsList(ExecutionId executionId) {
+        List<FilteredExecution> filteredExecutions = new ArrayList<>();
+        List<FilteredExecution> filteredExecutionsFromMap = this.filters.get(executionId);
+        if (filteredExecutionsFromMap == null) {
+            this.filters.put(executionId, filteredExecutions);
+        } else {
+            filteredExecutions = filteredExecutionsFromMap;
+        }
+        return filteredExecutions;
     }
 }

@@ -25,11 +25,11 @@ type Train {
     trainCategoryId : Int
     operator : Operator
     trainType : TrainType
-    timeTableRows : [TimeTableRow]
-    trainLocations : [TrainLocation]
-    compositions : [Composition]
-    trainTrackingMessages : [TrainTrackingMessage]
-    routesetMessages: [RoutesetMessage]
+    timeTableRows(where : TimeTableRowFilter, take : Int) : [TimeTableRow]
+    trainLocations(where : TrainLocationFilter, take : Int) : [TrainLocation]
+    compositions(where : CompositionFilter, take : Int) : [Composition]
+    trainTrackingMessages(where : TrainTrackingMessageFilter, take : Int) : [TrainTrackingMessage]
+    routesetMessages(where : RoutesetMessageFilter, take : Int): [RoutesetMessage]
 }
 
 type TrainType {
@@ -61,7 +61,7 @@ type TimeTableRow {
     departureDate : Date
 
     station : Station
-    causes : [Cause]
+    causes(where : CauseFilter, take : Int) : [Cause]
 }
 
 type Cause {
@@ -102,7 +102,7 @@ type Composition {
     version : String
     operatorUicCode : Int
     train : Train
-    journeySections : [JourneySection]
+    journeySections(where : JourneySectionFilter, take : Int) : [JourneySection]
 }
 
 type JourneySection {
@@ -115,8 +115,8 @@ type JourneySection {
     totalLength : Int
     startTimeTableRow : TimeTableRow
     endTimeTableRow : TimeTableRow
-    wagons : [Wagon]
-    locomotives : [Locomotive]
+    wagons(where : WagonFilter, take : Int) : [Wagon]
+    locomotives(where : LocomotiveFilter, take : Int) : [Locomotive]
 }
 
 type Locomotive {
@@ -210,7 +210,7 @@ type RoutesetMessage {
     departureDate : Date
     routeType : String
     clientSystem : String
-    routesections : [Routesection]
+    routesections(where : RoutesectionFilter, take : Int) : [Routesection]
     train : Train
 }
 

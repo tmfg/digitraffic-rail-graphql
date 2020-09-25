@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost/avoindata_ci?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
-    password:
+    password: jaakko
   jpa:
     properties:
       hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'
@@ -16,8 +16,6 @@ logging:
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-digitraffic.max-returned-trains: 2500
-
 graphql:
   servlet:
     mapping: /graphql
@@ -29,3 +27,58 @@ graphiql:
 cache:
   expiryInSeconds: 15
   maxCacheSize: 5
+
+digitraffic:
+  max-returned-trains: 500
+  max-returned-train-tracking-messages: 500
+  hidden-fields:
+    - "Train.trainTypeId"
+    - "Train.operatorShortCode"
+    - "Train.trainCategoryId"
+    - "TimeTableRow.id"
+    - "TimeTableRow.trainNumber"
+    - "TimeTableRow.departureDate"
+    - "TimeTableRow.stationShortCode"
+    - "TimeTableRow.stationUICCode"
+    - "TimeTableRow.countryCode"
+    - "Cause.timeTableRowId"
+    - "Cause.trainNumber"
+    - "Cause.departureDate"
+    - "Cause.categoryCodeId"
+    - "Cause.detailedCategoryCodeId"
+    - "Cause.thirdCategoryCodeId"
+    - "Cause.id"
+    - "CategoryCode.id"
+    - "DetailedCategoryCode.id"
+    - "DetailedCategoryCode.categoryCodeId"
+    - "ThirdCategoryCode.id"
+    - "ThirdCategoryCode.detailedCategoryCodeId"
+    - "TrainLocation.departureDate"
+    - "TrainLocation.trainNumber"
+    - "Composition.trainNumber"
+    - "Composition.departureDate"
+    - "Composition.operatorShortCode"
+    - "Composition.operatorUicCode"
+    - "Composition.trainCategoryId"
+    - "Composition.trainTypeId"
+    - "JourneySection.id"
+    - "JourneySection.trainNumber"
+    - "JourneySection.departureDate"
+    - "JourneySection.beginTimeTableRowId"
+    - "JourneySection.endTimeTableRowId"
+    - "Locomotive.id"
+    - "Locomotive.journeysectionId"
+    - "Wagon.id"
+    - "Wagon.journeysectionId"
+    - "Station.id"
+    - "TrainCategory.id"
+    - "TrainType.id"
+    - "TrainType.trainCategoryId"
+    - "TrainTrackingMessage.trainNumber"
+    - "TrainTrackingMessage.departureDate"
+    - "TrainTrackingMessage.stationShortCode"
+    - "TrainTrackingMessage.previousStationShortCode"
+    - "TrainTrackingMessage.nextStationShortCode"
+    - "RoutesetMessage.trainNumber"
+    - "RoutesetMessage.departureDate"
+    - "Routesection.stationCode"

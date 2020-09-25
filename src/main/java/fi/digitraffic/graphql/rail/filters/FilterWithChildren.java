@@ -89,7 +89,7 @@ public abstract class FilterWithChildren<EntityTOType, EntityFilterTOType> exten
 
     private boolean isChildFiltered(Object entity, Object filter) {
         if (filter != null) {
-            boolean filtered = filterRegistry.getFilterFor(filter.getClass()).isFiltered(entity, filter);
+            boolean filtered = filterRegistry.getFilterFor(filter.getClass().getSimpleName()).isFiltered(entity, filter);
             if (filtered) {
                 return true;
             }
