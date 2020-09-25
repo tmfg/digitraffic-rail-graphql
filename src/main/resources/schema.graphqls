@@ -1,6 +1,6 @@
 type Query {
     train(trainNumber : Int, departureDate : Date) : Train
-    trainsByDepartureDate(departureDate : Date, where : TrainFilter) : [Train]
+    trainsByDepartureDate(departureDate : Date, where : TrainFilter, orderBy : TrainOrderBy) : [Train]
     #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, where : TrainFilter) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainFilter) : [Train]
@@ -26,7 +26,7 @@ type Train {
     operator : Operator
     trainType : TrainType
     timeTableRows(where : TimeTableRowFilter, take : Int) : [TimeTableRow]
-    trainLocations(where : TrainLocationFilter, take : Int) : [TrainLocation]
+    trainLocations(where : TrainLocationFilter, orderBy : TrainLocationOrderBy, take : Int) : [TrainLocation]
     compositions(where : CompositionFilter, take : Int) : [Composition]
     trainTrackingMessages(where : TrainTrackingMessageFilter, take : Int) : [TrainTrackingMessage]
     routesetMessages(where : RoutesetMessageFilter, take : Int): [RoutesetMessage]
@@ -221,8 +221,12 @@ type Routesection {
     station : Station
 }
 
+## SCALARS
+
 scalar Date
 scalar DateTime
+
+## ENUMS
 
 enum TimetableType {
     REGULAR,
@@ -239,6 +243,42 @@ enum StationType {
 enum TrainTrackingMessageType {
     OCCUPY,RELEASE
 }
+
+## ORDERBYs
+
+input TrainOrderBy {
+    cancelled : OrderDirection
+    commuterLineid : OrderDirection
+    deleted : OrderDirection
+    departureDate : OrderDirection
+    runningCurrently : OrderDirection
+    timetableAcceptanceDate : OrderDirection
+    timetableType : OrderDirection
+    trainNumber : OrderDirection
+    version : OrderDirection
+    #    operator : OrderDirection
+    #    trainType : TrainTypeFilter
+
+    #    timeTableRows : TimeTableRowFilter
+    #    trainLocations : TrainLocationFilter
+    #    compositions : CompositionFilter
+}
+
+input TrainLocationOrderBy {
+    speed : OrderDirection
+    timestamp : OrderDirection
+}
+
+enum OrderDirection {
+    ASCENDING,
+    DESCENDING
+}
+
+input OrderBy {
+    direction: OrderDirection
+}
+
+## FILTERS
 
 input TrainFilter {
     and : [TrainFilter]
@@ -436,6 +476,8 @@ input RoutesectionFilter {
     stationCode : StringFilter
     station : StationFilter
 }
+
+## PRIMITIVE FILTERS
 
 input BooleanFilter {
     eq : Boolean

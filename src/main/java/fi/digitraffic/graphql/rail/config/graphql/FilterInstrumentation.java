@@ -4,8 +4,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
@@ -28,16 +31,35 @@ import graphql.schema.GraphQLArgument;
 
 @Component
 public class FilterInstrumentation extends SimpleInstrumentation {
-    private class FilteredExecution {
+    private class FilteredExecutionPath {
         public ExecutionPath executionPath;
         public GraphQLArgument filterType;
         public Object filterTO;
     }
 
+    private class SortedExecutionPath {
+        public ExecutionPath executionPath;
+        public Object orderBy;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SortedExecutionPath that = (SortedExecutionPath) o;
+            return Objects.equals(executionPath, that.executionPath);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(executionPath);
+        }
+    }
+
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Map<ExecutionId, List<FilteredExecution>> filters = new HashMap<>();
+    private Map<ExecutionId, List<FilteredExecutionPath>> filters = new HashMap<>();
+    private Map<ExecutionId, Set<SortedExecutionPath>> collectionsToSort = new HashMap<>();
     private Map<ExecutionId, Map<Class, Object>> filterTOCache = new HashMap<>();
 
     @Autowired
@@ -56,15 +78,50 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
         log.info("Filtering took: {}", Duration.ofMillis(System.currentTimeMillis() - start));
 
+        doSort(parameters, executionResultData);
+
         return super.instrumentExecutionResult(executionResult, parameters);
+    }
+
+    private void doSort(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
+        Set<SortedExecutionPath> sortedExecutionPaths = this.collectionsToSort.get(parameters.getExecutionInput().getExecutionId());
+        if (sortedExecutionPaths == null) {
+            return;
+        }
+        for (SortedExecutionPath sortedExecutionPath : sortedExecutionPaths) {
+            Object resultObject = executionResultData;
+            for (Object o : sortedExecutionPath.executionPath.toList()) {
+                if (o instanceof String) {
+                    resultObject = ((Map) resultObject).get(o);
+                } else if (o instanceof Integer) {
+                    resultObject = ((List) resultObject).get((Integer) o);
+                }
+            }
+
+            List<Map<String, Object>> resultList = (List<Map<String, Object>>) resultObject;
+            Map<String, String> orderByTo = (Map<String, String>) sortedExecutionPath.orderBy;
+            Map.Entry<String, String> firstEntry = orderByTo.entrySet().iterator().next();
+            String sortKey = firstEntry.getKey();
+            String sortDirection = firstEntry.getValue();
+
+            Collections.sort(resultList, (left, right) -> {
+                Comparable leftProperty = (Comparable) left.get(sortKey);
+                Comparable rightProperty = (Comparable) right.get(sortKey);
+                if (sortDirection.equals("ASCENDING")) {
+                    return leftProperty.compareTo(rightProperty);
+                } else {
+                    return rightProperty.compareTo(leftProperty);
+                }
+            });
+        }
     }
 
     private List<ExecutionPath> doFilter(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
         ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
-        List<FilteredExecution> filters = this.filters.get(executionId);
+        List<FilteredExecutionPath> filters = this.filters.get(executionId);
         List<ExecutionPath> filteredExecutionPaths = new ArrayList<>();
         if (filters != null) {
-            for (FilteredExecution filter : filters) {
+            for (FilteredExecutionPath filter : filters) {
                 BaseFilter baseFilter = filterRegistry.getFilterFor(filter.filterType.getType().getName() + "TO");
                 Object entityTO = objectMapper.convertValue(getExecutionResultDataByExecutionPath(executionResultData, filter.executionPath), baseFilter.getEntityTOType());
                 Object filterTO = getFilterTO(executionId, filter.filterTO, baseFilter.getFilterTOType());
@@ -134,29 +191,45 @@ public class FilterInstrumentation extends SimpleInstrumentation {
         ExecutionStepInfo executionStepInfo = parameters.getExecutionStrategyParameters().getExecutionStepInfo();
         Map<String, Object> arguments = executionStepInfo.getArguments();
 
-        if (arguments != null && !arguments.isEmpty() && arguments.containsKey("where")) {
-            ExecutionId executionId = parameters.getExecutionContext().getExecutionId();
-
-            List<FilteredExecution> filteredExecutions = initializeFilteredExecutionsList(executionId);
-
-            FilteredExecution filteredExecution = new FilteredExecution();
-            filteredExecution.executionPath = executionStepInfo.getPath();
-            filteredExecution.filterTO = arguments.get("where");
-            filteredExecution.filterType = executionStepInfo.getFieldDefinition().getArgument("where");
-
-            filteredExecutions.add(filteredExecution);
+        if (arguments == null || arguments.isEmpty()) {
+            return super.beginExecutionStrategy(parameters);
         }
+
+        ExecutionId executionId = parameters.getExecutionContext().getExecutionId();
+        if (arguments.containsKey("where")) {
+            List<FilteredExecutionPath> filteredExecutionPaths = initializeFilteredExecutionsList(executionId);
+
+            FilteredExecutionPath filteredExecutionPath = new FilteredExecutionPath();
+            filteredExecutionPath.executionPath = executionStepInfo.getPath();
+            filteredExecutionPath.filterTO = arguments.get("where");
+            filteredExecutionPath.filterType = executionStepInfo.getFieldDefinition().getArgument("where");
+
+            filteredExecutionPaths.add(filteredExecutionPath);
+        }
+        if (arguments.containsKey("orderBy")) {
+            Set<SortedExecutionPath> executionPaths = this.collectionsToSort.get(executionId);
+            if (executionPaths == null) {
+                executionPaths = new HashSet<>();
+                this.collectionsToSort.put(executionId, executionPaths);
+            }
+            SortedExecutionPath sortedExecutionPath = new SortedExecutionPath();
+            sortedExecutionPath.executionPath = executionStepInfo.getPath().getPathWithoutListEnd();
+            sortedExecutionPath.orderBy = arguments.get("orderBy");
+
+            executionPaths.add(sortedExecutionPath);
+        }
+
         return super.beginExecutionStrategy(parameters);
     }
 
-    private List<FilteredExecution> initializeFilteredExecutionsList(ExecutionId executionId) {
-        List<FilteredExecution> filteredExecutions = new ArrayList<>();
-        List<FilteredExecution> filteredExecutionsFromMap = this.filters.get(executionId);
-        if (filteredExecutionsFromMap == null) {
-            this.filters.put(executionId, filteredExecutions);
+    private List<FilteredExecutionPath> initializeFilteredExecutionsList(ExecutionId executionId) {
+        List<FilteredExecutionPath> filteredExecutionPaths = new ArrayList<>();
+        List<FilteredExecutionPath> fileredExecutionsFromMapPaths = this.filters.get(executionId);
+        if (fileredExecutionsFromMapPaths == null) {
+            this.filters.put(executionId, filteredExecutionPaths);
         } else {
-            filteredExecutions = filteredExecutionsFromMap;
+            filteredExecutionPaths = fileredExecutionsFromMapPaths;
         }
-        return filteredExecutions;
+        return filteredExecutionPaths;
     }
 }
