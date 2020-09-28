@@ -23,7 +23,7 @@ public class TrainTrackingMessagesByVersionGreaterThanQuery extends BaseQuery<Li
     @Autowired
     private TrainTrackingTOConverter trainTrackingTOConverter;
 
-    @Value("${digitraffic.max-returned-train-tracking-messages}")
+    @Value("${digitraffic.max-returned-rows}")
     public Integer MAX_RESULTS;
 
     @Override

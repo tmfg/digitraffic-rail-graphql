@@ -23,7 +23,7 @@ public class TrainsByVersionGreaterThanQuery extends BaseQuery<List<TrainTO>> {
     @Autowired
     private TrainTOConverter trainTOConverter;
 
-    @Value("${digitraffic.max-returned-trains}")
+    @Value("${digitraffic.max-returned-rows}")
     public Integer MAX_RESULTS;
 
     @Override

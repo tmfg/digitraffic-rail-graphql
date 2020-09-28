@@ -29,8 +29,7 @@ cache:
   maxCacheSize: 5
 
 digitraffic:
-  max-returned-trains: 500
-  max-returned-train-tracking-messages: 500
+  max-returned-rows: 250
   hidden-fields:
     - "Train.trainTypeId"
     - "Train.operatorShortCode"

@@ -23,7 +23,7 @@ public class CompositionsGreaterThanVersionQuery extends BaseQuery<List<Composit
     @Autowired
     private CompositionTOConverter compositionTOConverter;
 
-    @Value("${digitraffic.max-returned-trains}")
+    @Value("${digitraffic.max-returned-rows}")
     public Integer MAX_RESULTS;
 
     @Override

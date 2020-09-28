@@ -23,7 +23,7 @@ public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<List<Ro
     @Autowired
     private RoutesetMessageTOConverter routesetMessageTOConverter;
 
-    @Value("${digitraffic.max-returned-train-tracking-messages}")
+    @Value("${digitraffic.max-returned-rows}")
     public Integer MAX_RESULTS;
 
     @Override
