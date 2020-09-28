@@ -35,6 +35,19 @@ public class FilterInstrumentation extends SimpleInstrumentation {
         public ExecutionPath executionPath;
         public GraphQLArgument filterType;
         public Object filterTO;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FilteredExecutionPath that = (FilteredExecutionPath) o;
+            return Objects.equals(executionPath, that.executionPath);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(executionPath);
+        }
     }
 
     private class SortedExecutionPath {
@@ -55,12 +68,29 @@ public class FilterInstrumentation extends SimpleInstrumentation {
         }
     }
 
+    private class LimitedExecutionPath {
+        public ExecutionPath executionPath;
+        public Object limit;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            LimitedExecutionPath that = (LimitedExecutionPath) o;
+            return Objects.equals(executionPath, that.executionPath);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(executionPath);
+        }
+    }
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Map<ExecutionId, List<FilteredExecutionPath>> filters = new HashMap<>();
+    private Map<ExecutionId, Set<FilteredExecutionPath>> collectionsToFilter = new HashMap<>();
     private Map<ExecutionId, Set<SortedExecutionPath>> collectionsToSort = new HashMap<>();
-    private Map<ExecutionId, Map<Class, Object>> filterTOCache = new HashMap<>();
+    private Map<ExecutionId, Set<LimitedExecutionPath>> collectionsToLimit = new HashMap<>();
 
     @Autowired
     private FilterRegistry filterRegistry;
@@ -73,14 +103,48 @@ public class FilterInstrumentation extends SimpleInstrumentation {
         long start = System.currentTimeMillis();
         Map<String, List<Object>> executionResultData = executionResult.getData();
 
-        List<ExecutionPath> filteredExecutionPaths = doFilter(parameters, executionResultData);
-        removeFilteredRows(executionResultData, filteredExecutionPaths);
-
+        doFilter(parameters, executionResultData);
         log.info("Filtering took: {}", Duration.ofMillis(System.currentTimeMillis() - start));
-
         doSort(parameters, executionResultData);
+        doLimit(parameters, executionResultData);
+
+        this.collectionsToFilter.remove(parameters.getExecutionInput().getExecutionId());
+        this.collectionsToSort.remove(parameters.getExecutionInput().getExecutionId());
+        this.collectionsToLimit.remove(parameters.getExecutionInput().getExecutionId());
 
         return super.instrumentExecutionResult(executionResult, parameters);
+    }
+
+    private void doLimit(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
+        Set<LimitedExecutionPath> limitedExecutionPaths = this.collectionsToLimit.get(parameters.getExecutionInput().getExecutionId());
+        if (limitedExecutionPaths == null) {
+            return;
+        }
+        for (LimitedExecutionPath limitedExecutionPath : limitedExecutionPaths) {
+            ExecutionPath executionPath = limitedExecutionPath.executionPath;
+            Object resultObject = getObjectByExecutionPath(executionResultData, executionPath);
+
+            ArrayList<Map<String, Object>> resultList = (ArrayList<Map<String, Object>>) resultObject;
+            Integer limit = (Integer) limitedExecutionPath.limit;
+
+            for (int i = resultList.size() - 1; i >= 0; i--) {
+                if (i >= limit) {
+                    resultList.remove(i);
+                }
+            }
+        }
+    }
+
+    private Object getObjectByExecutionPath(Map<String, List<Object>> executionResultData, ExecutionPath executionPath) {
+        Object resultObject = executionResultData;
+        for (Object o : executionPath.toList()) {
+            if (o instanceof String) {
+                resultObject = ((Map) resultObject).get(o);
+            } else if (o instanceof Integer) {
+                resultObject = ((List) resultObject).get((Integer) o);
+            }
+        }
+        return resultObject;
     }
 
     private void doSort(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
@@ -89,14 +153,7 @@ public class FilterInstrumentation extends SimpleInstrumentation {
             return;
         }
         for (SortedExecutionPath sortedExecutionPath : sortedExecutionPaths) {
-            Object resultObject = executionResultData;
-            for (Object o : sortedExecutionPath.executionPath.toList()) {
-                if (o instanceof String) {
-                    resultObject = ((Map) resultObject).get(o);
-                } else if (o instanceof Integer) {
-                    resultObject = ((List) resultObject).get((Integer) o);
-                }
-            }
+            Object resultObject = getObjectByExecutionPath(executionResultData, sortedExecutionPath.executionPath);
 
             List<Map<String, Object>> resultList = (List<Map<String, Object>>) resultObject;
             Map<String, String> orderByTo = (Map<String, String>) sortedExecutionPath.orderBy;
@@ -116,23 +173,26 @@ public class FilterInstrumentation extends SimpleInstrumentation {
         }
     }
 
-    private List<ExecutionPath> doFilter(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
+    private void doFilter(InstrumentationExecutionParameters parameters, Map<String, List<Object>> executionResultData) {
         ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
-        List<FilteredExecutionPath> filters = this.filters.get(executionId);
+        Set<FilteredExecutionPath> filters = this.collectionsToFilter.get(executionId);
         List<ExecutionPath> filteredExecutionPaths = new ArrayList<>();
         if (filters != null) {
             for (FilteredExecutionPath filter : filters) {
                 BaseFilter baseFilter = filterRegistry.getFilterFor(filter.filterType.getType().getName() + "TO");
-                Object entityTO = objectMapper.convertValue(getExecutionResultDataByExecutionPath(executionResultData, filter.executionPath), baseFilter.getEntityTOType());
-                Object filterTO = getFilterTO(executionId, filter.filterTO, baseFilter.getFilterTOType());
-
-                if (baseFilter.isFiltered(entityTO, filterTO)) {
-                    filteredExecutionPaths.add(filter.executionPath);
+                List<Map<String, Object>> entityList = (List<Map<String, Object>>) getObjectByExecutionPath(executionResultData, filter.executionPath);
+                Object filterTO = objectMapper.convertValue(filter.filterTO, baseFilter.getFilterTOType());
+                for (int i = 0; i < entityList.size(); i++) {
+                    Object entityTO = objectMapper.convertValue(entityList.get(i), baseFilter.getEntityTOType());
+                    if (baseFilter.isFiltered(entityTO, filterTO)) {
+                        filteredExecutionPaths.add(filter.executionPath.segment(i));
+                    }
                 }
             }
             Collections.reverse(filteredExecutionPaths);
         }
-        return filteredExecutionPaths;
+
+        removeFilteredRows(executionResultData, filteredExecutionPaths);
     }
 
     private void removeFilteredRows(Map<String, List<Object>> executionResultData, List<ExecutionPath> filteredExecutionPaths) {
@@ -153,39 +213,6 @@ public class FilterInstrumentation extends SimpleInstrumentation {
         }
     }
 
-    private Object getFilterTO(ExecutionId executionId, Object rawFilterTO, Class filterTOType) {
-        Map<Class, Object> filterTOsByClass = this.filterTOCache.get(executionId);
-        if (filterTOsByClass != null) {
-            Object filterTO = filterTOsByClass.get(filterTOType);
-            if (filterTO != null) {
-                return filterTO;
-            } else {
-                filterTO = objectMapper.convertValue(rawFilterTO, filterTOType);
-                filterTOsByClass.put(filterTOType, filterTO);
-                return filterTO;
-            }
-        } else {
-            filterTOsByClass = new HashMap<>();
-            this.filterTOCache.put(executionId, filterTOsByClass);
-            Object filterTO = objectMapper.convertValue(rawFilterTO, filterTOType);
-            filterTOsByClass.put(filterTOType, filterTO);
-            return filterTO;
-        }
-    }
-
-    private Object getExecutionResultDataByExecutionPath(Map<String, List<Object>> executionResultData, ExecutionPath executionPath) {
-        Object resultObject = executionResultData;
-        for (Object o : executionPath.toList()) {
-            if (o instanceof String) {
-                resultObject = ((Map) resultObject).get(o);
-            } else if (o instanceof Integer) {
-                resultObject = ((List) resultObject).get((Integer) o);
-            }
-        }
-
-        return resultObject;
-    }
-
     @Override
     public ExecutionStrategyInstrumentationContext beginExecutionStrategy(InstrumentationExecutionStrategyParameters parameters) {
         ExecutionStepInfo executionStepInfo = parameters.getExecutionStrategyParameters().getExecutionStepInfo();
@@ -197,10 +224,14 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
         ExecutionId executionId = parameters.getExecutionContext().getExecutionId();
         if (arguments.containsKey("where")) {
-            List<FilteredExecutionPath> filteredExecutionPaths = initializeFilteredExecutionsList(executionId);
+            Set<FilteredExecutionPath> filteredExecutionPaths = this.collectionsToFilter.get(executionId);
+            if (filteredExecutionPaths == null) {
+                filteredExecutionPaths = new HashSet<>();
+                this.collectionsToFilter.put(executionId, filteredExecutionPaths);
+            }
 
             FilteredExecutionPath filteredExecutionPath = new FilteredExecutionPath();
-            filteredExecutionPath.executionPath = executionStepInfo.getPath();
+            filteredExecutionPath.executionPath = executionStepInfo.getPath().getPathWithoutListEnd();
             filteredExecutionPath.filterTO = arguments.get("where");
             filteredExecutionPath.filterType = executionStepInfo.getFieldDefinition().getArgument("where");
 
@@ -219,17 +250,19 @@ public class FilterInstrumentation extends SimpleInstrumentation {
             executionPaths.add(sortedExecutionPath);
         }
 
-        return super.beginExecutionStrategy(parameters);
-    }
+        if (arguments.containsKey("take")) {
+            Set<LimitedExecutionPath> limitedExecutionPaths = this.collectionsToLimit.get(executionId);
+            if (limitedExecutionPaths == null) {
+                limitedExecutionPaths = new HashSet<>();
+                this.collectionsToLimit.put(executionId, limitedExecutionPaths);
+            }
+            LimitedExecutionPath limitedExecutionPath = new LimitedExecutionPath();
+            limitedExecutionPath.executionPath = executionStepInfo.getPath().getPathWithoutListEnd();
+            limitedExecutionPath.limit = arguments.get("take");
 
-    private List<FilteredExecutionPath> initializeFilteredExecutionsList(ExecutionId executionId) {
-        List<FilteredExecutionPath> filteredExecutionPaths = new ArrayList<>();
-        List<FilteredExecutionPath> fileredExecutionsFromMapPaths = this.filters.get(executionId);
-        if (fileredExecutionsFromMapPaths == null) {
-            this.filters.put(executionId, filteredExecutionPaths);
-        } else {
-            filteredExecutionPaths = fileredExecutionsFromMapPaths;
+            limitedExecutionPaths.add(limitedExecutionPath);
         }
-        return filteredExecutionPaths;
+
+        return super.beginExecutionStrategy(parameters);
     }
 }
