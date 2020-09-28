@@ -4,7 +4,7 @@ type Query {
     #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, where : TrainFilter) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainFilter) : [Train]
-    latestTrainLocations(where : TrainLocationFilter) : [TrainLocation]
+    latestTrainLocations(where : TrainLocationFilter, orderBy : TrainLocationOrderBy, take : Int) : [TrainLocation]
     compositionsGreaterThanVersion(version : String, where : CompositionFilter) : [Composition]
     trainTrackingMessagesByVersionGreaterThan(version : String, where : TrainTrackingMessageFilter) : [TrainTrackingMessage]
     routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageFilter) : [RoutesetMessage]
@@ -265,6 +265,7 @@ input TrainOrderBy {
 }
 
 input TrainLocationOrderBy {
+    train : TrainOrderBy
     speed : OrderDirection
     timestamp : OrderDirection
 }

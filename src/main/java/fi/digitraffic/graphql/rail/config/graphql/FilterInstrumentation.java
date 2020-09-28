@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,19 +158,39 @@ public class FilterInstrumentation extends SimpleInstrumentation {
 
             List<Map<String, Object>> resultList = (List<Map<String, Object>>) resultObject;
             Map<String, String> orderByTo = (Map<String, String>) sortedExecutionPath.orderBy;
-            Map.Entry<String, String> firstEntry = orderByTo.entrySet().iterator().next();
-            String sortKey = firstEntry.getKey();
-            String sortDirection = firstEntry.getValue();
+            Pair<List<String>, String> deepValue = getPathAndDeepValueAsString(orderByTo, new ArrayList<>());
+            List<String> paths = deepValue.getLeft();
+            String sortDirection = deepValue.getRight();
 
             Collections.sort(resultList, (left, right) -> {
-                Comparable leftProperty = (Comparable) left.get(sortKey);
-                Comparable rightProperty = (Comparable) right.get(sortKey);
-                if (sortDirection.equals("ASCENDING")) {
-                    return leftProperty.compareTo(rightProperty);
+                Object leftProperty = null;
+                Object rightProperty = null;
+                for (String path : paths) {
+                    leftProperty = leftProperty == null ? left.get(path) : ((Map) leftProperty).get(path);
+                    rightProperty = rightProperty == null ? right.get(path) : ((Map) rightProperty).get(path);
+                }
+                if (leftProperty instanceof Comparable && rightProperty instanceof Comparable) {
+                    if (sortDirection.equals("ASCENDING")) {
+                        return ((Comparable) leftProperty).compareTo(rightProperty);
+                    } else {
+                        return ((Comparable) rightProperty).compareTo(leftProperty);
+                    }
                 } else {
-                    return rightProperty.compareTo(leftProperty);
+                    throw new IllegalArgumentException("Sorting target is not a Comparable");
                 }
             });
+        }
+    }
+
+    public Pair<List<String>, String> getPathAndDeepValueAsString(Map rootValue, List<String> paths) {
+        Set<Map.Entry> entries = rootValue.entrySet();
+        Map.Entry entry = entries.iterator().next();
+        Object value = entry.getValue();
+        paths.add((String) entry.getKey());
+        if (!entries.isEmpty() && value instanceof Map) {
+            return getPathAndDeepValueAsString((Map) value, paths);
+        } else {
+            return Pair.of(paths, (String) value);
         }
     }
 
