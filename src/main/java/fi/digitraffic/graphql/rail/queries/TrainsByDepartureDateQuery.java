@@ -1,43 +1,56 @@
 package fi.digitraffic.graphql.rail.queries;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
-import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
 
 @Component
-public class TrainsByDepartureDateQuery extends BaseQuery<List<TrainTO>> {
-
-    @Autowired
-    private TrainRepository trainRepository;
-
+public class TrainsByDepartureDateQuery extends BaseQuery<TrainTO> {
     @Autowired
     private TrainTOConverter trainTOConverter;
-
-    @Value("${digitraffic.max-returned-rows}")
-    public Integer MAX_RESULTS;
 
     @Override
     public String getQueryName() {
         return "trainsByDepartureDate";
     }
 
-    public DataFetcher<List<TrainTO>> createFetcher() {
-        return dataFetchingEnvironment -> {
-            LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-
-            List<Train> trains = trainRepository.findByDepartureDate(departureDate, PageRequest.of(0, MAX_RESULTS));
-            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
-        };
+    @Override
+    public Class getEntityClass() {
+        return Train.class;
     }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTrain.train;
+    }
+
+    @Override
+    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
+        LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
+        return QTrain.train.id.departureDate.eq(departureDate);
+    }
+
+    @Override
+    public TrainTO convertEntityToTO(Tuple tuple) {
+        return trainTOConverter.convert(tuple);
+    }
+
+
 }

@@ -9,18 +9,23 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.config.graphql.CustomException;
+import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
-import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
 
 @Component
-public class TrainByStationAndQuantityQuery extends BaseQuery<List<TrainTO>> {
+public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     @Autowired
     private TrainRepository trainRepository;
 
@@ -35,60 +40,82 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<List<TrainTO>> {
         return "trainsByStationAndQuantity";
     }
 
-    public DataFetcher<List<TrainTO>> createFetcher() {
-        return dataFetchingEnvironment -> {
-            String station = dataFetchingEnvironment.getArgument("station");
-            Integer arrivedTrains = dataFetchingEnvironment.getArgument("arrivedTrains");
-            Integer arrivingTrains = dataFetchingEnvironment.getArgument("arrivingTrains");
-            Integer departedTrains = dataFetchingEnvironment.getArgument("departedTrains");
-            Integer departingTrains = dataFetchingEnvironment.getArgument("departingTrains");
-            Boolean includeNonStopping = dataFetchingEnvironment.getArgument("includeNonStopping");
-            List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
-
-            if (arrivedTrains == null) {
-                arrivedTrains = 5;
-            }
-            if (arrivingTrains == null) {
-                arrivingTrains = 5;
-            }
-            if (departedTrains == null) {
-                departedTrains = 5;
-            }
-            if (departingTrains == null) {
-                departingTrains = 5;
-            }
-            if (includeNonStopping == null) {
-                includeNonStopping = false;
-            }
-
-            if (arrivedTrains + arrivingTrains + departedTrains + departingTrains > 250) {
-                throw new CustomException(400, "Can not return more than 250 trains");
-            }
-
-            List<Long> trainCategoryIds;
-            if (trainCategoryNames == null) {
-                trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
-            } else {
-                trainCategoryIds = trainCategoryRepository.findAllByNameIn(trainCategoryNames);
-            }
-
-            List<Train> trains = getLiveTrainsUsingQuantityFiltering(station, -1L, arrivedTrains, arrivingTrains, departedTrains, departingTrains, includeNonStopping, trainCategoryIds);
-            return trains.stream().map(trainTOConverter::convert).collect(Collectors.toList());
-        };
+    @Override
+    public Class getEntityClass() {
+        return Train.class;
     }
 
-    private List<Train> getLiveTrainsUsingQuantityFiltering(String station, long version, int arrived_trains, int arriving_trains,
-                                                            int departedTrains, int departingTrains, Boolean includeNonstopping, List<Long> trainCategoryIds) {
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTrain.train;
+    }
+
+    @Override
+    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
+        String station = dataFetchingEnvironment.getArgument("station");
+        Integer arrivedTrains = dataFetchingEnvironment.getArgument("arrivedTrains");
+        Integer arrivingTrains = dataFetchingEnvironment.getArgument("arrivingTrains");
+        Integer departedTrains = dataFetchingEnvironment.getArgument("departedTrains");
+        Integer departingTrains = dataFetchingEnvironment.getArgument("departingTrains");
+        Boolean includeNonStopping = dataFetchingEnvironment.getArgument("includeNonStopping");
+        List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
+
+        if (arrivedTrains == null) {
+            arrivedTrains = 5;
+        }
+        if (arrivingTrains == null) {
+            arrivingTrains = 5;
+        }
+        if (departedTrains == null) {
+            departedTrains = 5;
+        }
+        if (departingTrains == null) {
+            departingTrains = 5;
+        }
+        if (includeNonStopping == null) {
+            includeNonStopping = false;
+        }
+
+        if (arrivedTrains + arrivingTrains + departedTrains + departingTrains > MAX_RESULTS) {
+            throw new CustomException(400, "Can not return more than " + MAX_RESULTS + " rows");
+        }
+
+        List<Long> trainCategoryIds;
+        if (trainCategoryNames == null) {
+            trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
+        } else {
+            trainCategoryIds = trainCategoryRepository.findAllByNameIn(trainCategoryNames);
+        }
+
+
+        List<TrainId> trainIds = getLiveTrainsUsingQuantityFiltering(station, -1L, arrivedTrains, arrivingTrains, departedTrains, departingTrains, includeNonStopping, trainCategoryIds);
+
+
+        if (!trainIds.isEmpty()) {
+            return QTrain.train.id.in(trainIds);
+        } else {
+            return QTrain.train.id.in(new TrainId(-9999L, LocalDate.now()));
+        }
+    }
+
+    @Override
+    public TrainTO convertEntityToTO(Tuple tuple) {
+        return trainTOConverter.convert(tuple);
+    }
+
+    private List<TrainId> getLiveTrainsUsingQuantityFiltering(String station, long version, int arrived_trains, int arriving_trains,
+                                                              int departedTrains, int departingTrains, Boolean includeNonstopping, List<Long> trainCategoryIds) {
         List<Object[]> liveTrains = trainRepository.findLiveTrainsIds(station, departedTrains, departingTrains, arrived_trains,
                 arriving_trains, !includeNonstopping, trainCategoryIds);
 
-        List<TrainId> trainsToRetrieve = extractNewerTrainIds(version, liveTrains);
+        return extractNewerTrainIds(version, liveTrains);
 
-        if (!trainsToRetrieve.isEmpty()) {
-            return trainRepository.findAllById(trainsToRetrieve);
-        } else {
-            return Lists.newArrayList();
-        }
+
     }
 
     private List<TrainId> extractNewerTrainIds(long version, List<Object[]> liveTrains) {

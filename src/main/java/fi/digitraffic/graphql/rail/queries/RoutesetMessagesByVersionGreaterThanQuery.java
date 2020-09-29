@@ -1,42 +1,60 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QRouteset;
 import fi.digitraffic.graphql.rail.entities.Routeset;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
-import fi.digitraffic.graphql.rail.repositories.RoutesetRepository;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
-import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
 
 @Component
-public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<List<RoutesetMessageTO>> {
-
-    @Autowired
-    private RoutesetRepository routesetRepository;
+public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<RoutesetMessageTO> {
 
     @Autowired
     private RoutesetMessageTOConverter routesetMessageTOConverter;
-
-    @Value("${digitraffic.max-returned-rows}")
-    public Integer MAX_RESULTS;
 
     @Override
     public String getQueryName() {
         return "routesetMessagesByVersionGreaterThan";
     }
 
-    public DataFetcher<List<RoutesetMessageTO>> createFetcher() {
-        return dataFetchingEnvironment -> {
-            String version = dataFetchingEnvironment.getArgument("version");
+    @Override
+    public Class getEntityClass() {
+        return Routeset.class;
+    }
 
-            List<Routeset> entities = routesetRepository.findByVersionGreaterThanOrderByVersionAsc(Long.parseLong(version), PageRequest.of(0, MAX_RESULTS));
-            return entities.stream().map(routesetMessageTOConverter::convert).collect(Collectors.toList());
-        };
+    @Override
+    public Expression[] getFields() {
+        return AllFields.ROUTESET;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QRouteset.routeset;
+    }
+
+    @Override
+    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
+        Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
+        return QRouteset.routeset.version.gt(version);
+    }
+
+    @Override
+    public RoutesetMessageTO convertEntityToTO(Tuple tuple) {
+        return routesetMessageTOConverter.convert(tuple);
+    }
+
+    @Override
+    public OrderSpecifier createDefaultOrder() {
+        return new OrderSpecifier(Order.ASC, QRouteset.routeset.version);
     }
 }

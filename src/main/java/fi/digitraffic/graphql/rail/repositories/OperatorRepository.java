@@ -12,5 +12,5 @@ import fi.digitraffic.graphql.rail.entities.Operator;
 @Transactional
 public interface OperatorRepository extends JpaRepository<Operator, Long> {
 
-    List<Operator> findByOperatorShortCodeIn(List<String> operatorShortCodes);
+    List<Operator> findByShortCodeIn(List<String> operatorShortCodes);
 }

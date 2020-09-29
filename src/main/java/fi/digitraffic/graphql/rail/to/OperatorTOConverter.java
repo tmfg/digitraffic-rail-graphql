@@ -9,6 +9,6 @@ import fi.digitraffic.graphql.rail.model.OperatorTO;
 public class OperatorTOConverter {
     public OperatorTO convert(Operator entity) {
         return new OperatorTO(
-                entity.operatorName, entity.operatorShortCode, entity.operatorUicCode);
+                entity.name, entity.shortCode, entity.operatorUicCode);
     }
 }

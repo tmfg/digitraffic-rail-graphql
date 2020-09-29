@@ -87,16 +87,16 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
         Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getLeft();
         Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getLeft();
 
-        train66.commuterLineID = "A";
+        train66.commuterLineid = "A";
         trainRepository.save(train66);
 
-        train67.commuterLineID = "B";
+        train67.commuterLineid = "B";
         trainRepository.save(train67);
 
-        train68.commuterLineID = null;
+        train68.commuterLineid = null;
         trainRepository.save(train68);
 
-        train69.commuterLineID = null;
+        train69.commuterLineid = null;
         trainRepository.save(train69);
 
         ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{eq:\\\"A\\\"}}) {   trainNumber, version, commuterLineid  }}");

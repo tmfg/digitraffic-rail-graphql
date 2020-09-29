@@ -29,7 +29,7 @@ cache:
   maxCacheSize: 5
 
 digitraffic:
-  max-returned-rows: 2500
+  max-returned-rows: 250
   hidden-fields:
     - "Train.trainTypeId"
     - "Train.operatorShortCode"

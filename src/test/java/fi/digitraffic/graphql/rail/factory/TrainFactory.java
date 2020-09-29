@@ -42,7 +42,7 @@ public class TrainFactory {
         Train train = new Train();
         train.id = id;
         train.cancelled = cancelled;
-        train.commuterLineID = commuterLineID;
+        train.commuterLineid = commuterLineID;
         train.deleted = null;
         train.operatorShortCode = operatorShortCode;
         train.operatorUicCode = operatorShortCode.hashCode();

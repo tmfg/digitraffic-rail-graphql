@@ -169,6 +169,13 @@ public class FilterInstrumentation extends SimpleInstrumentation {
                     leftProperty = leftProperty == null ? left.get(path) : ((Map) leftProperty).get(path);
                     rightProperty = rightProperty == null ? right.get(path) : ((Map) rightProperty).get(path);
                 }
+                if (leftProperty == null && rightProperty == null) {
+                    return 0;
+                } else if (leftProperty == null && rightProperty != null) {
+                    return -1;
+                } else if (leftProperty != null && rightProperty == null) {
+                    return 1;
+                }
                 if (leftProperty instanceof Comparable && rightProperty instanceof Comparable) {
                     if (sortDirection.equals("ASCENDING")) {
                         return ((Comparable) leftProperty).compareTo(rightProperty);

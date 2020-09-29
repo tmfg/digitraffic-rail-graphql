@@ -37,7 +37,7 @@ public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator,
 
     @Override
     public String createKeyFromChild(Operator child) {
-        return child.operatorShortCode;
+        return child.shortCode;
     }
 
     @Override
@@ -47,6 +47,6 @@ public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator,
 
     @Override
     public List<Operator> findChildrenByKeys(List<String> keys) {
-        return operatorRepository.findByOperatorShortCodeIn(keys);
+        return operatorRepository.findByShortCodeIn(keys);
     }
 }
