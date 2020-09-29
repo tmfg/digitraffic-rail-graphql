@@ -5,19 +5,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
-import fi.digitraffic.graphql.rail.repositories.TimeTableRowRepository;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
 public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTableRowId, JourneySectionTO, TimeTableRow, TimeTableRowTO> {
-    @Autowired
-    private TimeTableRowRepository timeTableRowRepository;
-
     @Autowired
     private TimeTableRowTOConverter timeTableRowTOConverter;
 
@@ -37,18 +39,33 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
     }
 
     @Override
-    public TimeTableRowId createKeyFromChild(TimeTableRow child) {
-        return child.id;
+    public TimeTableRowId createKeyFromChild(TimeTableRowTO timeTableRowTO) {
+        return new TimeTableRowId(timeTableRowTO.getId(), timeTableRowTO.getDepartureDate(), timeTableRowTO.getTrainNumber().longValue());
     }
 
     @Override
-    public TimeTableRowTO createChildTOToFromChild(TimeTableRow child) {
-        return timeTableRowTOConverter.convert(child);
+    public TimeTableRowTO createChildTOFromTuple(Tuple tuple) {
+        return timeTableRowTOConverter.convert(tuple);
     }
 
     @Override
-    public List<TimeTableRow> findChildrenByKeys(List<TimeTableRowId> keys) {
-        return timeTableRowRepository.findAllById(keys);
+    public Class getEntityClass() {
+        return TimeTableRow.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TIME_TABLE_ROW;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTimeTableRow.timeTableRow;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<TimeTableRowId> keys) {
+        return QTimeTableRow.timeTableRow.id.in(keys);
     }
 
 }

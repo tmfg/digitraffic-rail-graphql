@@ -5,20 +5,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTrainType;
 import fi.digitraffic.graphql.rail.entities.TrainType;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
-import fi.digitraffic.graphql.rail.repositories.TrainTypeRepository;
 import fi.digitraffic.graphql.rail.to.TrainTypeTOConverter;
 
 @Component
 public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType, TrainTypeTO> {
     @Autowired
     private TrainTypeTOConverter trainTypeTOConverter;
-
-    @Autowired
-    private TrainTypeRepository trainTypeRepository;
 
     @Override
     public String getTypeName() {
@@ -36,17 +38,32 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
     }
 
     @Override
-    public Long createKeyFromChild(TrainType child) {
-        return child.id;
+    public Long createKeyFromChild(TrainTypeTO trainTypeTO) {
+        return trainTypeTO.getId().longValue();
     }
 
     @Override
-    public TrainTypeTO createChildTOToFromChild(TrainType child) {
-        return trainTypeTOConverter.convert(child);
+    public TrainTypeTO createChildTOFromTuple(Tuple tuple) {
+        return trainTypeTOConverter.convert(tuple);
     }
 
     @Override
-    public List<TrainType> findChildrenByKeys(List<Long> keys) {
-        return trainTypeRepository.findAllById(keys);
+    public Class getEntityClass() {
+        return TrainType.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN_TYPE;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTrainType.trainType;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<Long> keys) {
+        return QTrainType.trainType.id.in(keys);
     }
 }

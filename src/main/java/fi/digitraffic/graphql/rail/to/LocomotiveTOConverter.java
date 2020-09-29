@@ -2,19 +2,20 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.entities.Locomotive;
+import com.querydsl.core.Tuple;
+import fi.digitraffic.graphql.rail.entities.QLocomotive;
 import fi.digitraffic.graphql.rail.model.LocomotiveTO;
 
 @Component
-public class LocomotiveTOConverter {
-    public LocomotiveTO convert(Locomotive entity) {
+public class LocomotiveTOConverter extends BaseConverter<LocomotiveTO> {
+    public LocomotiveTO convert(Tuple tuple) {
         return new LocomotiveTO(
-                entity.id.intValue(),
-                entity.location,
-                entity.locomotiveType,
-                entity.powerTypeAbbreviation,
-                entity.journeysectionId.intValue(),
-                entity.vehicleNumber
+                tuple.get(QLocomotive.locomotive.id).intValue(),
+                tuple.get(QLocomotive.locomotive.location),
+                tuple.get(QLocomotive.locomotive.locomotiveType),
+                tuple.get(QLocomotive.locomotive.powerTypeAbbreviation),
+                tuple.get(QLocomotive.locomotive.journeysectionId).intValue(),
+                tuple.get(QLocomotive.locomotive.vehicleNumber)
         );
     }
 }

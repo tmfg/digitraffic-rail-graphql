@@ -54,9 +54,6 @@ public class GraphQLProvider {
     @Autowired
     private List<BaseQuery> rootFetchers;
 
-    @Autowired
-    private FilterInstrumentation filterInstrumentation;
-
     @Bean
     public GraphQL graphQL() {
         return graphQL;
@@ -70,8 +67,7 @@ public class GraphQLProvider {
         this.graphQL = GraphQL.newGraphQL(graphQLSchema)
                 .instrumentation(new ChainedInstrumentation(Arrays.asList(
 //                new ExecutionTimeInstrumentation()
-                        new NoCircularQueriesInstrumentation(),
-                        filterInstrumentation
+                        new NoCircularQueriesInstrumentation()
                 ))).build();
     }
 

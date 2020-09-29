@@ -5,18 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.DetailedCategoryCode;
+import fi.digitraffic.graphql.rail.entities.QDetailedCategoryCode;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.DetailedCategoryCodeTO;
-import fi.digitraffic.graphql.rail.repositories.DetailedCategoryCodeRepository;
 import fi.digitraffic.graphql.rail.to.DetailedCategoryCodeTOConverter;
 
 @Component
 public class CauseToDetailedCategoryCodeLink extends OneToOneLink<Long, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
-    @Autowired
-    private DetailedCategoryCodeRepository detailedCategoryCodeRepository;
-
     @Autowired
     private DetailedCategoryCodeTOConverter detailedCategoryCodeTOConverter;
 
@@ -41,18 +43,32 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<Long, CauseTO,
     }
 
     @Override
-    public Long createKeyFromChild(DetailedCategoryCode child) {
-        return child.id;
+    public Long createKeyFromChild(DetailedCategoryCodeTO detailedCategoryCodeTO) {
+        return detailedCategoryCodeTO.getId().longValue();
     }
 
     @Override
-    public DetailedCategoryCodeTO createChildTOToFromChild(DetailedCategoryCode child) {
-        return detailedCategoryCodeTOConverter.convert(child);
+    public DetailedCategoryCodeTO createChildTOFromTuple(Tuple tuple) {
+        return detailedCategoryCodeTOConverter.convert(tuple);
     }
 
     @Override
-    public List<DetailedCategoryCode> findChildrenByKeys(List<Long> keys) {
-        return detailedCategoryCodeRepository.findAllById(keys);
+    public Class getEntityClass() {
+        return DetailedCategoryCode.class;
     }
 
+    @Override
+    public Expression[] getFields() {
+        return AllFields.DETAILED_CATEGORY_CODE;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QDetailedCategoryCode.detailedCategoryCode;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<Long> keys) {
+        return QDetailedCategoryCode.detailedCategoryCode.id.in(keys);
+    }
 }

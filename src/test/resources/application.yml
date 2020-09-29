@@ -81,3 +81,4 @@ digitraffic:
     - "RoutesetMessage.trainNumber"
     - "RoutesetMessage.departureDate"
     - "Routesection.stationCode"
+    - "Routesection.routesetId"

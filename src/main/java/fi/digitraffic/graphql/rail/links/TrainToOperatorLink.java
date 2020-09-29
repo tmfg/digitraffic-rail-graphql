@@ -5,18 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.Operator;
+import fi.digitraffic.graphql.rail.entities.QOperator;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.OperatorTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.OperatorRepository;
 import fi.digitraffic.graphql.rail.to.OperatorTOConverter;
 
 @Component
 public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator, OperatorTO> {
-    @Autowired
-    private OperatorRepository operatorRepository;
-
     @Autowired
     private OperatorTOConverter operatorTOConverter;
 
@@ -36,17 +38,32 @@ public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator,
     }
 
     @Override
-    public String createKeyFromChild(Operator child) {
-        return child.shortCode;
+    public String createKeyFromChild(OperatorTO operatorTO) {
+        return operatorTO.getShortCode();
     }
 
     @Override
-    public OperatorTO createChildTOToFromChild(Operator child) {
-        return operatorTOConverter.convert(child);
+    public OperatorTO createChildTOFromTuple(Tuple tuple) {
+        return operatorTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Operator> findChildrenByKeys(List<String> keys) {
-        return operatorRepository.findByShortCodeIn(keys);
+    public Class getEntityClass() {
+        return Operator.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.OPERATOR;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QOperator.operator;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<String> keys) {
+        return QOperator.operator.shortCode.in(keys);
     }
 }

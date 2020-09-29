@@ -52,8 +52,6 @@ Sample query to be run:
     * Spring Boot config etc
 * entities
     * Classes modeling rows returned from database
-* filters
-    * Logic for "filter" arguments in GraphQL queries
 * links
     * Logic implementing "links" in GraphQL graph
 * queries

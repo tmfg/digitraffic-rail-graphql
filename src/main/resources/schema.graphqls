@@ -25,7 +25,7 @@ type Train {
     trainCategoryId : Int
     operator : Operator
     trainType : TrainType
-    timeTableRows(where : TimeTableRowFilter, take : Int) : [TimeTableRow]
+    timeTableRows(where : TimeTableRowFilter, orderBy: TimeTableRowOrderBy, take : Int) : [TimeTableRow]
     trainLocations(where : TrainLocationFilter, orderBy : TrainLocationOrderBy, take : Int) : [TrainLocation]
     compositions(where : CompositionFilter, take : Int) : [Composition]
     trainTrackingMessages(where : TrainTrackingMessageFilter, take : Int) : [TrainTrackingMessage]
@@ -218,6 +218,7 @@ type Routesection {
     sectionId : String
     commercialTrackId : String
     stationCode : String
+    routesetId : Int
     station : Station
 }
 
@@ -262,6 +263,36 @@ input TrainOrderBy {
     #    timeTableRows : TimeTableRowFilter
     #    trainLocations : TrainLocationFilter
     #    compositions : CompositionFilter
+}
+
+input TimeTableRowOrderBy {
+    #    stationShortCode : OrderDirection
+    #    stationUICCode : OrderDirection
+    #    countryCode : OrderDirection
+    type : OrderDirection
+    trainStopping : OrderDirection
+    commercialStop : OrderDirection
+    commercialTrack : OrderDirection
+    cancelled : OrderDirection
+    scheduledTime : OrderDirection
+    actualTime : OrderDirection
+
+    #    id : Int
+    trainNumber : OrderDirection
+    departureDate : OrderDirection
+
+    station : StationOrderBy
+    #    causes(where : CauseFilter, take : Int) : [Cause]
+}
+
+input StationOrderBy {
+    passengerTraffic : OrderDirection
+    countryCode : OrderDirection
+    #    location : [Float]
+    name : OrderDirection
+    shortCode : OrderDirection
+    uicCode : OrderDirection
+    type : OrderDirection
 }
 
 input TrainLocationOrderBy {

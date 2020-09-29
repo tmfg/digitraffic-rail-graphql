@@ -79,7 +79,7 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
 
         ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: {timetableType: {eq: \\\"ADHOC\\\"}}) {    timetableType    trainLocations(where: {speed: {gt: 11}}) {      speed    }  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(2));
-        result.andExpect(jsonPath("$.data.trainsByDepartureDate[1].trainLocations.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[1].trainLocations").doesNotExist());
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[2].trainLocations.length()").value(1));
     }
 }

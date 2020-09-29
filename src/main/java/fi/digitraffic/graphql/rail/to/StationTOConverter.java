@@ -4,23 +4,25 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.entities.Station;
+import com.querydsl.core.Tuple;
+import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.model.StationTypeTO;
 
 @Component
-public class StationTOConverter {
-    public StationTO convert(Station entity) {
+public class StationTOConverter extends BaseConverter<StationTO> {
+    @Override
+    public StationTO convert(Tuple tuple) {
         return new StationTO(
-                entity.id.intValue(),
-                entity.passengerTraffic,
-                entity.countryCode,
-                List.of(entity.longitude.floatValue(), entity.latitude.floatValue()),
-                entity.name,
-                entity.shortCode,
-                entity.uicCode,
-                parseStationType(entity.type)
+                tuple.get(QStation.station.id).intValue(),
+                tuple.get(QStation.station.passengerTraffic),
+                tuple.get(QStation.station.countryCode),
+                List.of(tuple.get(QStation.station.longitude).floatValue(), tuple.get(QStation.station.latitude).floatValue()),
+                tuple.get(QStation.station.name),
+                tuple.get(QStation.station.shortCode),
+                tuple.get(QStation.station.uicCode),
+                parseStationType(tuple.get(QStation.station.type))
         );
     }
 

@@ -5,19 +5,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.TimeTableRowRepository;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
 public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, TimeTableRow, TimeTableRowTO> {
-    @Autowired
-    private TimeTableRowRepository timeTableRowRepository;
-
     @Autowired
     private TimeTableRowTOConverter timeTableRowTOConverter;
 
@@ -37,17 +39,32 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public TrainId createKeyFromChild(TimeTableRow child) {
-        return new TrainId(child.id.trainNumber, child.id.departureDate);
+    public TrainId createKeyFromChild(TimeTableRowTO child) {
+        return new TrainId(child.getTrainNumber(), child.getDepartureDate());
     }
 
     @Override
-    public TimeTableRowTO createChildTOToFromChild(TimeTableRow child) {
-        return timeTableRowTOConverter.convert(child);
+    public TimeTableRowTO createChildTOFromTuple(Tuple tuple) {
+        return timeTableRowTOConverter.convert(tuple);
     }
 
     @Override
-    public List<TimeTableRow> findChildrenByKeys(List<TrainId> keys) {
-        return timeTableRowRepository.findAllByTrainIds(keys);
+    public Class getEntityClass() {
+        return TimeTableRow.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TIME_TABLE_ROW;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTimeTableRow.timeTableRow;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return QTimeTableRow.timeTableRow.train.id.in(keys);
     }
 }

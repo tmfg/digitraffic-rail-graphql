@@ -63,9 +63,9 @@ public class WhereExpressionBuilder {
                 start = path.isNull();
             } else if (path.toString().endsWith("timetableType")) {
                 start = path.eq(Train.TimetableType.valueOf(value.toString()));
-            } else if (path.toString().endsWith("timeTableRowType")) {
+            } else if (path.toString().endsWith("timeTableRow.type")) {
                 start = path.eq(TimeTableRow.TimeTableRowType.valueOf(value.toString()));
-            } else if (path.toString().endsWith("stationType")) {
+            } else if (path.toString().endsWith("station.type")) {
                 start = path.eq(StationTypeEnum.valueOf(value.toString()));
             } else if (path.toString().endsWith("trainTrackingMessageType")) {
                 start = path.eq(TrainRunningMessageTypeEnum.valueOf(value.toString()));

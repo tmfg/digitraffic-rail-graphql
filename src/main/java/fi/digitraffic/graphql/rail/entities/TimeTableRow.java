@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
+import org.springframework.context.annotation.Lazy;
+
 @Entity
 public class TimeTableRow {
     public enum TimeTableRowType {
@@ -50,4 +52,9 @@ public class TimeTableRow {
     public ZonedDateTime actualTime;
     public Long differenceInMinutes;
     public TimeTableRowType type;
+
+    @Lazy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stationShortCode", referencedColumnName = "shortCode", updatable = false, insertable = false)
+    private Station station;
 }

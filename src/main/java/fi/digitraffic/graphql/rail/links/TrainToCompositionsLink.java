@@ -5,19 +5,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.Composition;
+import fi.digitraffic.graphql.rail.entities.QComposition;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.CompositionRepository;
 import fi.digitraffic.graphql.rail.to.CompositionTOConverter;
 
 @Component
 public class TrainToCompositionsLink extends OneToManyLink<TrainId, TrainTO, Composition, CompositionTO> {
-    @Autowired
-    private CompositionRepository compositionRepository;
-
     @Autowired
     private CompositionTOConverter compositionTOConverter;
 
@@ -37,17 +39,32 @@ public class TrainToCompositionsLink extends OneToManyLink<TrainId, TrainTO, Com
     }
 
     @Override
-    public TrainId createKeyFromChild(Composition child) {
-        return new TrainId(child.id.trainNumber, child.id.departureDate);
+    public TrainId createKeyFromChild(CompositionTO compositionTO) {
+        return new TrainId(compositionTO.getTrainNumber().longValue(), compositionTO.getDepartureDate());
     }
 
     @Override
-    public CompositionTO createChildTOToFromChild(Composition child) {
-        return compositionTOConverter.convert(child);
+    public CompositionTO createChildTOFromTuple(Tuple tuple) {
+        return compositionTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Composition> findChildrenByKeys(List<TrainId> keys) {
-        return compositionRepository.findAllByTrainIds(keys);
+    public Class getEntityClass() {
+        return Composition.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.COMPOSITION;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QComposition.composition;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return QComposition.composition.id.in(keys);
     }
 }

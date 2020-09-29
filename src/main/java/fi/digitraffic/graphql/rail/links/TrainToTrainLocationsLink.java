@@ -5,21 +5,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTrainLocation;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 
 @Component
 public class TrainToTrainLocationsLink extends OneToManyLink<TrainId, TrainTO, TrainLocation, TrainLocationTO> {
     @Autowired
     private TrainLocationTOConverter trainLocationTOConverter;
-
-    @Autowired
-    private TrainLocationRepository trainLocationRepository;
 
     @Override
     public String getTypeName() {
@@ -37,17 +39,32 @@ public class TrainToTrainLocationsLink extends OneToManyLink<TrainId, TrainTO, T
     }
 
     @Override
-    public TrainId createKeyFromChild(TrainLocation child) {
-        return new TrainId(child.trainLocationId.trainNumber, child.trainLocationId.departureDate);
+    public TrainId createKeyFromChild(TrainLocationTO trainLocationTO) {
+        return new TrainId(trainLocationTO.getTrainNumber().longValue(), trainLocationTO.getDepartureDate());
     }
 
     @Override
-    public TrainLocationTO createChildTOToFromChild(TrainLocation child) {
-        return trainLocationTOConverter.convert(child);
+    public TrainLocationTO createChildTOFromTuple(Tuple tuple) {
+        return trainLocationTOConverter.convert(tuple);
     }
 
     @Override
-    public List<TrainLocation> findChildrenByKeys(List<TrainId> keys) {
-        return trainLocationRepository.findAllByTrainIds(keys);
+    public Class getEntityClass() {
+        return TrainLocation.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN_LOCATION;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTrainLocation.trainLocation;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return QTrainLocation.trainLocation.train.id.in(keys);
     }
 }

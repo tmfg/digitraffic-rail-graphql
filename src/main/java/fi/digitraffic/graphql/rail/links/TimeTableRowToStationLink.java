@@ -5,18 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
-import fi.digitraffic.graphql.rail.repositories.StationRepository;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
 @Component
 public class TimeTableRowToStationLink extends OneToOneLink<String, TimeTableRowTO, Station, StationTO> {
-    @Autowired
-    private StationRepository stationRepository;
-
     @Autowired
     private StationTOConverter stationTOConverter;
 
@@ -36,17 +38,32 @@ public class TimeTableRowToStationLink extends OneToOneLink<String, TimeTableRow
     }
 
     @Override
-    public String createKeyFromChild(Station child) {
-        return child.shortCode;
+    public String createKeyFromChild(StationTO stationTO) {
+        return stationTO.getShortCode();
     }
 
     @Override
-    public StationTO createChildTOToFromChild(Station child) {
-        return stationTOConverter.convert(child);
+    public StationTO createChildTOFromTuple(Tuple tuple) {
+        return stationTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Station> findChildrenByKeys(List<String> keys) {
-        return stationRepository.findByShortCodeIn(keys);
+    public Class getEntityClass() {
+        return Station.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.STATION;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QStation.station;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<String> keys) {
+        return QStation.station.shortCode.in(keys);
     }
 }

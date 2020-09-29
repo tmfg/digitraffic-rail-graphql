@@ -2,20 +2,22 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.entities.ThirdCategoryCode;
+import com.querydsl.core.Tuple;
+import fi.digitraffic.graphql.rail.entities.QThirdCategoryCode;
 import fi.digitraffic.graphql.rail.model.ThirdCategoryCodeTO;
 
 @Component
-public class ThirdCategoryCodeTOConverter {
-    public ThirdCategoryCodeTO convert(ThirdCategoryCode entity) {
+public class ThirdCategoryCodeTOConverter extends BaseConverter<ThirdCategoryCodeTO> {
+    @Override
+    public ThirdCategoryCodeTO convert(Tuple tuple) {
         return new ThirdCategoryCodeTO(
-                entity.code,
-                entity.name,
-                entity.description,
-                entity.id.intValue(),
-                entity.validFrom,
-                entity.validTo,
-                entity.detailedCategoryCodeId.intValue()
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.code),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.name),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.description),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.id).intValue(),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.validFrom),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.validTo),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.detailedCategoryCodeId).intValue()
         );
     }
 }

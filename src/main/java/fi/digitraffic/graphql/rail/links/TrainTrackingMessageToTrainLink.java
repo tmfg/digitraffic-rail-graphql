@@ -5,21 +5,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
-import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
 @Component
 public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, TrainTrackingMessageTO, Train, TrainTO> {
     @Autowired
     private TrainTOConverter trainTOConverter;
-
-    @Autowired
-    private TrainRepository trainRepository;
 
     @Override
     public String getTypeName() {
@@ -41,19 +43,32 @@ public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, Train
     }
 
     @Override
-    public TrainId createKeyFromChild(Train child) {
-        return child.id;
+    public TrainId createKeyFromChild(TrainTO trainTO) {
+        return new TrainId(trainTO.getTrainNumber(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainTO createChildTOToFromChild(Train child) {
-        return trainTOConverter.convert(child);
+    public TrainTO createChildTOFromTuple(Tuple tuple) {
+        return trainTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Train> findChildrenByKeys(List<TrainId> keys) {
-        return trainRepository.findAllById(keys);
+    public Class getEntityClass() {
+        return Train.class;
     }
 
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN;
+    }
 
+    @Override
+    public EntityPath getEntityTable() {
+        return QTrain.train;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return QTrain.train.id.in(keys);
+    }
 }

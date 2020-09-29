@@ -5,18 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.CategoryCode;
+import fi.digitraffic.graphql.rail.entities.QCategoryCode;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CategoryCodeTO;
 import fi.digitraffic.graphql.rail.model.CauseTO;
-import fi.digitraffic.graphql.rail.repositories.CategoryCodeRepository;
 import fi.digitraffic.graphql.rail.to.CategoryCodeTOConverter;
 
 @Component
 public class CauseToCategoryCodeLink extends OneToOneLink<Long, CauseTO, CategoryCode, CategoryCodeTO> {
-    @Autowired
-    private CategoryCodeRepository categoryCodeRepository;
-
     @Autowired
     private CategoryCodeTOConverter categoryCodeTOConverter;
 
@@ -36,18 +38,33 @@ public class CauseToCategoryCodeLink extends OneToOneLink<Long, CauseTO, Categor
     }
 
     @Override
-    public Long createKeyFromChild(CategoryCode child) {
-        return child.id;
+    public Long createKeyFromChild(CategoryCodeTO categoryCodeTO) {
+        return categoryCodeTO.getId().longValue();
     }
 
     @Override
-    public CategoryCodeTO createChildTOToFromChild(CategoryCode child) {
-        return categoryCodeTOConverter.convert(child);
+    public CategoryCodeTO createChildTOFromTuple(Tuple tuple) {
+        return categoryCodeTOConverter.convert(tuple);
     }
 
     @Override
-    public List<CategoryCode> findChildrenByKeys(List<Long> keys) {
-        return categoryCodeRepository.findAllById(keys);
+    public Class getEntityClass() {
+        return CategoryCode.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.CATEGORY_CODE;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QCategoryCode.categoryCode;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<Long> keys) {
+        return QCategoryCode.categoryCode.id.in(keys);
     }
 
 }

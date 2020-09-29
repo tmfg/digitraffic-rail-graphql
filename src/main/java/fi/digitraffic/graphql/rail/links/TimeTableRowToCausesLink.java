@@ -5,19 +5,21 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.Cause;
+import fi.digitraffic.graphql.rail.entities.QCause;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
-import fi.digitraffic.graphql.rail.repositories.CauseRepository;
 import fi.digitraffic.graphql.rail.to.CauseTOConverter;
 
 @Component
 public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, TimeTableRowTO, Cause, CauseTO> {
-    @Autowired
-    private CauseRepository causeRepository;
-
     @Autowired
     private CauseTOConverter causeTOConverter;
 
@@ -37,17 +39,32 @@ public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, Time
     }
 
     @Override
-    public TimeTableRowId createKeyFromChild(Cause child) {
-        return child.timeTableRowId;
+    public TimeTableRowId createKeyFromChild(CauseTO causeTO) {
+        return new TimeTableRowId(causeTO.getTimeTableRowId().longValue(), causeTO.getDepartureDate(), causeTO.getTrainNumber().longValue());
     }
 
     @Override
-    public CauseTO createChildTOToFromChild(Cause child) {
-        return causeTOConverter.convert(child);
+    public CauseTO createChildTOFromTuple(Tuple tuple) {
+        return causeTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Cause> findChildrenByKeys(List<TimeTableRowId> keys) {
-        return causeRepository.findAllByTimeTableRowIds(keys);
+    public Class getEntityClass() {
+        return Cause.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.CAUSE;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QCause.cause;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<TimeTableRowId> keys) {
+        return QCause.cause.timeTableRowId.in(keys);
     }
 }

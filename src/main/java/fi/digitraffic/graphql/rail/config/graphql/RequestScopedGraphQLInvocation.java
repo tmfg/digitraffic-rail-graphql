@@ -41,7 +41,7 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         for (BaseLink fetcher : fetchers) {
             BatchLoader<?, ?> dataLoader = fetcher.createLoader();
             DataLoader<?, ?> loader = DataLoader.newDataLoader(dataLoader);
-            dataLoaderRegistry.register(fetcher.getFieldName(), loader);
+            dataLoaderRegistry.register(fetcher.getTypeName() + "." + fetcher.getFieldName(), loader);
         }
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);

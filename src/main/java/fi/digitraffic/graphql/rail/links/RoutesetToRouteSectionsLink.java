@@ -5,20 +5,24 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QRoutesection;
 import fi.digitraffic.graphql.rail.entities.Routesection;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.RoutesectionTO;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
-import fi.digitraffic.graphql.rail.repositories.RoutesectionRepository;
 import fi.digitraffic.graphql.rail.to.RoutesectionTOConverter;
 
 @Component
 public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMessageTO, Routesection, RoutesectionTO> {
     @Autowired
     private RoutesectionTOConverter routesectionTOConverter;
-
-    @Autowired
-    private RoutesectionRepository routesectionRepository;
 
     @Override
     public String getTypeName() {
@@ -36,19 +40,37 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
     }
 
     @Override
-    public Long createKeyFromChild(Routesection child) {
-        return child.routesetId;
+    public Long createKeyFromChild(RoutesectionTO routesectionTO) {
+        return routesectionTO.getRoutesetId().longValue();
     }
 
     @Override
-    public RoutesectionTO createChildTOToFromChild(Routesection child) {
-        return routesectionTOConverter.convert(child);
+    public RoutesectionTO createChildTOFromTuple(Tuple tuple) {
+        return routesectionTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Routesection> findChildrenByKeys(List<Long> keys) {
-        return routesectionRepository.findAllByRoutesetIdInOrderBySectionOrderAsc(keys);
+    public Class getEntityClass() {
+        return Routesection.class;
     }
 
+    @Override
+    public Expression[] getFields() {
+        return AllFields.ROUTESECTION;
+    }
 
+    @Override
+    public EntityPath getEntityTable() {
+        return QRoutesection.routesection;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<Long> keys) {
+        return QRoutesection.routesection.routesetId.in(keys);
+    }
+
+    @Override
+    public OrderSpecifier createDefaultOrder() {
+        return new OrderSpecifier(Order.ASC, QRoutesection.routesection.sectionOrder);
+    }
 }

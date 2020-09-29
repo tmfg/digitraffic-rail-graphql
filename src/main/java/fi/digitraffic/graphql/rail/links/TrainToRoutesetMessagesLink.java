@@ -1,27 +1,27 @@
 package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QRouteset;
 import fi.digitraffic.graphql.rail.entities.Routeset;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
-import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.repositories.RoutesetRepository;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 
 @Component
-public class TrainToRoutesetMessagesLink extends OneToManyLink<TrainId, TrainTO, Routeset, RoutesetMessageTO> {
+public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, Routeset, RoutesetMessageTO> {
     @Autowired
     private RoutesetMessageTOConverter routesetMessageTOConverter;
-
-    @Autowired
-    private RoutesetRepository routesetRepository;
 
     @Override
     public String getTypeName() {
@@ -34,29 +34,37 @@ public class TrainToRoutesetMessagesLink extends OneToManyLink<TrainId, TrainTO,
     }
 
     @Override
-    public TrainId createKeyFromParent(TrainTO trainTO) {
-        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
+    public StringVirtualDepartureDateTrainId createKeyFromParent(TrainTO trainTO) {
+        return new StringVirtualDepartureDateTrainId(trainTO.getTrainNumber().toString(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainId createKeyFromChild(Routeset child) {
-        Long trainNumber;
-        try {
-            trainNumber = Long.parseLong(child.trainId.trainNumber);
-        } catch (NumberFormatException e) {
-            trainNumber = -1111L;
-        }
-        return new TrainId(trainNumber, child.trainId.virtualDepartureDate);
+    public StringVirtualDepartureDateTrainId createKeyFromChild(RoutesetMessageTO routesetMessageTO) {
+        return new StringVirtualDepartureDateTrainId(routesetMessageTO.getTrainNumber(), routesetMessageTO.getDepartureDate());
     }
 
     @Override
-    public RoutesetMessageTO createChildTOToFromChild(Routeset child) {
-        return routesetMessageTOConverter.convert(child);
+    public RoutesetMessageTO createChildTOFromTuple(Tuple tuple) {
+        return routesetMessageTOConverter.convert(tuple);
     }
 
     @Override
-    public List<Routeset> findChildrenByKeys(List<TrainId> keys) {
-        List<StringVirtualDepartureDateTrainId> stringTrainIds = keys.stream().map(s -> new StringVirtualDepartureDateTrainId(s.trainNumber.toString(), s.departureDate)).collect(Collectors.toList());
-        return routesetRepository.findAllByTrainIds(stringTrainIds);
+    public Class getEntityClass() {
+        return Routeset.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.ROUTESET;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QRouteset.routeset;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<StringVirtualDepartureDateTrainId> keys) {
+        return QRouteset.routeset.trainId.in(keys);
     }
 }

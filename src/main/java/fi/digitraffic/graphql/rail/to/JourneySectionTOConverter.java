@@ -2,20 +2,22 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.entities.JourneySection;
+import com.querydsl.core.Tuple;
+import fi.digitraffic.graphql.rail.entities.QJourneySection;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 
 @Component
-public class JourneySectionTOConverter {
-    public JourneySectionTO convert(JourneySection entity) {
+public class JourneySectionTOConverter extends BaseConverter<JourneySectionTO> {
+    @Override
+    public JourneySectionTO convert(Tuple tuple) {
         return new JourneySectionTO(
-                entity.id.intValue(),
-                entity.trainId.departureDate,
-                entity.trainId.trainNumber.intValue(),
-                entity.attapId.intValue(),
-                entity.saapAttapId.intValue(),
-                entity.maximumSpeed,
-                entity.totalLength,
+                tuple.get(QJourneySection.journeySection.id).intValue(),
+                tuple.get(QJourneySection.journeySection.trainId.departureDate),
+                tuple.get(QJourneySection.journeySection.trainId.trainNumber).intValue(),
+                tuple.get(QJourneySection.journeySection.attapId).intValue(),
+                tuple.get(QJourneySection.journeySection.saapAttapId).intValue(),
+                tuple.get(QJourneySection.journeySection.maximumSpeed),
+                tuple.get(QJourneySection.journeySection.totalLength),
                 null,
                 null,
                 null,

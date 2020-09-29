@@ -8,12 +8,11 @@ import org.dataloader.BatchLoader;
 
 public abstract class OneToOneLink<KeyType, ParentTOType, ChildEntityType, ChildTOType> extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildTOType> {
     public BatchLoader<KeyType, ChildTOType> createLoader() {
-        Function<ChildEntityType, ChildTOType> childTOConverter = s -> createChildTOToFromChild(s);
-        return createDataLoader(parentIds -> findChildrenByKeys(parentIds), (children) -> {
+        return createDataLoader((children) -> {
                     Map<KeyType, ChildTOType> childrenMap = new HashMap<>();
-                    for (ChildEntityType child1 : children) {
-                        KeyType parentId = ((Function<ChildEntityType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
-                        childrenMap.put(parentId, childTOConverter.apply(child1));
+                    for (ChildTOType child1 : children) {
+                        KeyType parentId = ((Function<ChildTOType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
+                        childrenMap.put(parentId, child1);
                     }
 
                     return childrenMap;

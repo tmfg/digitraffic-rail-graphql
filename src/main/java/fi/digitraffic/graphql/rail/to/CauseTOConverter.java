@@ -2,31 +2,25 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-import fi.digitraffic.graphql.rail.entities.Cause;
+import com.querydsl.core.Tuple;
+import fi.digitraffic.graphql.rail.entities.QCause;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 
 @Component
-public class CauseTOConverter {
-    public CauseTO convert(Cause entity) {
+public class CauseTOConverter extends BaseConverter<CauseTO> {
+    @Override
+    public CauseTO convert(Tuple tuple) {
         return new CauseTO(
-                entity.timeTableRowId.attapId.intValue(),
-                entity.timeTableRowId.trainNumber.intValue(),
-                entity.timeTableRowId.departureDate,
-                entity.id.intValue(),
-                longToNullableInteger(entity.categoryCodeId),
-                longToNullableInteger(entity.detailedCategoryCodeId),
-                longToNullableInteger(entity.thirdCategoryCodeId),
+                tuple.get(QCause.cause.timeTableRowId.attapId).intValue(),
+                tuple.get(QCause.cause.timeTableRowId.trainNumber).intValue(),
+                tuple.get(QCause.cause.timeTableRowId.departureDate),
+                tuple.get(QCause.cause.id).intValue(),
+                nullableInt(tuple.get(QCause.cause.categoryCodeId)),
+                nullableInt(tuple.get(QCause.cause.detailedCategoryCodeId)),
+                nullableInt(tuple.get(QCause.cause.thirdCategoryCodeId)),
                 null,
                 null,
                 null
         );
-    }
-
-    public Integer longToNullableInteger(Long value) {
-        if (value == null) {
-            return null;
-        } else {
-            return value.intValue();
-        }
     }
 }

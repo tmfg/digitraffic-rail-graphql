@@ -1,25 +1,25 @@
 package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.config.graphql.AllFields;
+import fi.digitraffic.graphql.rail.entities.QTrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
-import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
-import fi.digitraffic.graphql.rail.repositories.TrainTrackingMessageRepository;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
 
 @Component
-public class TrainToTrainTrackingMessagesLink extends OneToManyLink<TrainId, TrainTO, TrainTrackingMessage, TrainTrackingMessageTO> {
-    @Autowired
-    private TrainTrackingMessageRepository trainTrackingMessageRepository;
-
+public class TrainToTrainTrackingMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, TrainTrackingMessage, TrainTrackingMessageTO> {
     @Autowired
     private TrainTrackingTOConverter trainTrackingTOConverter;
 
@@ -34,29 +34,37 @@ public class TrainToTrainTrackingMessagesLink extends OneToManyLink<TrainId, Tra
     }
 
     @Override
-    public TrainId createKeyFromParent(TrainTO trainTO) {
-        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
+    public StringVirtualDepartureDateTrainId createKeyFromParent(TrainTO trainTO) {
+        return new StringVirtualDepartureDateTrainId(trainTO.getTrainNumber().toString(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainId createKeyFromChild(TrainTrackingMessage child) {
-        Long trainNumber;
-        try {
-            trainNumber = Long.parseLong(child.trainId.trainNumber);
-        } catch (NumberFormatException e) {
-            trainNumber = -1111L;
-        }
-        return new TrainId(trainNumber, child.trainId.virtualDepartureDate);
+    public StringVirtualDepartureDateTrainId createKeyFromChild(TrainTrackingMessageTO trainTrackingMessageTO) {
+        return new StringVirtualDepartureDateTrainId(trainTrackingMessageTO.getTrainNumber(), trainTrackingMessageTO.getDepartureDate());
     }
 
     @Override
-    public TrainTrackingMessageTO createChildTOToFromChild(TrainTrackingMessage child) {
-        return trainTrackingTOConverter.convert(child);
+    public TrainTrackingMessageTO createChildTOFromTuple(Tuple tuple) {
+        return trainTrackingTOConverter.convert(tuple);
     }
 
     @Override
-    public List<TrainTrackingMessage> findChildrenByKeys(List<TrainId> keys) {
-        List<StringVirtualDepartureDateTrainId> stringTrainIds = keys.stream().map(s -> new StringVirtualDepartureDateTrainId(s.trainNumber.toString(), s.departureDate)).collect(Collectors.toList());
-        return trainTrackingMessageRepository.findAllByTrainIds(stringTrainIds);
+    public Class getEntityClass() {
+        return TrainTrackingMessage.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN_TRACKING_MESSAGE;
+    }
+
+    @Override
+    public EntityPath getEntityTable() {
+        return QTrainTrackingMessage.trainTrackingMessage;
+    }
+
+    @Override
+    public BooleanExpression createWhere(List<StringVirtualDepartureDateTrainId> keys) {
+        return QTrainTrackingMessage.trainTrackingMessage.trainId.in(keys);
     }
 }
