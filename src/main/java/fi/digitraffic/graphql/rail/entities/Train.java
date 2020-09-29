@@ -2,6 +2,7 @@ package fi.digitraffic.graphql.rail.entities;
 
 import java.time.ZonedDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,6 +31,9 @@ public class Train {
     public Integer operatorUicCode;
     public Long trainCategoryId;
     public Long trainTypeId;
+
+    @Column(updatable = false, insertable = false)
+    public Long trainNumber;
 
     @Lazy
     @ManyToOne(fetch = FetchType.LAZY)

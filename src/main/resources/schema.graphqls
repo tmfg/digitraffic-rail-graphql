@@ -296,9 +296,9 @@ input TrainFilter {
     version : VersionFilter
     operator : OperatorFilter
     trainType : TrainTypeFilter
-    timeTableRows : TimeTableRowFilter
-    trainLocations : TrainLocationFilter
-    compositions : CompositionFilter
+    #    timeTableRows : TimeTableRowFilter
+    #    trainLocations : TrainLocationFilter
+    #    compositions : CompositionFilter
 }
 
 input TimeTableRowFilter {
@@ -312,7 +312,7 @@ input TimeTableRowFilter {
     scheduledTime : DateTimeFilter
     actualTime : DateTimeFilter
     station : StationFilter
-    causes : CauseFilter
+    #    causes : CauseFilter
 }
 
 input TrainTypeFilter {
@@ -341,7 +341,7 @@ input StationFilter {
     or : [StationFilter]
     passengerTraffic : BooleanFilter
     countryCode : StringFilter
-    location : CoordinateFilter
+    #    location : CoordinateFilter
     name : StringFilter
     shortCode : StringFilter
     uicCode : IntegerFilter
@@ -389,7 +389,7 @@ input TrainLocationFilter {
     or : [TrainLocationFilter]
     speed : IntegerFilter
     timestamp : DateTimeFilter
-    location : CoordinateFilter
+    #    location : CoordinateFilter
     train : TrainFilter
 }
 

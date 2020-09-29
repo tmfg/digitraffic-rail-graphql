@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.querydsl.core.Tuple;
@@ -23,11 +24,15 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import fi.digitraffic.graphql.rail.config.graphql.WhereExpressionBuilder;
 import fi.digitraffic.graphql.rail.entities.Train;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseQuery<T> {
+    @Autowired
+    private WhereExpressionBuilder whereExpressionBuilder;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -56,7 +61,7 @@ public abstract class BaseQuery<T> {
     public DataFetcher<List<T>> createFetcher() {
         return dataFetchingEnvironment -> {
             Class entityClass = getEntityClass();
-            PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().toLowerCase());
+            PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
             JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
                     getFields())
@@ -95,12 +100,11 @@ public abstract class BaseQuery<T> {
         }
     }
 
+
     private JPAQuery<Tuple> createWhereQuery(JPAQuery<Tuple> query, PathBuilder root, BooleanExpression basicWhere, Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            Pair<List<String>, Object> where = this.getPathAndDeepValueAsString(whereAsMap, new ArrayList<>());
-            List<String> filterPath = where.getLeft().subList(0, where.getLeft().size() - 1);
-            BooleanExpression dynamicWhere = ((PathBuilder) getProperty(root, filterPath)).eq(where.getRight());
-            return query.where(basicWhere.and(dynamicWhere));
+            BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
+            return query.where(basicWhere.and(whereExpression));
         } else {
             return query.where(basicWhere);
         }

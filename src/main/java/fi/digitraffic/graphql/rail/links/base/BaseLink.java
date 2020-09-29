@@ -13,6 +13,7 @@ import org.dataloader.DataLoaderRegistry;
 
 import com.google.common.collect.Lists;
 import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     public abstract String getTypeName();
@@ -29,8 +30,11 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public abstract BatchLoader<KeyType, ChildFieldType> createLoader();
 
+    protected DataFetchingEnvironment dataFetchingEnvironment;
+
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
+            this.dataFetchingEnvironment = dataFetchingEnvironment;
             ParentTOType parent = dataFetchingEnvironment.getSource();
 
             DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getContext();
