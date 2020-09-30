@@ -85,7 +85,8 @@ public abstract class BaseQuery<T> {
 
     private JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
         if (limitArgument != null) {
-            return query.limit(((Integer) limitArgument).longValue());
+            long limit = Math.min(MAX_RESULTS, (Integer) limitArgument);
+            return query.limit(limit);
         } else {
             return query.limit(MAX_RESULTS);
         }
