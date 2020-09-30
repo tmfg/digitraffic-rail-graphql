@@ -4,10 +4,10 @@ type Query {
     #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainFilter) : [Train]
     trainsByVersionGreaterThan(version : String, where : TrainFilter, orderBy : TrainOrderBy, skip: Int, take : Int) : [Train]
     trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainFilter, orderBy : TrainOrderBy, skip: Int, take : Int) : [Train]
-    latestTrainLocations(where : TrainLocationFilter, orderBy : TrainLocationOrderBy, take : Int) : [TrainLocation]
-    compositionsGreaterThanVersion(version : String, where : CompositionFilter) : [Composition]
-    trainTrackingMessagesByVersionGreaterThan(version : String, where : TrainTrackingMessageFilter) : [TrainTrackingMessage]
-    routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageFilter) : [RoutesetMessage]
+    latestTrainLocations(where : TrainLocationFilter, orderBy : TrainLocationOrderBy, skip: Int, take : Int) : [TrainLocation]
+    compositionsGreaterThanVersion(version : String, where : CompositionFilter, skip: Int, take : Int) : [Composition]
+    trainTrackingMessagesByVersionGreaterThan(version : String, where : TrainTrackingMessageFilter, skip: Int, take : Int) : [TrainTrackingMessage]
+    routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageFilter, skip: Int, take : Int) : [RoutesetMessage]
 }
 
 type Train {
