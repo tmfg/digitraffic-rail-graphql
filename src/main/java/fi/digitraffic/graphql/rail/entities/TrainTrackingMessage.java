@@ -13,8 +13,6 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.springframework.context.annotation.Lazy;
-
 @Entity
 @Table(name = "train_running_message")
 public class TrainTrackingMessage {
@@ -54,7 +52,6 @@ public class TrainTrackingMessage {
     @JoinColumn(name = "previousStation", referencedColumnName = "shortCode", updatable = false, insertable = false)
     private Station previousStation;
 
-    @Lazy
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),

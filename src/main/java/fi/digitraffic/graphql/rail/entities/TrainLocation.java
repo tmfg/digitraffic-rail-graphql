@@ -11,7 +11,6 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
 import org.locationtech.jts.geom.Point;
-import org.springframework.context.annotation.Lazy;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,7 +32,6 @@ public class TrainLocation {
     public TrainLocationConnectionQuality connectionQuality;
 
 
-    @Lazy
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),

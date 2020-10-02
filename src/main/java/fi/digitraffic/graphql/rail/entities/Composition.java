@@ -7,8 +7,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 
-import org.springframework.context.annotation.Lazy;
-
 @Entity
 public class Composition {
 
@@ -23,7 +21,6 @@ public class Composition {
 
     public Long version;
 
-    @Lazy
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),
