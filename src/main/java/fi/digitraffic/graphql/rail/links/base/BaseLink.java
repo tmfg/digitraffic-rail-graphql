@@ -27,7 +27,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fi.digitraffic.graphql.rail.config.graphql.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.config.graphql.WhereExpressionBuilder;
-import fi.digitraffic.graphql.rail.entities.Train;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -50,7 +49,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public abstract BatchLoader<KeyType, ChildFieldType> createLoader();
 
-    public abstract Class getEntityClass();
+    public abstract Class<ChildEntityType> getEntityClass();
 
     public abstract Expression[] getFields();
 
@@ -89,20 +88,20 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     protected <ResultType> BatchLoader<KeyType, ResultType> createDataLoader(Function<List<ChildTOType>, Map<KeyType, ResultType>> childGroupFunction) {
         return parentIds -> CompletableFuture.supplyAsync(() -> {
-                    List<List<KeyType>> partitions = Lists.partition(parentIds, 2499);
-                    List<ChildTOType> children = new ArrayList<>(parentIds.size());
+            List<List<KeyType>> partitions = Lists.partition(parentIds, 2499);
+            List<ChildTOType> children = new ArrayList<>(parentIds.size());
 
-                    Class entityClass = getEntityClass();
-                    PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+            Class<ChildEntityType> entityClass = getEntityClass();
+            PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-                    for (List<KeyType> partition : partitions) {
-                        JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
-                        BooleanExpression basicWhere = this.createWhere(partition);
-                        JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-                        JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+            for (List<KeyType> partition : partitions) {
+                JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
+                BooleanExpression basicWhere = this.createWhere(partition);
+                JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+                JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
-                        children.addAll(queryAfterOrderBy.fetch().stream().map(s -> this.createChildTOFromTuple(s)).collect(Collectors.toList()));
-                    }
+                children.addAll(queryAfterOrderBy.fetch().stream().map(s -> this.createChildTOFromTuple(s)).collect(Collectors.toList()));
+            }
 
                     Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children);
 

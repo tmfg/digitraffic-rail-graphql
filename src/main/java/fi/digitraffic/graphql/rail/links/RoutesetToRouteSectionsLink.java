@@ -50,7 +50,7 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Routesection> getEntityClass() {
         return Routesection.class;
     }
 
