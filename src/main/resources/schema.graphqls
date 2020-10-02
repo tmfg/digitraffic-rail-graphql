@@ -1,29 +1,29 @@
 type Query {
-    train(trainNumber : Int, departureDate : Date) : Train
-    trainsByDepartureDate(departureDate : Date) : [Train]
-    trainsByVersionGreaterThan(version : String) : [Train]
-    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
+    train(trainNumber : Int!, departureDate : Date!) : Train
+    trainsByDepartureDate(departureDate : Date!) : [Train]
+    trainsByVersionGreaterThan(version : String!) : [Train]
+    trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
     latestTrainLocations : [TrainLocation]
-    compositionsGreaterThanVersion(version : String) : [Composition]
-    trainTrackingMessagesByVersionGreaterThan(version : String) : [TrainTrackingMessage]
-    routesetMessagesByVersionGreaterThan(version : String) : [RoutesetMessage]
+    compositionsGreaterThanVersion(version : String!) : [Composition]
+    trainTrackingMessagesByVersionGreaterThan(version : String!) : [TrainTrackingMessage]
+    routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage]
 }
 
 type Train {
-    cancelled : Boolean
+    cancelled : Boolean!
     commuterLineid : String
     deleted : Boolean
-    departureDate : Date
-    operatorShortCode : String
-    runningCurrently : Boolean
-    timetableAcceptanceDate : DateTime
-    timetableType : TimetableType
-    trainNumber : Int
-    version : String
-    trainTypeId : Int
-    trainCategoryId : Int
-    operator : Operator
-    trainType : TrainType
+    departureDate : Date!
+    operatorShortCode : String!
+    runningCurrently : Boolean!
+    timetableAcceptanceDate : DateTime!
+    timetableType : TimetableType!
+    trainNumber : Int!
+    version : String!
+    trainTypeId : Int!
+    trainCategoryId : Int!
+    operator : Operator!
+    trainType : TrainType!
     timeTableRows : [TimeTableRow]
     trainLocations : [TrainLocation]
     compositions : [Composition]
@@ -32,107 +32,107 @@ type Train {
 }
 
 type TrainType {
-    id : Int
-    name : String
-    trainCategoryId : Int
-    trainCategory : TrainCategory
+    id : Int!
+    name : String!
+    trainCategoryId : Int!
+    trainCategory : TrainCategory!
 }
 
 type TrainCategory {
-    id : Int
-    name : String
+    id : Int!
+    name : String!
 }
 
 type TimeTableRow {
-    stationShortCode : String
-    stationUICCode : Int
-    countryCode : String
-    type : TimeTableRowType
-    trainStopping : Boolean
+    stationShortCode : String!
+    stationUICCode : Int!
+    countryCode : String!
+    type : TimeTableRowType!
+    trainStopping : Boolean!
     commercialStop : Boolean
     commercialTrack : String
-    cancelled : Boolean
-    scheduledTime : DateTime
-    actualTime : DateTime
+    cancelled : Boolean!
+    scheduledTime : DateTime!
+    actualTime : DateTime!
 
-    id : Int
-    trainNumber : Int
-    departureDate : Date
+    id : Int!
+    trainNumber : Int!
+    departureDate : Date!
 
-    station : Station
+    station : Station!
     causes : [Cause]
 }
 
 type Cause {
-    timeTableRowId : Int
-    trainNumber : Int
-    departureDate : Date
+    timeTableRowId : Int!
+    trainNumber : Int!
+    departureDate : Date!
 
-    id : Int
-    categoryCodeId : Int
+    id : Int!
+    categoryCodeId : Int!
     detailedCategoryCodeId : Int
     thirdCategoryCodeId : Int
-    categoryCode : CategoryCode
+    categoryCode : CategoryCode!
     detailedCategoryCode : DetailedCategoryCode
     thirdCategoryCode : ThirdCategoryCode
 }
 
 type Operator {
-    name : String
-    shortCode : String
-    uicCode : Int
+    name : String!
+    shortCode : String!
+    uicCode : Int!
 }
 
 type TrainLocation {
-    departureDate : Date
-    speed : Int
-    timestamp : DateTime
-    trainNumber : Int
+    departureDate : Date!
+    speed : Int!
+    timestamp : DateTime!
+    trainNumber : Int!
     location : [Float]
-    train : Train
+    train : Train!
 }
 
 type Composition {
-    departureDate : Date
-    trainNumber : Int
-    operatorShortCode : String
-    trainCategoryId : Int
-    trainTypeId : Int
-    version : String
-    operatorUicCode : Int
-    train : Train
+    departureDate : Date!
+    trainNumber : Int!
+    operatorShortCode : String!
+    trainCategoryId : Int!
+    trainTypeId : Int!
+    version : String!
+    operatorUicCode : Int!
+    train : Train!
     journeySections : [JourneySection]
 }
 
 type JourneySection {
-    id : Int
-    departureDate : Date
-    trainNumber : Int
-    beginTimeTableRowId : Int
-    endTimeTableRowId : Int
-    maximumSpeed : Int
-    totalLength : Int
-    startTimeTableRow : TimeTableRow
-    endTimeTableRow : TimeTableRow
+    id : Int!
+    departureDate : Date!
+    trainNumber : Int!
+    beginTimeTableRowId : Int!
+    endTimeTableRowId : Int!
+    maximumSpeed : Int!
+    totalLength : Int!
+    startTimeTableRow : TimeTableRow!
+    endTimeTableRow : TimeTableRow!
     wagons : [Wagon]
     locomotives : [Locomotive]
 }
 
 type Locomotive {
-    id : Int
-    location : Int
-    locomotiveType : String
-    powerTypeAbbreviation : String
-    journeysectionId : Int
+    id : Int!
+    location : Int!
+    locomotiveType : String!
+    powerTypeAbbreviation : String!
+    journeysectionId : Int!
     vehicleNumber : String
 }
 
 type Wagon {
-    id : Int
-    length : Int
-    location : Int
-    salesNumber : Int
-    journeysectionId : Int
+    id : Int!
+    length : Int!
+    location : Int!
+    salesNumber : Int!
+    journeysectionId : Int!
     catering : Boolean
     disabled : Boolean
     luggage : Boolean
@@ -140,85 +140,85 @@ type Wagon {
     playground : Boolean
     smoking : Boolean
     video : Boolean
-    wagonType : String
+    wagonType : String!
     vehicleNumber : String
 }
 
 type Station {
-    id : Int
-    passengerTraffic : Boolean
-    countryCode : String
+    id : Int!
+    passengerTraffic : Boolean!
+    countryCode : String!
     location : [Float]
-    name : String
-    shortCode : String
-    uicCode : Int
-    type : StationType
+    name : String!
+    shortCode : String!
+    uicCode : Int!
+    type : StationType!
 }
 
 type CategoryCode {
-    code : String
-    name : String
-    id : Int
-    validFrom : Date
+    code : String!
+    name : String!
+    id : Int!
+    validFrom : Date!
     validTo : Date
 }
 
 type DetailedCategoryCode {
-    code : String
-    name : String
-    id : Int
-    categoryCodeId : Int
-    validFrom : Date
+    code : String!
+    name : String!
+    id : Int!
+    categoryCodeId : Int!
+    validFrom : Date!
     validTo : Date
 }
 
 type ThirdCategoryCode {
-    code : String
-    name : String
-    description : String
-    id : Int
-    validFrom : Date
+    code : String!
+    name : String!
+    description : String!
+    id : Int!
+    validFrom : Date!
     validTo : Date
-    detailedCategoryCodeId : Int
+    detailedCategoryCodeId : Int!
 }
 
 type TrainTrackingMessage {
-    id : Int
-    trainNumber : String
-    departureDate : Date
-    stationShortCode : String
+    id : Int!
+    trainNumber : String!
+    departureDate : Date!
+    stationShortCode : String!
     nextStationShortCode : String
     previousStationShortCode : String
-    version : String
-    timestamp : DateTime
-    trackSection : String
+    version : String!
+    timestamp : DateTime!
+    trackSection : String!
     nextTrackSection : String
     previousTrackSection : String
-    type : TrainTrackingMessageType
-    station : Station
+    type : TrainTrackingMessageType!
+    station : Station!
     nextStation : Station
     previousStation : Station
-    train : Train
+    train : Train!
 }
 
 type RoutesetMessage {
-    id : Int
-    version : String
-    messageTime : DateTime
-    trainNumber : String
+    id : Int!
+    version : String!
+    messageTime : DateTime!
+    trainNumber : String!
     departureDate : Date
-    routeType : String
-    clientSystem : String
+    routeType : String!
+    clientSystem : String!
     routesections : [Routesection]
-    train : Train
+    train : Train!
 }
 
 type Routesection {
-    sectionId : String
-    commercialTrackId : String
-    stationCode : String
-    routesetId : Int
-    station : Station
+    sectionId : String!
+    commercialTrackId : String!
+    stationCode : String!
+    routesetId : Int!
+    station : Station!
 }
 
 ## SCALARS
