@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -34,6 +35,7 @@ import graphql.language.InputObjectTypeDefinition;
 import graphql.language.InputValueDefinition;
 import graphql.language.ListType;
 import graphql.language.NodeChildrenContainer;
+import graphql.language.NonNullType;
 import graphql.language.ObjectTypeDefinition;
 import graphql.language.Type;
 import graphql.language.TypeDefinition;
@@ -187,9 +189,9 @@ public class GraphQLProvider {
         for (ObjectTypeDefinition userType : userTypes) {
             List<InputValueDefinition> inputValueDefinitions = new ArrayList<>();
             for (FieldDefinition fieldDefinition : userType.getFieldDefinitions()) {
-                if (fieldDefinition.getType() instanceof TypeName) {
-                    TypeName typeName = (TypeName) fieldDefinition.getType();
-                    String name = typeName.getName();
+                Optional<String> optionalName = getTypeName(fieldDefinition.getType());
+                if (optionalName.isPresent()) {
+                    String name = optionalName.get();
                     String fieldName = fieldDefinition.getName();
 
                     Type type;
@@ -215,6 +217,18 @@ public class GraphQLProvider {
                     .inputValueDefinitions(inputValueDefinitions).build();
             typeRegistry.add(whereType);
         }
+    }
+
+    private Optional<String> getTypeName(Type type) {
+        if (type instanceof NonNullType) {
+            Type nestedType = ((NonNullType) type).getType();
+            if (nestedType instanceof TypeName) {
+                return Optional.of(((TypeName) nestedType).getName());
+            }
+        } else if (type instanceof TypeName) {
+            return Optional.of(((TypeName) type).getName());
+        }
+        return Optional.empty();
     }
 
     private void removeBlacklistedFields(TypeDefinitionRegistry typeRegistry) {
