@@ -70,6 +70,7 @@ public class GraphQLProvider {
 
     private Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
     private Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
+    private Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "EnumWhere");
 
     @PostConstruct
     public void init() throws IOException {
@@ -90,6 +91,7 @@ public class GraphQLProvider {
         addGenericArgumentsToQueries(typeRegistry);
         addGenericArgumentsToCollections(typeRegistry);
         generateOrderByTypes(typeRegistry);
+        generateWhereTypes(typeRegistry);
 
         RuntimeWiring runtimeWiring = buildWiring();
         SchemaGenerator schemaGenerator = new SchemaGenerator();
@@ -175,6 +177,53 @@ public class GraphQLProvider {
         }
         typeRegistry.remove(oldQuery);
         typeRegistry.add(newQuery);
+    }
+
+    private void generateWhereTypes(TypeDefinitionRegistry typeRegistry) {
+        List<ObjectTypeDefinition> userTypes = new ArrayList<>();
+        for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
+            if (typeEntry.getValue() instanceof ObjectTypeDefinition && !typeEntry.getValue().getName().equals("Query") && !typeEntry.getValue().getName().endsWith("OrderBy")) {
+                userTypes.add((ObjectTypeDefinition) typeEntry.getValue());
+            }
+        }
+
+        for (ObjectTypeDefinition userType : userTypes) {
+            List<InputValueDefinition> inputValueDefinitions = new ArrayList<>();
+            for (FieldDefinition fieldDefinition : userType.getFieldDefinitions()) {
+                Optional<String> optionalName = getTypeName(fieldDefinition.getType());
+                if (optionalName.isPresent()) {
+                    String name = optionalName.get();
+                    String fieldName = fieldDefinition.getName();
+
+                    Type type;
+                    if (fieldNameWhereOverrides.containsKey(fieldName)) {
+                        type = TypeName.newTypeName(fieldNameWhereOverrides.get(fieldName)).build();
+                    } else if (PRIMITIVE_TYPES.contains(name)) {
+                        ;
+                        type = TypeName.newTypeName(optionalName.get() + "Where").build();
+                    } else if (name.endsWith("Type")) {
+                        type = TypeName.newTypeName("EnumWhere").build();
+                    } else {
+                        type = TypeName.newTypeName(name + "Where").build();
+                    }
+
+                    InputValueDefinition inputValueDefinition = InputValueDefinition.newInputValueDefinition()
+                            .type(type)
+                            .name(fieldName)
+                            .build();
+                    inputValueDefinitions.add(inputValueDefinition);
+                }
+            }
+
+            TypeName typeName = TypeName.newTypeName(userType.getName() + "Where").build();
+            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("and").type(ListType.newListType().type(typeName).build()).build());
+            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("or").type(ListType.newListType().type(typeName).build()).build());
+
+            InputObjectTypeDefinition whereType = InputObjectTypeDefinition.newInputObjectDefinition()
+                    .name(userType.getName() + "Where")
+                    .inputValueDefinitions(inputValueDefinitions).build();
+            typeRegistry.add(whereType);
+        }
     }
 
     private void generateOrderByTypes(TypeDefinitionRegistry typeRegistry) {
