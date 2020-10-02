@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
@@ -34,7 +35,7 @@ public class TrainTrackingMessageToNextStationLink extends OneToOneLink<String, 
 
     @Override
     public String createKeyFromParent(TrainTrackingMessageTO trainTrackingMessageTO) {
-        return trainTrackingMessageTO.getNextStationShortCode();
+        return Strings.nullToEmpty(trainTrackingMessageTO.getNextStationShortCode());
     }
 
     @Override

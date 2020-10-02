@@ -168,9 +168,9 @@ public class AllFields {
             QTrainTrackingMessage.trainTrackingMessage.trainId.trainNumber,
             QTrainTrackingMessage.trainTrackingMessage.trainId.virtualDepartureDate,
             QTrainTrackingMessage.trainTrackingMessage.id,
-            QTrainTrackingMessage.trainTrackingMessage.nextStation,
-            QTrainTrackingMessage.trainTrackingMessage.previousStation,
-            QTrainTrackingMessage.trainTrackingMessage.station,
+            QTrainTrackingMessage.trainTrackingMessage.nextStationShortCode,
+            QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode,
+            QTrainTrackingMessage.trainTrackingMessage.stationShortCode,
             QTrainTrackingMessage.trainTrackingMessage.nextTrackSection,
             QTrainTrackingMessage.trainTrackingMessage.previousTrackSection,
             QTrainTrackingMessage.trainTrackingMessage.trackSection

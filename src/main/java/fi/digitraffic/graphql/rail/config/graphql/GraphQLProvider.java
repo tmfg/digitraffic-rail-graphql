@@ -85,15 +85,58 @@ public class GraphQLProvider {
         TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
 
         removeBlacklistedFields(typeRegistry);
+        addGenericArgumentsToQueries(typeRegistry);
+        addGenericArgumentsToCollections(typeRegistry);
         generateOrderByTypes(typeRegistry);
-        addGeneralArgumentsToQueries(typeRegistry);
 
         RuntimeWiring runtimeWiring = buildWiring();
         SchemaGenerator schemaGenerator = new SchemaGenerator();
         return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
     }
 
-    private void addGeneralArgumentsToQueries(TypeDefinitionRegistry typeRegistry) {
+    private void addGenericArgumentsToCollections(TypeDefinitionRegistry typeRegistry) {
+        for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
+            TypeDefinition value = typeEntry.getValue();
+            if (value instanceof ObjectTypeDefinition && !value.getName().equals("Query")) {
+                ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) value;
+
+                List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
+                for (FieldDefinition fieldDefinition : objectTypeDefinition.getFieldDefinitions()) {
+                    if (fieldDefinition.getType() instanceof ListType) {
+                        ListType listType = (ListType) fieldDefinition.getType();
+                        TypeName childType = (TypeName) listType.getType();
+                        if (childType.getName().equals("Float")) {
+                            newFieldDefinitions.add(fieldDefinition);
+                        } else {
+                            List<InputValueDefinition> inputValueDefinitions = fieldDefinition.getInputValueDefinitions();
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(childType.getName() + "Where").build()).build());
+//                        inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
+//                        inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(TypeName.newTypeName(childType.getName() + "OrderBy").build()).build());
+
+                            newFieldDefinitions.add(
+                                    FieldDefinition.newFieldDefinition()
+                                            .name(fieldDefinition.getName())
+                                            .type(fieldDefinition.getType())
+                                            .inputValueDefinitions(inputValueDefinitions)
+                                            .build()
+                            );
+                        }
+                    } else {
+                        newFieldDefinitions.add(fieldDefinition);
+                    }
+                }
+
+                NodeChildrenContainer children = newNodeChildrenContainer()
+                        .children(CHILD_FIELD_DEFINITIONS, newFieldDefinitions)
+                        .build();
+                typeRegistry.remove(objectTypeDefinition);
+                typeRegistry.add(objectTypeDefinition.withNewChildren(children));
+            }
+        }
+    }
+
+    private void addGenericArgumentsToQueries(TypeDefinitionRegistry typeRegistry) {
         ObjectTypeDefinition oldQuery = null;
         ObjectTypeDefinition newQuery = null;
         for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
@@ -101,7 +144,7 @@ public class GraphQLProvider {
                 ObjectTypeDefinition queryObjectTypeDefinition = (ObjectTypeDefinition) typeEntry.getValue();
                 oldQuery = queryObjectTypeDefinition;
 
-                List<FieldDefinition> newQueries = new ArrayList<>();
+                List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
                 for (FieldDefinition fieldDefinition : queryObjectTypeDefinition.getFieldDefinitions()) {
                     if (fieldDefinition.getType() instanceof ListType) {
                         ListType listType = (ListType) fieldDefinition.getType();
@@ -113,19 +156,19 @@ public class GraphQLProvider {
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(TypeName.newTypeName(namedType.getName() + "OrderBy").build()).build());
 
-                        newQueries.add(FieldDefinition.newFieldDefinition()
+                        newFieldDefinitions.add(FieldDefinition.newFieldDefinition()
                                 .type(fieldDefinition.getType())
                                 .name(fieldDefinition.getName())
                                 .inputValueDefinitions(newInputValueDefinitions)
                                 .build());
                     } else {
-                        newQueries.add(fieldDefinition);
+                        newFieldDefinitions.add(fieldDefinition);
                     }
                 }
-                NodeChildrenContainer asdf = newNodeChildrenContainer()
-                        .children(CHILD_FIELD_DEFINITIONS, newQueries)
+                NodeChildrenContainer children = newNodeChildrenContainer()
+                        .children(CHILD_FIELD_DEFINITIONS, newFieldDefinitions)
                         .build();
-                newQuery = queryObjectTypeDefinition.withNewChildren(asdf);
+                newQuery = queryObjectTypeDefinition.withNewChildren(children);
             }
         }
         typeRegistry.remove(oldQuery);

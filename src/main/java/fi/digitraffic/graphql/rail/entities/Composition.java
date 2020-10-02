@@ -2,6 +2,12 @@ package fi.digitraffic.graphql.rail.entities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+
+import org.springframework.context.annotation.Lazy;
 
 @Entity
 public class Composition {
@@ -16,6 +22,13 @@ public class Composition {
     public Long trainTypeId;
 
     public Long version;
+
+    @Lazy
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumns({
+            @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),
+            @JoinColumn(name = "trainNumber", referencedColumnName = "trainNumber", nullable = false, insertable = false, updatable = false)})
+    private Train train;
 
 //    @OneToMany(mappedBy = "composition", fetch = FetchType.LAZY)
 //    @OrderBy

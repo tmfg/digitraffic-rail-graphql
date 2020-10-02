@@ -1,7 +1,10 @@
 package fi.digitraffic.graphql.rail.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -18,4 +21,8 @@ public class Routesection {
     public Long routesetId;
 
     public int sectionOrder;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stationCode", referencedColumnName = "shortCode", updatable = false, insertable = false)
+    private Station station;
 }
