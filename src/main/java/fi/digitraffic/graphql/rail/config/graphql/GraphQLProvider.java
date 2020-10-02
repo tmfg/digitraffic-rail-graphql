@@ -32,6 +32,8 @@ import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.language.FieldDefinition;
 import graphql.language.InputObjectTypeDefinition;
 import graphql.language.InputValueDefinition;
+import graphql.language.ListType;
+import graphql.language.NodeChildrenContainer;
 import graphql.language.ObjectTypeDefinition;
 import graphql.language.Type;
 import graphql.language.TypeDefinition;
@@ -84,10 +86,50 @@ public class GraphQLProvider {
 
         removeBlacklistedFields(typeRegistry);
         generateOrderByTypes(typeRegistry);
+        addGeneralArgumentsToQueries(typeRegistry);
 
         RuntimeWiring runtimeWiring = buildWiring();
         SchemaGenerator schemaGenerator = new SchemaGenerator();
         return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
+    }
+
+    private void addGeneralArgumentsToQueries(TypeDefinitionRegistry typeRegistry) {
+        ObjectTypeDefinition oldQuery = null;
+        ObjectTypeDefinition newQuery = null;
+        for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
+            if (typeEntry.getKey().equals("Query")) {
+                ObjectTypeDefinition queryObjectTypeDefinition = (ObjectTypeDefinition) typeEntry.getValue();
+                oldQuery = queryObjectTypeDefinition;
+
+                List<FieldDefinition> newQueries = new ArrayList<>();
+                for (FieldDefinition fieldDefinition : queryObjectTypeDefinition.getFieldDefinitions()) {
+                    if (fieldDefinition.getType() instanceof ListType) {
+                        ListType listType = (ListType) fieldDefinition.getType();
+                        TypeName namedType = (TypeName) listType.getType();
+
+                        List<InputValueDefinition> newInputValueDefinitions = fieldDefinition.getInputValueDefinitions();
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(namedType.getName() + "Where").build()).build());
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(TypeName.newTypeName(namedType.getName() + "OrderBy").build()).build());
+
+                        newQueries.add(FieldDefinition.newFieldDefinition()
+                                .type(fieldDefinition.getType())
+                                .name(fieldDefinition.getName())
+                                .inputValueDefinitions(newInputValueDefinitions)
+                                .build());
+                    } else {
+                        newQueries.add(fieldDefinition);
+                    }
+                }
+                NodeChildrenContainer asdf = newNodeChildrenContainer()
+                        .children(CHILD_FIELD_DEFINITIONS, newQueries)
+                        .build();
+                newQuery = queryObjectTypeDefinition.withNewChildren(asdf);
+            }
+        }
+        typeRegistry.remove(oldQuery);
+        typeRegistry.add(newQuery);
     }
 
     private void generateOrderByTypes(TypeDefinitionRegistry typeRegistry) {

@@ -9,8 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.springframework.context.annotation.Lazy;
-
 @Entity
 public class Train {
     public enum TimetableType {
@@ -35,9 +33,12 @@ public class Train {
     @Column(updatable = false, insertable = false)
     public Long trainNumber;
 
-    @Lazy
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operatorShortCode", referencedColumnName = "operator_short_code", updatable = false, insertable = false)
     private Operator operator;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trainTypeId", referencedColumnName = "id", updatable = false, insertable = false)
+    private TrainType trainType;
 
 }

@@ -1,13 +1,12 @@
 type Query {
     train(trainNumber : Int, departureDate : Date) : Train
-    trainsByDepartureDate(departureDate : Date, where : TrainWhere, orderBy : TrainOrderBy, skip: Int, take : Int) : [Train]
-    #    trainsByDepartureDateAndTrainNumberGreaterThan(departureDate : Date, trainNumberGreaterThan : Int, where : TrainWhere) : [Train]
-    trainsByVersionGreaterThan(version : String, where : TrainWhere, orderBy : TrainOrderBy, skip: Int, take : Int) : [Train]
-    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String], where : TrainWhere, orderBy : TrainOrderBy, skip: Int, take : Int) : [Train]
-    latestTrainLocations(where : TrainLocationWhere, orderBy : TrainLocationOrderBy, skip: Int, take : Int) : [TrainLocation]
-    compositionsGreaterThanVersion(version : String, where : CompositionWhere, orderBy: CompositionOrderBy, skip: Int, take : Int) : [Composition]
-    trainTrackingMessagesByVersionGreaterThan(version : String, where : TrainTrackingMessageWhere, orderBy: TrainTrackingMessageOrderBy, skip: Int, take : Int) : [TrainTrackingMessage]
-    routesetMessagesByVersionGreaterThan(version : String, where : RoutesetMessageWhere, orderBy: RoutesetMessageOrderBy, skip: Int, take : Int) : [RoutesetMessage]
+    trainsByDepartureDate(departureDate : Date) : [Train]
+    trainsByVersionGreaterThan(version : String) : [Train]
+    trainsByStationAndQuantity(station : String, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
+    latestTrainLocations : [TrainLocation]
+    compositionsGreaterThanVersion(version : String) : [Composition]
+    trainTrackingMessagesByVersionGreaterThan(version : String) : [TrainTrackingMessage]
+    routesetMessagesByVersionGreaterThan(version : String) : [RoutesetMessage]
 }
 
 type Train {
@@ -25,11 +24,11 @@ type Train {
     trainCategoryId : Int
     operator : Operator
     trainType : TrainType
-    timeTableRows(where : TimeTableRowWhere, orderBy: TimeTableRowOrderBy, take : Int) : [TimeTableRow]
-    trainLocations(where : TrainLocationWhere, orderBy : TrainLocationOrderBy, take : Int) : [TrainLocation]
-    compositions(where : CompositionWhere, take : Int) : [Composition]
-    trainTrackingMessages(where : TrainTrackingMessageWhere, take : Int) : [TrainTrackingMessage]
-    routesetMessages(where : RoutesetMessageWhere, take : Int): [RoutesetMessage]
+    timeTableRows : [TimeTableRow]
+    trainLocations : [TrainLocation]
+    compositions : [Composition]
+    trainTrackingMessages : [TrainTrackingMessage]
+    routesetMessages: [RoutesetMessage]
 }
 
 type TrainType {
@@ -61,7 +60,7 @@ type TimeTableRow {
     departureDate : Date
 
     station : Station
-    causes(where : CauseWhere, take : Int) : [Cause]
+    causes : [Cause]
 }
 
 type Cause {
@@ -102,7 +101,7 @@ type Composition {
     version : String
     operatorUicCode : Int
     train : Train
-    journeySections(where : JourneySectionWhere, take : Int) : [JourneySection]
+    journeySections : [JourneySection]
 }
 
 type JourneySection {
@@ -115,8 +114,8 @@ type JourneySection {
     totalLength : Int
     startTimeTableRow : TimeTableRow
     endTimeTableRow : TimeTableRow
-    wagons(where : WagonWhere, take : Int) : [Wagon]
-    locomotives(where : LocomotiveWhere, take : Int) : [Locomotive]
+    wagons : [Wagon]
+    locomotives : [Locomotive]
 }
 
 type Locomotive {
@@ -210,7 +209,7 @@ type RoutesetMessage {
     departureDate : Date
     routeType : String
     clientSystem : String
-    routesections(where : RoutesectionWhere, take : Int) : [Routesection]
+    routesections : [Routesection]
     train : Train
 }
 
@@ -245,65 +244,9 @@ enum TrainTrackingMessageType {
     OCCUPY,RELEASE
 }
 
-## ORDERBYs
-
-#input TrainOrderBy {
-#    cancelled : OrderDirection
-#    commuterLineid : OrderDirection
-#    deleted : OrderDirection
-#    departureDate : OrderDirection
-#    runningCurrently : OrderDirection
-#    timetableAcceptanceDate : OrderDirection
-#    timetableType : OrderDirection
-#    trainNumber : OrderDirection
-#    version : OrderDirection
-#        operator : OperatorOrderBy
-#        trainType : TrainTypeOrderBy
-#
-#    #    timeTableRows : TimeTableRowWhere
-#    #    trainLocations : TrainLocationWhere
-#    #    compositions : CompositionWhere
-#}
-#
-#input TimeTableRowOrderBy {
-#    type : OrderDirection
-#    trainStopping : OrderDirection
-#    commercialStop : OrderDirection
-#    commercialTrack : OrderDirection
-#    cancelled : OrderDirection
-#    scheduledTime : OrderDirection
-#    actualTime : OrderDirection
-#
-#    trainNumber : OrderDirection
-#    departureDate : OrderDirection
-#
-#    station : StationOrderBy
-#    #    causes(where : CauseWhere, take : Int) : [Cause]
-#}
-#
-#input StationOrderBy {
-#    passengerTraffic : OrderDirection
-#    countryCode : OrderDirection
-#    #    location : [Float]
-#    name : OrderDirection
-#    shortCode : OrderDirection
-#    uicCode : OrderDirection
-#    type : OrderDirection
-#}
-#
-#input TrainLocationOrderBy {
-#    train : TrainOrderBy
-#    speed : OrderDirection
-#    timestamp : OrderDirection
-#}
-
 enum OrderDirection {
     ASCENDING,
     DESCENDING
-}
-
-input OrderBy {
-    direction: OrderDirection
 }
 
 ## FILTERS
