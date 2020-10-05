@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import fi.digitraffic.graphql.rail.entities.QTrainTrackingMessage;
-import fi.digitraffic.graphql.rail.entities.TrainRunningMessageTypeEnum;
+import fi.digitraffic.graphql.rail.entities.TrainTrackingMessageTypeEnum;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
 
@@ -27,10 +27,10 @@ public class TrainTrackingTOConverter {
                 null, null, null, null);
     }
 
-    private TrainTrackingMessageTypeTO getType(TrainRunningMessageTypeEnum type) {
-        if (type == TrainRunningMessageTypeEnum.OCCUPY) {
+    private TrainTrackingMessageTypeTO getType(TrainTrackingMessageTypeEnum type) {
+        if (type == TrainTrackingMessageTypeEnum.OCCUPY) {
             return TrainTrackingMessageTypeTO.OCCUPY;
-        } else if (type == TrainRunningMessageTypeEnum.RELEASE) {
+        } else if (type == TrainTrackingMessageTypeEnum.RELEASE) {
             return TrainTrackingMessageTypeTO.RELEASE;
         } else {
             throw new IllegalArgumentException("Unknonwn TrainRunningMessageTypeEnum " + type);

@@ -258,30 +258,36 @@ enum OrderDirection {
 
 input BooleanWhere {
     eq : Boolean
+    ne : Boolean
 }
 
 input StringWhere {
     eq : String
+    ne : String
 }
 
 input IntWhere {
     eq : Int
+    ne : Int
     gt : Int
     lt : Int
 }
 
 input EnumWhere {
     eq : String
+    ne : String
 }
 
 input DateTimeWhere {
     eq : DateTime
+    ne : DateTime
     gt : DateTime
     lt : DateTime
 }
 
 input DateWhere {
     eq : Date
+    ne : Date
     gt : Date
     lt : Date
 }
@@ -292,6 +298,7 @@ input CoordinateWhere {
 
 input VersionWhere {
     eq : String
+    ne : String
     gt : String
     lt : String
 }

@@ -38,7 +38,7 @@ public class TrainTrackingMessage {
     public String nextStationShortCode;
     @Column(name = "previousStation")
     public String previousStationShortCode;
-    public TrainRunningMessageTypeEnum type;
+    public TrainTrackingMessageTypeEnum type;
 
     @Column(updatable = false, insertable = false)
     public Long trainNumber;
