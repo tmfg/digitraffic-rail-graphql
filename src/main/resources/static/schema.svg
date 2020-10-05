@@ -667,9 +667,9 @@
         <!-- TrainType&#45;&gt;TrainCategory -->
         <g id="edge26" class="edge">
             <title>TrainType:trainCategoryport&#45;&gt;TrainCategory</title>
-            <path fill="none" stroke="black" d="M3127.5,-728.5C3391.68,-728.5 3715.26,-739.056 3776.68,-741.144"/>
+            <path fill="none" stroke="black" d="M3127.5,-728.5C3344.21,-728.5 3600.9,-735.603 3720.05,-739.309"/>
             <polygon fill="black" stroke="black"
-                     points="3776.82,-744.651 3786.93,-741.498 3777.06,-737.655 3776.82,-744.651"/>
+                     points="3720,-742.809 3730.11,-739.624 3720.22,-735.812 3720,-742.809"/>
         </g>
         <!-- TimeTableRow&#45;&gt;Station -->
         <g id="edge27" class="edge">

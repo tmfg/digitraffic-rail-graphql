@@ -15,11 +15,16 @@ import com.querydsl.core.types.dsl.PathBuilder;
 
 @Service
 public class OrderByExpressionBuilder {
-    public OrderSpecifier create(PathBuilder root, Map<String, Object> orderByAsMap) {
-        Pair<List<String>, Object> order = this.getPathAndDeepValueAsString(orderByAsMap, new ArrayList<>());
-        Path<Object> dynamicOrder = getProperty(root, order.getLeft());
-        Order orderAsDSL = order.getRight().equals("ASCENDING") ? Order.ASC : Order.DESC;
-        return new OrderSpecifier(orderAsDSL, dynamicOrder);
+    public List<OrderSpecifier> create(PathBuilder root, List<Map<String, Object>> orderByArgument) {
+        List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
+        for (Map<String, Object> orderByMap : orderByArgument) {
+            Pair<List<String>, Object> order = this.getPathAndDeepValueAsString(orderByMap, new ArrayList<>());
+            Path<Object> dynamicOrder = getProperty(root, order.getLeft());
+            Order orderAsDSL = order.getRight().equals("ASCENDING") ? Order.ASC : Order.DESC;
+            orderSpecifiers.add(new OrderSpecifier(orderAsDSL, dynamicOrder));
+        }
+
+        return orderSpecifiers;
     }
 
     private Path<Object> getProperty(PathBuilder root, List<String> paths) {

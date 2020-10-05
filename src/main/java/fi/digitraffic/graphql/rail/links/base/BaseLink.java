@@ -119,9 +119,13 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         }
     }
 
-    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, PathBuilder root, Map<String, Object> orderByAsMap) {
-        if (orderByAsMap != null) {
-            return query.orderBy(this.orderByExpressionBuilder.create(root, orderByAsMap));
+    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, PathBuilder root, List<Map<String, Object>> orderByArgument) {
+        if (orderByArgument != null) {
+            List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
+            for (OrderSpecifier orderSpecifier : orderSpecifiers) {
+                query = query.orderBy(orderSpecifier);
+            }
+            return query;
         } else {
             OrderSpecifier defaultOrder = this.createDefaultOrder();
             if (defaultOrder != null) {

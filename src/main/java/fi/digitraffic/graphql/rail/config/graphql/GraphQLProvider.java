@@ -117,7 +117,7 @@ public class GraphQLProvider {
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(childType.getName() + "Where").build()).build());
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
-                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(TypeName.newTypeName(childType.getName() + "OrderBy").build()).build());
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(ListType.newListType(TypeName.newTypeName(childType.getName() + "OrderBy").build()).build()).build());
 
                             newFieldDefinitions.add(
                                     FieldDefinition.newFieldDefinition()
@@ -159,7 +159,7 @@ public class GraphQLProvider {
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(namedType.getName() + "Where").build()).build());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
-                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(TypeName.newTypeName(namedType.getName() + "OrderBy").build()).build());
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(ListType.newListType(TypeName.newTypeName(namedType.getName() + "OrderBy").build()).build()).build());
 
                         newFieldDefinitions.add(FieldDefinition.newFieldDefinition()
                                 .type(fieldDefinition.getType())
@@ -183,7 +183,7 @@ public class GraphQLProvider {
     private void generateWhereTypes(TypeDefinitionRegistry typeRegistry) {
         List<ObjectTypeDefinition> userTypes = new ArrayList<>();
         for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
-            if (typeEntry.getValue() instanceof ObjectTypeDefinition && !typeEntry.getValue().getName().equals("Query") && !typeEntry.getValue().getName().endsWith("OrderBy")) {
+            if (typeEntry.getValue() instanceof ObjectTypeDefinition && !typeEntry.getValue().getName().equals("Query")) {
                 userTypes.add((ObjectTypeDefinition) typeEntry.getValue());
             }
         }
