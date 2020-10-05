@@ -73,9 +73,9 @@ public abstract class BaseQuery<T> {
             JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
             JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
 
-            List<Tuple> trains = queryAfterLimit.fetch();
+            List<Tuple> rows = queryAfterLimit.fetch();
 
-            return trains.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+            return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
         };
     }
 

@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
@@ -50,6 +51,12 @@ public class TimeTableRow {
     public ZonedDateTime actualTime;
     public Long differenceInMinutes;
     public TimeTableRowType type;
+
+    @Column(updatable = false, insertable = false)
+    public Long trainNumber;
+
+    @Column(updatable = false, insertable = false)
+    public LocalDate departureDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stationShortCode", referencedColumnName = "shortCode", updatable = false, insertable = false)

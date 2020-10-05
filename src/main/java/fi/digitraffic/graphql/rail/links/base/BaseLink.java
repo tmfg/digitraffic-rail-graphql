@@ -88,20 +88,20 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     protected <ResultType> BatchLoader<KeyType, ResultType> createDataLoader(Function<List<ChildTOType>, Map<KeyType, ResultType>> childGroupFunction) {
         return parentIds -> CompletableFuture.supplyAsync(() -> {
-            List<List<KeyType>> partitions = Lists.partition(parentIds, 2499);
-            List<ChildTOType> children = new ArrayList<>(parentIds.size());
+                    List<List<KeyType>> partitions = Lists.partition(parentIds, 2499);
+                    List<ChildTOType> children = new ArrayList<>(parentIds.size());
 
-            Class<ChildEntityType> entityClass = getEntityClass();
-            PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+                    Class<ChildEntityType> entityClass = getEntityClass();
+                    PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-            for (List<KeyType> partition : partitions) {
-                JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
-                BooleanExpression basicWhere = this.createWhere(partition);
-                JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-                JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+                    for (List<KeyType> partition : partitions) {
+                        JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
+                        BooleanExpression basicWhere = this.createWhere(partition);
+                        JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+                        JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
-                children.addAll(queryAfterOrderBy.fetch().stream().map(s -> this.createChildTOFromTuple(s)).collect(Collectors.toList()));
-            }
+                        children.addAll(queryAfterOrderBy.fetch().stream().map(s -> this.createChildTOFromTuple(s)).collect(Collectors.toList()));
+                    }
 
                     Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children);
 

@@ -5,12 +5,9 @@ import java.time.ZonedDateTime;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 public class CompositionTimeTableRow {
     @Id
-    @JsonIgnore
     public Long id;
 
     public String stationShortCode;

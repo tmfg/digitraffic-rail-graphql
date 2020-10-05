@@ -1,5 +1,9 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,6 +35,14 @@ public class TrainLocation {
 
     public TrainLocationConnectionQuality connectionQuality;
 
+    @Column(updatable = false, insertable = false)
+    public Long trainNumber;
+
+    @Column(updatable = false, insertable = false)
+    public LocalDate departureDate;
+
+    @Column(updatable = false, insertable = false)
+    public ZonedDateTime timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({

@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
@@ -32,6 +33,9 @@ public class Train {
 
     @Column(updatable = false, insertable = false)
     public Long trainNumber;
+
+    @Column(updatable = false, insertable = false)
+    public LocalDate departureDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "operatorShortCode", referencedColumnName = "operator_short_code", updatable = false, insertable = false)

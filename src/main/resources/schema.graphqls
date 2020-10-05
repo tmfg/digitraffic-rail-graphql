@@ -1,11 +1,16 @@
 type Query {
-    train(trainNumber : Int!, departureDate : Date!) : Train
+    train(trainNumber : Int!, departureDate : Date!) : [Train]
     trainsByDepartureDate(departureDate : Date!) : [Train]
     trainsByVersionGreaterThan(version : String!) : [Train]
     trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
+    currentlyRunningTrains : [Train]
+
     latestTrainLocations : [TrainLocation]
+
     compositionsGreaterThanVersion(version : String!) : [Composition]
+
     trainTrackingMessagesByVersionGreaterThan(version : String!) : [TrainTrackingMessage]
+
     routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage]
 }
 

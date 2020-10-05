@@ -40,6 +40,9 @@ public class TrainTrackingMessage {
     public String previousStationShortCode;
     public TrainRunningMessageTypeEnum type;
 
+    @Column(updatable = false, insertable = false)
+    public Long trainNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station", referencedColumnName = "shortCode", updatable = false, insertable = false)
     private Station station;
