@@ -9,13 +9,13 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component

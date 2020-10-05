@@ -9,12 +9,12 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.QWagon;
 import fi.digitraffic.graphql.rail.entities.Wagon;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.WagonTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.WagonTOConverter;
 
 @Component

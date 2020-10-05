@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.config.graphql;
+package fi.digitraffic.graphql.rail.querydsl;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

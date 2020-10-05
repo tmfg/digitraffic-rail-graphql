@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.config.graphql;
+package fi.digitraffic.graphql.rail.querydsl;
 
 import com.querydsl.core.types.Expression;
 import fi.digitraffic.graphql.rail.entities.QCategoryCode;

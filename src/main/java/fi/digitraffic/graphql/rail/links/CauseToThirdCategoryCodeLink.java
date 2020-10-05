@@ -9,12 +9,12 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.QThirdCategoryCode;
 import fi.digitraffic.graphql.rail.entities.ThirdCategoryCode;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.ThirdCategoryCodeTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.ThirdCategoryCodeTOConverter;
 
 @Component

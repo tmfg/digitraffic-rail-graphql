@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
 import fi.digitraffic.graphql.rail.queries.BaseQuery;
 import graphql.GraphQL;

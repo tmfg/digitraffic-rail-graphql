@@ -49,13 +49,15 @@ Sample query to be run:
 
 # Architecture:
 * config
-    * Spring Boot config etc
+    * Spring Boot config, GraphQL instruments etc
 * entities
     * Classes modeling rows returned from database
 * links
     * Logic implementing "links" in GraphQL graph
 * queries
-    * Logic implementing queries in GraphQL graph
+    * Logic implementing GraphQL queries
+* querydsl
+    * Logic for creating querydsl queries
 * to
     * Logic for converting entities to GraphQL objects (=TOs)
 

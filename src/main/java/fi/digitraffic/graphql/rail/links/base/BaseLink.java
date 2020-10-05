@@ -25,8 +25,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import fi.digitraffic.graphql.rail.config.graphql.OrderByExpressionBuilder;
-import fi.digitraffic.graphql.rail.config.graphql.WhereExpressionBuilder;
+import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
+import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 

@@ -9,10 +9,10 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.config.graphql.AllFields;
 import fi.digitraffic.graphql.rail.entities.QRouteset;
 import fi.digitraffic.graphql.rail.entities.Routeset;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
