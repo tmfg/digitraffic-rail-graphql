@@ -94,7 +94,7 @@ type TrainLocation {
     timestamp : DateTime!
     trainNumber : Int!
     location : [Float]
-    train : Train!
+    train : Train
 }
 
 type Composition {
@@ -203,7 +203,7 @@ type TrainTrackingMessage {
     station : Station!
     nextStation : Station
     previousStation : Station
-    train : Train!
+    train : Train
 }
 
 type RoutesetMessage {
@@ -215,7 +215,7 @@ type RoutesetMessage {
     routeType : String!
     clientSystem : String!
     routesections : [Routesection]
-    train : Train!
+    train : Train
 }
 
 type Routesection {
