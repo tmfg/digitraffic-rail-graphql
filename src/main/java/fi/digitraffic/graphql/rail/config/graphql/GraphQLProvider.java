@@ -114,8 +114,8 @@ public class GraphQLProvider {
                         } else {
                             List<InputValueDefinition> inputValueDefinitions = fieldDefinition.getInputValueDefinitions();
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(childType.getName() + "Where").build()).build());
-//                        inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
-//                        inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(TypeName.newTypeName(childType.getName() + "OrderBy").build()).build());
 
                             newFieldDefinitions.add(
