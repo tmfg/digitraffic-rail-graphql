@@ -134,4 +134,14 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
         ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{eq:false}}) {   trainNumber, version, deleted  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
     }
+
+    @Test
+    public void neQueryShouldWork() throws Exception {
+        trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
+        trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1)));
+
+        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { trainNumber: {ne: 66 } }) {   trainNumber, version  }}");
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainNumber").value(67));
+    }
 }
