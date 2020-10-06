@@ -778,8 +778,8 @@
             </text>
             <polygon fill="none" stroke="black"
                      points="4354.5,-445.5 4354.5,-470.5 4506.5,-470.5 4506.5,-445.5 4354.5,-445.5"/>
-            <text text-anchor="start" x="4366.29" y="-453.1" font-family="Times,serif" font-size="16.00">wagonType:
-                String!
+            <text text-anchor="start" x="4368.96" y="-453.1" font-family="Times,serif" font-size="16.00">wagonType:
+                String
             </text>
             <polygon fill="none" stroke="black"
                      points="4354.5,-420.5 4354.5,-445.5 4506.5,-445.5 4506.5,-420.5 4354.5,-420.5"/>
