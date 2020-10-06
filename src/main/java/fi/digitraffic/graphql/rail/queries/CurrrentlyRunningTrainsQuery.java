@@ -48,9 +48,7 @@ public class CurrrentlyRunningTrainsQuery extends BaseQuery<TrainTO> {
         LocalDate departureDate = LocalDate.now(ZoneId.of("Europe/Helsinki"));
         LocalDate yesterday = departureDate.minusDays(1);
 
-        BooleanExpression fi = QTrain.train.timeTableRows.any().stationShortCode.eq("OL");
-
-        return QTrain.train.id.departureDate.in(departureDate, yesterday).and(QTrain.train.runningCurrently.eq(true)).and(fi);
+        return QTrain.train.id.departureDate.in(departureDate, yesterday).and(QTrain.train.runningCurrently.eq(true));
     }
 
     @Override
