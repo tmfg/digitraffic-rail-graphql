@@ -105,7 +105,7 @@ type Composition {
     trainTypeId : Int!
     version : String!
     operatorUicCode : Int!
-    train : Train!
+    train : Train
     journeySections : [JourneySection]
 }
 
@@ -113,12 +113,12 @@ type JourneySection {
     id : Int!
     departureDate : Date!
     trainNumber : Int!
-    beginTimeTableRowId : Int!
-    endTimeTableRowId : Int!
+    beginTimeTableRowId : Int
+    endTimeTableRowId : Int
     maximumSpeed : Int!
     totalLength : Int!
-    startTimeTableRow : TimeTableRow!
-    endTimeTableRow : TimeTableRow!
+    startTimeTableRow : TimeTableRow
+    endTimeTableRow : TimeTableRow
     wagons : [Wagon]
     locomotives : [Locomotive]
 }
