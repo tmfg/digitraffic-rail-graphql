@@ -17,7 +17,7 @@ public class CacheControlFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        response.addHeader("Cache-Control", "Cache-Control: no-cache");
+        response.addHeader("Cache-Control", "no-cache");
 
         filterChain.doFilter(request, response);
     }
