@@ -25,4 +25,8 @@ public class Routesection {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stationCode", referencedColumnName = "shortCode", updatable = false, insertable = false)
     private Station station;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "routesetId", referencedColumnName = "id", updatable = false, insertable = false)
+    private Routeset routeset;
 }

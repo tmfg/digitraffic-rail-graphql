@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
 @Component
-public class RunningTrainsQuery extends BaseQuery<TrainTO> {
+public class CurrrentlyRunningTrainsQuery extends BaseQuery<TrainTO> {
 
     @Autowired
     private TrainTOConverter trainTOConverter;
@@ -48,7 +48,9 @@ public class RunningTrainsQuery extends BaseQuery<TrainTO> {
         LocalDate departureDate = LocalDate.now(ZoneId.of("Europe/Helsinki"));
         LocalDate yesterday = departureDate.minusDays(1);
 
-        return QTrain.train.id.departureDate.in(departureDate, yesterday).and(QTrain.train.runningCurrently.eq(true));
+        BooleanExpression fi = QTrain.train.timeTableRows.any().stationShortCode.eq("OL");
+
+        return QTrain.train.id.departureDate.in(departureDate, yesterday).and(QTrain.train.runningCurrently.eq(true)).and(fi);
     }
 
     @Override

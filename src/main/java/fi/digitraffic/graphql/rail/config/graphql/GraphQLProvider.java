@@ -80,7 +80,7 @@ public class GraphQLProvider {
         GraphQLSchema graphQLSchema = buildSchema(sdl);
         this.graphQL = GraphQL.newGraphQL(graphQLSchema)
                 .instrumentation(new ChainedInstrumentation(Arrays.asList(
-//                new ExecutionTimeInstrumentation()
+                        new ExecutionTimeInstrumentation(),
                         new NoCircularQueriesInstrumentation()
                 ))).build();
     }
@@ -93,6 +93,7 @@ public class GraphQLProvider {
         addGenericArgumentsToCollections(typeRegistry);
         generateOrderByTypes(typeRegistry);
         generateWhereTypes(typeRegistry);
+        generateCollectionWhereTypes(typeRegistry);
 
         RuntimeWiring runtimeWiring = buildWiring();
         SchemaGenerator schemaGenerator = new SchemaGenerator();
@@ -191,28 +192,42 @@ public class GraphQLProvider {
         for (ObjectTypeDefinition userType : userTypes) {
             List<InputValueDefinition> inputValueDefinitions = new ArrayList<>();
             for (FieldDefinition fieldDefinition : userType.getFieldDefinitions()) {
-                Optional<String> optionalName = getTypeName(fieldDefinition.getType());
-                if (optionalName.isPresent()) {
-                    String name = optionalName.get();
-                    String fieldName = fieldDefinition.getName();
+                if (fieldDefinition.getType() instanceof ListType) {
+                    String name = getTypeName(((ListType) fieldDefinition.getType()).getType()).get();
+                    if (!name.equals("Float")) {
+                        String fieldName = fieldDefinition.getName();
+                        Type type = TypeName.newTypeName(name + "CollectionWhere").build();
 
-                    Type type;
-                    if (fieldNameWhereOverrides.containsKey(fieldName)) {
-                        type = TypeName.newTypeName(fieldNameWhereOverrides.get(fieldName)).build();
-                    } else if (PRIMITIVE_TYPES.contains(name)) {
-                        ;
-                        type = TypeName.newTypeName(optionalName.get() + "Where").build();
-                    } else if (name.endsWith("Type")) {
-                        type = TypeName.newTypeName("EnumWhere").build();
-                    } else {
-                        type = TypeName.newTypeName(name + "Where").build();
+                        InputValueDefinition inputValueDefinition = InputValueDefinition.newInputValueDefinition()
+                                .type(type)
+                                .name(fieldName)
+                                .build();
+                        inputValueDefinitions.add(inputValueDefinition);
                     }
+                } else {
+                    Optional<String> typeName = getTypeName(fieldDefinition.getType());
+                    if (typeName.isPresent()) {
+                        String name = typeName.get();
+                        String fieldName = fieldDefinition.getName();
 
-                    InputValueDefinition inputValueDefinition = InputValueDefinition.newInputValueDefinition()
-                            .type(type)
-                            .name(fieldName)
-                            .build();
-                    inputValueDefinitions.add(inputValueDefinition);
+                        Type type;
+                        if (fieldNameWhereOverrides.containsKey(fieldName)) {
+                            type = TypeName.newTypeName(fieldNameWhereOverrides.get(fieldName)).build();
+                        } else if (PRIMITIVE_TYPES.contains(name)) {
+                            ;
+                            type = TypeName.newTypeName(typeName.get() + "Where").build();
+                        } else if (name.endsWith("Type")) {
+                            type = TypeName.newTypeName("EnumWhere").build();
+                        } else {
+                            type = TypeName.newTypeName(name + "Where").build();
+                        }
+
+                        InputValueDefinition inputValueDefinition = InputValueDefinition.newInputValueDefinition()
+                                .type(type)
+                                .name(fieldName)
+                                .build();
+                        inputValueDefinitions.add(inputValueDefinition);
+                    }
                 }
             }
 
@@ -223,6 +238,27 @@ public class GraphQLProvider {
             InputObjectTypeDefinition whereType = InputObjectTypeDefinition.newInputObjectDefinition()
                     .name(userType.getName() + "Where")
                     .inputValueDefinitions(inputValueDefinitions).build();
+            typeRegistry.add(whereType);
+        }
+    }
+
+    private void generateCollectionWhereTypes(TypeDefinitionRegistry typeRegistry) {
+        List<ObjectTypeDefinition> userTypes = new ArrayList<>();
+        for (Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
+            if (typeEntry.getValue() instanceof ObjectTypeDefinition && !typeEntry.getValue().getName().equals("Query")) {
+                userTypes.add((ObjectTypeDefinition) typeEntry.getValue());
+            }
+        }
+
+        for (ObjectTypeDefinition userType : userTypes) {
+            InputValueDefinition inputValueDefinition = InputValueDefinition.newInputValueDefinition()
+                    .type(TypeName.newTypeName(userType.getName() + "Where").build())
+                    .name("contains")
+                    .build();
+
+            InputObjectTypeDefinition whereType = InputObjectTypeDefinition.newInputObjectDefinition()
+                    .name(userType.getName() + "CollectionWhere")
+                    .inputValueDefinition(inputValueDefinition).build();
             typeRegistry.add(whereType);
         }
     }

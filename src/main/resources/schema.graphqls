@@ -145,7 +145,7 @@ type Wagon {
     playground : Boolean
     smoking : Boolean
     video : Boolean
-    wagonType : String!
+    wagonType : String
     vehicleNumber : String
 }
 

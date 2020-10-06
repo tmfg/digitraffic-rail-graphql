@@ -64,6 +64,6 @@ public class JourneySectionToLocomotiveLink extends OneToManyLink<Long, JourneyS
 
     @Override
     public BooleanExpression createWhere(List<Long> keys) {
-        return QLocomotive.locomotive.id.in(keys);
+        return QLocomotive.locomotive.journeysectionId.in(keys);
     }
 }

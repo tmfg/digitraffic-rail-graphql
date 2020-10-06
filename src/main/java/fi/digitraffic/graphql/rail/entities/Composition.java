@@ -1,6 +1,7 @@
 package fi.digitraffic.graphql.rail.entities;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -9,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Composition {
@@ -36,9 +38,8 @@ public class Composition {
             @JoinColumn(name = "trainNumber", referencedColumnName = "trainNumber", nullable = false, insertable = false, updatable = false)})
     private Train train;
 
-//    @OneToMany(mappedBy = "composition", fetch = FetchType.LAZY)
-//    @OrderBy
-//    public Set<JourneySection> journeySections = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "composition", fetch = FetchType.LAZY)
+    private Set<JourneySection> journeySections;
 
     protected Composition() {
     }

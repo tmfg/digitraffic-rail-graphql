@@ -64,6 +64,6 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
 
     @Override
     public BooleanExpression createWhere(List<Long> keys) {
-        return QWagon.wagon.id.in(keys);
+        return QWagon.wagon.journeysectionId.in(keys);
     }
 }

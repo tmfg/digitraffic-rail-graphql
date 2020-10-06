@@ -9,9 +9,16 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.querydsl.core.types.Operator;
+import com.querydsl.core.types.Ops;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.PathMetadataFactory;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.BooleanOperation;
+import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.SetPath;
 import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.Train;
@@ -26,7 +33,9 @@ public class WhereExpressionBuilder {
         if (value instanceof OffsetDateTime) {
             value = ((OffsetDateTime) value).toZonedDateTime();
         }
-        if (key.equals("and")) {
+        if (key.equals("contains")) {
+            start = contains(start, path, value);
+        } else if (key.equals("and")) {
             start = and(start, path, (List<Map<String, Object>>) value);
         } else if (key.equals("or")) {
             start = or(start, path, (List<Map<String, Object>>) value);
@@ -45,6 +54,35 @@ public class WhereExpressionBuilder {
         }
 
         return start;
+    }
+
+    private BooleanExpression contains(BooleanExpression start, PathBuilder path, Object value) {
+        SetPath setPath = Expressions.setPath(path.getType(), EntityPathBase.class, path.getMetadata());
+        PathBuilder basePath = new PathBuilder(path.getType(), PathMetadataFactory.forCollectionAny(setPath));
+        Map<String, Object> valueAsMap = (Map<String, Object>) value;
+        ParsedExpression parsedExpression = getPathFromMap(valueAsMap, basePath);
+        BooleanOperation operation = Expressions.booleanOperation(parsedExpression.operator, parsedExpression.path, Expressions.constant(parsedExpression.value));
+        return operation;
+    }
+
+    private ParsedExpression getPathFromMap(Map<String, Object> map, PathBuilder builder) {
+        if (builder == null) {
+            builder = new PathBuilder(Object.class, "subAny");
+        }
+        Map.Entry<String, Object> entry = map.entrySet().iterator().next();
+        if (entry.getValue() instanceof Map) {
+            if (entry.getKey().equals("contains")) {
+                return getPathFromMap((Map<String, Object>) entry.getValue(), builder);
+            } else {
+                return getPathFromMap((Map<String, Object>) entry.getValue(), builder.get(entry.getKey()));
+            }
+        } else {
+            ParsedExpression parsedExpression = new ParsedExpression();
+            parsedExpression.operator = Ops.valueOf(entry.getKey().toUpperCase());
+            parsedExpression.value = entry.getValue();
+            parsedExpression.path = builder;
+            return parsedExpression;
+        }
     }
 
     private BooleanExpression inside(PathBuilder path, List<Double> value) {
@@ -163,5 +201,11 @@ public class WhereExpressionBuilder {
         }
         start = combinedExpression;
         return start;
+    }
+
+    private static class ParsedExpression {
+        public Path path;
+        public Operator operator;
+        public Object value;
     }
 }
