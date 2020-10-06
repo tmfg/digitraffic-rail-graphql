@@ -140,7 +140,7 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
         trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1)));
 
-        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { trainNumber: {unequal: 66 } }) {   trainNumber, version  }}");
+        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { trainNumber: {unequals: 66 } }) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainNumber").value(67));
     }

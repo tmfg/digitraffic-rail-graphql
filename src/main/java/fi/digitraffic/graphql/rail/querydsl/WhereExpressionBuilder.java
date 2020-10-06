@@ -26,6 +26,14 @@ import fi.digitraffic.graphql.rail.entities.TrainTrackingMessageTypeEnum;
 
 @Service
 public class WhereExpressionBuilder {
+    private Map<String, Operator> stringToOperationMap = Map.of(
+            "greaterThan", Ops.GT,
+            "lessThan", Ops.LT,
+            "equals", Ops.EQ,
+            "unequals", Ops.NE
+
+    );
+
     public BooleanExpression create(BooleanExpression start, PathBuilder path, Map<String, Object> where) {
         Map.Entry<String, Object> entry = where.entrySet().iterator().next();
         String key = entry.getKey();
@@ -41,7 +49,7 @@ public class WhereExpressionBuilder {
             start = or(start, path, (List<Map<String, Object>>) value);
         } else if (key.equals("equals")) {
             start = eq(path, value);
-        } else if (key.equals("unequal")) {
+        } else if (key.equals("unequals")) {
             start = ne(path, value);
         } else if (key.equals("greaterThan")) {
             start = gt(path, value);
@@ -78,7 +86,7 @@ public class WhereExpressionBuilder {
             }
         } else {
             ParsedExpression parsedExpression = new ParsedExpression();
-            parsedExpression.operator = Ops.valueOf(entry.getKey().toUpperCase());
+            parsedExpression.operator = stringToOperationMap.get(entry.getKey());
             parsedExpression.value = entry.getValue();
             parsedExpression.path = builder;
             return parsedExpression;
