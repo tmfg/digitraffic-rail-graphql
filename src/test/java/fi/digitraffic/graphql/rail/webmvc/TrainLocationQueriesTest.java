@@ -31,7 +31,7 @@ public class TrainLocationQueriesTest extends BaseWebMVCTest {
         trainLocationFactory.create(1, 2, 101, train66);
         trainLocationFactory.create(1, 2, 102, train67);
 
-        ResultActions result = this.query("{   latestTrainLocations(where: {speed: {gt: 100}}) {    speed    train {      trainNumber      departureDate    }  }}");
+        ResultActions result = this.query("{   latestTrainLocations(where: {speed: {greaterThan: 100}}) {    speed    train {      trainNumber      departureDate    }  }}");
         result.andExpect(jsonPath("$.data.latestTrainLocations.length()").value(2));
     }
 

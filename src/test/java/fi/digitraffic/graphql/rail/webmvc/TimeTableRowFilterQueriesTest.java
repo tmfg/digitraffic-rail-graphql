@@ -42,10 +42,10 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
 //        timeTableRowRepository.delete(train67.getRight().get(6));
 //
 //
-//        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {timeTableRows: {station: {name: {eq: \\\"TPE\\\"}}}}) {    trainNumber    version    timeTableRows {      station {        name      }    }  }}");
+//        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {timeTableRows: {station: {name: {equals: \\\"TPE\\\"}}}}) {    trainNumber    version    timeTableRows {      station {        name      }    }  }}");
 //        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
 //
-//        ResultActions result2 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {timeTableRows: {station: {name: {eq: \\\"HKI\\\"}}}}) {    trainNumber    version    timeTableRows {      station {        name      }    }  }}");
+//        ResultActions result2 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {timeTableRows: {station: {name: {equals: \\\"HKI\\\"}}}}) {    trainNumber    version    timeTableRows {      station {        name      }    }  }}");
 //        result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(4));
 //    }
 
@@ -77,7 +77,7 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
         trainLocationFactory.create(4, 3, 15, train70);
         trainLocationFactory.create(5, 1, 16, train71);
 
-        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: {timetableType: {eq: \\\"ADHOC\\\"}}) {    timetableType    trainLocations(where: {speed: {gt: 11}}) {      speed    }  }}");
+        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: {timetableType: {equals: \\\"ADHOC\\\"}}) {    timetableType    trainLocations(where: {speed: {greaterThan: 11}}) {      speed    }  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(2));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[1].trainLocations").doesNotExist());
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[2].trainLocations.length()").value(1));

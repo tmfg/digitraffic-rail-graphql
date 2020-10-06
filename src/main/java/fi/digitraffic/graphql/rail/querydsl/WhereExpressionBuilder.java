@@ -39,13 +39,13 @@ public class WhereExpressionBuilder {
             start = and(start, path, (List<Map<String, Object>>) value);
         } else if (key.equals("or")) {
             start = or(start, path, (List<Map<String, Object>>) value);
-        } else if (key.equals("eq")) {
+        } else if (key.equals("equals")) {
             start = eq(path, value);
-        } else if (key.equals("ne")) {
+        } else if (key.equals("unequal")) {
             start = ne(path, value);
-        } else if (key.equals("gt")) {
+        } else if (key.equals("greaterThan")) {
             start = gt(path, value);
-        } else if (key.equals("lt")) {
+        } else if (key.equals("lessThan")) {
             start = lt(path, value);
         } else if (key.equals("inside")) {
             start = inside(path, (List<Double>) value);

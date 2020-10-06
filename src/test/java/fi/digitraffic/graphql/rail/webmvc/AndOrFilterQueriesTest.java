@@ -24,16 +24,16 @@ public class AndOrFilterQueriesTest extends BaseWebMVCTest {
     public void AndOrShouldWork() throws Exception {
         createTestData();
 
-        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {or: [{deleted: {eq: true}}, {cancelled: {eq: true}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
+        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {or: [{deleted: {equals: true}}, {cancelled: {equals: true}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(6));
 
-        ResultActions result2 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {and: [{deleted: {eq: true}}, {cancelled: {eq: false}}, {runningCurrently: {eq: false}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
+        ResultActions result2 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {and: [{deleted: {equals: true}}, {cancelled: {equals: false}}, {runningCurrently: {equals: false}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
-        ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      or: [    {deleted: {eq: false}},     {and: [{runningCurrently: {eq: false}}, {cancelled: {eq: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
+        ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      or: [    {deleted: {equals: false}},     {and: [{runningCurrently: {equals: false}}, {cancelled: {equals: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
         result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(5));
 
-        ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      and: [    {deleted: {eq: false}},     {or: [{runningCurrently: {eq: false}}, {cancelled: {eq: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
+        ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      and: [    {deleted: {equals: false}},     {or: [{runningCurrently: {equals: false}}, {cancelled: {equals: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
         result4.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
     }
 

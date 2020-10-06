@@ -257,39 +257,39 @@ enum OrderDirection {
 ## PRIMITIVE FILTERS
 
 input BooleanWhere {
-    eq : Boolean
-    ne : Boolean
+    equals : Boolean
+    unequal : Boolean
 }
 
 input StringWhere {
-    eq : String
-    ne : String
+    equals : String
+    unequal : String
 }
 
 input IntWhere {
-    eq : Int
-    ne : Int
-    gt : Int
-    lt : Int
+    equals : Int
+    unequal : Int
+    greaterThan : Int
+    lessThan : Int
 }
 
 input EnumWhere {
-    eq : String
-    ne : String
+    equals : String
+    unequal : String
 }
 
 input DateTimeWhere {
-    eq : DateTime
-    ne : DateTime
-    gt : DateTime
-    lt : DateTime
+    equals : DateTime
+    unequal : DateTime
+    greaterThan : DateTime
+    lessThan : DateTime
 }
 
 input DateWhere {
-    eq : Date
-    ne : Date
-    gt : Date
-    lt : Date
+    equals : Date
+    unequal : Date
+    greaterThan : Date
+    lessThan : Date
 }
 
 input CoordinateWhere {
@@ -297,8 +297,8 @@ input CoordinateWhere {
 }
 
 input VersionWhere {
-    eq : String
-    ne : String
-    gt : String
-    lt : String
+    equals : String
+    notEquals : String
+    greaterThan : String
+    lessThan : String
 }
