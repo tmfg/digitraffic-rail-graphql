@@ -71,7 +71,7 @@ public class GraphQLProvider {
 
     private Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
     private Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
-    private Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "EnumWhere");
+    private Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
 
     @PostConstruct
     public void init() throws IOException {
