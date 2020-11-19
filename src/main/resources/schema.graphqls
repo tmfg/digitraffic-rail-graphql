@@ -58,7 +58,7 @@ type TimeTableRow {
     commercialTrack : String
     cancelled : Boolean!
     scheduledTime : DateTime!
-    actualTime : DateTime!
+    actualTime : DateTime
 
     id : Int!
     trainNumber : Int!
