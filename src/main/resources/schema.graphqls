@@ -59,6 +59,10 @@ type TimeTableRow {
     cancelled : Boolean!
     scheduledTime : DateTime!
     actualTime : DateTime
+    differenceInMinutes : Int
+    liveEstimateTime : DateTime
+    estimateSourceType : EstimateSourceType
+    unknownDelay : Boolean
 
     id : Int!
     trainNumber : Int!
@@ -252,6 +256,13 @@ enum TrainTrackingMessageType {
 enum OrderDirection {
     ASCENDING,
     DESCENDING
+}
+enum EstimateSourceType {
+    LIIKE_USER,
+    MIKU_USER,
+    LIIKE_AUTOMATIC,
+    UNKNOWN,
+    COMBOCALC
 }
 
 ## PRIMITIVE FILTERS
