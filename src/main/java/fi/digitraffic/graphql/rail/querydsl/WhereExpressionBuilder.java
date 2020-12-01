@@ -182,18 +182,8 @@ public class WhereExpressionBuilder {
         BooleanExpression start;
         if (value == null) {
             start = path.isNull();
-        } else if (path.toString().endsWith("timetableType")) {
-            start = path.ne(Train.TimetableType.valueOf(value.toString()));
-        } else if (path.toString().endsWith("timeTableRow.type")) {
-            start = path.ne(TimeTableRow.TimeTableRowType.valueOf(value.toString()));
-        } else if (path.toString().endsWith("station.type")) {
-            start = path.ne(StationTypeEnum.valueOf(value.toString()));
-        } else if (path.toString().endsWith("trainTrackingMessageType")) {
-            start = path.ne(TrainTrackingMessageTypeEnum.valueOf(value.toString()));
-        } else if (path.toString().endsWith("trainTrackingMessage.type")) {
-            start = path.ne(TrainTrackingMessageTypeEnum.valueOf(value.toString()));
         } else {
-            start = path.ne(value);
+            start = path.ne(convertToEnumOrDefault(value));
         }
         return start;
     }

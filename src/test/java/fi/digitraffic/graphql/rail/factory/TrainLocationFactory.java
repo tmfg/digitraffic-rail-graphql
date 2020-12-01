@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
-import fi.digitraffic.graphql.rail.entities.TrainLocationConnectionQuality;
 import fi.digitraffic.graphql.rail.entities.TrainLocationId;
 import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 
@@ -27,7 +26,6 @@ public class TrainLocationFactory {
         trainLocation.trainLocationId = new TrainLocationId(train.id.trainNumber, train.id.departureDate, ZonedDateTime.now());
         trainLocation.speed = speed;
         trainLocation.location = geometryFactory.createPoint(new Coordinate(x, y));
-        trainLocation.connectionQuality = TrainLocationConnectionQuality.OK;
 
         return trainLocationRepository.save(trainLocation);
     }
