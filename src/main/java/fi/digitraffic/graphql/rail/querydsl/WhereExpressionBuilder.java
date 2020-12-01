@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.querydsl.core.types.Operator;
 import com.querydsl.core.types.Ops;
 import com.querydsl.core.types.Path;
@@ -40,23 +41,18 @@ public class WhereExpressionBuilder {
 
     @PostConstruct
     public void setup() {
-        for (Enum value : TimeTableRow.EstimateSourceEnum.values()) {
-            enumValues.put(value.name(), value);
-        }
-        for (Enum value : Train.TimetableType.values()) {
-            enumValues.put(value.name(), value);
-        }
-        for (Enum value : TimeTableRow.TimeTableRowType.values()) {
-            enumValues.put(value.name(), value);
-        }
-        for (Enum value : StationTypeEnum.values()) {
-            enumValues.put(value.name(), value);
-        }
-        for (Enum value : TrainTrackingMessageTypeEnum.values()) {
-            enumValues.put(value.name(), value);
-        }
-        for (Enum value : TrainTrackingMessageTypeEnum.values()) {
-            enumValues.put(value.name(), value);
+        List<Enum<? extends Enum<?>>[]> valuess = List.of(
+                TimeTableRow.EstimateSourceEnum.values(),
+                Train.TimetableType.values(),
+                TimeTableRow.TimeTableRowType.values(),
+                StationTypeEnum.values(),
+                TrainTrackingMessageTypeEnum.values()
+        );
+
+        for (Enum[] values : valuess) {
+            for (Enum value : Lists.newArrayList(values)) {
+                enumValues.put(value.name(), value);
+            }
         }
     }
 
