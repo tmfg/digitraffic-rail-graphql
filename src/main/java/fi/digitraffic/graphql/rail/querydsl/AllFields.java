@@ -140,7 +140,6 @@ public class AllFields {
 
     public static Expression[] TRAIN_LOCATION = new Expression[]{
             QTrainLocation.trainLocation.id,
-            QTrainLocation.trainLocation.connectionQuality,
             QTrainLocation.trainLocation.location,
             QTrainLocation.trainLocation.speed,
             QTrainLocation.trainLocation.trainLocationId.departureDate,

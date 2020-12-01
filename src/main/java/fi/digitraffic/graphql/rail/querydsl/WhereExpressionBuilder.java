@@ -4,8 +4,11 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
@@ -31,8 +34,31 @@ public class WhereExpressionBuilder {
             "lessThan", Ops.LT,
             "equals", Ops.EQ,
             "unequals", Ops.NE
-
     );
+
+    private Map<String, Enum> enumValues = new HashMap<>();
+
+    @PostConstruct
+    public void setup() {
+        for (Enum value : TimeTableRow.EstimateSourceEnum.values()) {
+            enumValues.put(value.name(), value);
+        }
+        for (Enum value : Train.TimetableType.values()) {
+            enumValues.put(value.name(), value);
+        }
+        for (Enum value : TimeTableRow.TimeTableRowType.values()) {
+            enumValues.put(value.name(), value);
+        }
+        for (Enum value : StationTypeEnum.values()) {
+            enumValues.put(value.name(), value);
+        }
+        for (Enum value : TrainTrackingMessageTypeEnum.values()) {
+            enumValues.put(value.name(), value);
+        }
+        for (Enum value : TrainTrackingMessageTypeEnum.values()) {
+            enumValues.put(value.name(), value);
+        }
+    }
 
     public BooleanExpression create(BooleanExpression start, PathBuilder path, Map<String, Object> where) {
         Map.Entry<String, Object> entry = where.entrySet().iterator().next();
@@ -87,9 +113,18 @@ public class WhereExpressionBuilder {
         } else {
             ParsedExpression parsedExpression = new ParsedExpression();
             parsedExpression.operator = stringToOperationMap.get(entry.getKey());
-            parsedExpression.value = entry.getValue();
+            parsedExpression.value = convertToEnumOrDefault(entry.getValue());
             parsedExpression.path = builder;
             return parsedExpression;
+        }
+    }
+
+    private Object convertToEnumOrDefault(Object value) {
+        Enum anEnum = this.enumValues.get(value);
+        if (anEnum != null) {
+            return anEnum;
+        } else {
+            return value;
         }
     }
 
@@ -137,18 +172,8 @@ public class WhereExpressionBuilder {
         BooleanExpression start;
         if (value == null) {
             start = path.isNull();
-        } else if (path.toString().endsWith("timetableType")) {
-            start = path.eq(Train.TimetableType.valueOf(value.toString()));
-        } else if (path.toString().endsWith("timeTableRow.type")) {
-            start = path.eq(TimeTableRow.TimeTableRowType.valueOf(value.toString()));
-        } else if (path.toString().endsWith("station.type")) {
-            start = path.eq(StationTypeEnum.valueOf(value.toString()));
-        } else if (path.toString().endsWith("trainTrackingMessageType")) {
-            start = path.eq(TrainTrackingMessageTypeEnum.valueOf(value.toString()));
-        } else if (path.toString().endsWith("trainTrackingMessage.type")) {
-            start = path.eq(TrainTrackingMessageTypeEnum.valueOf(value.toString()));
         } else {
-            start = path.eq(value);
+            start = path.eq(convertToEnumOrDefault(value));
         }
         return start;
     }

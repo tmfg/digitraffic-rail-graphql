@@ -78,6 +78,12 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
         ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{timetableType:{equals:\\\"REGULAR\\\"}}) {   trainNumber, version, timetableType  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
+
+        ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: { timeTableRows:{contains:{station:{type:{equals:\\\"TURNOUT_IN_THE_OPEN_LINE\\\"}}}}}) {    cancelled  }}");
+        result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(0));
+
+        ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: { timeTableRows:{contains:{station:{type:{equals:\\\"STATION\\\"}}}}}) {    cancelled  }}");
+        result4.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(4));
     }
 
     @Test

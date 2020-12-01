@@ -33,8 +33,6 @@ public class TrainLocation {
 
     public Integer speed;
 
-    public TrainLocationConnectionQuality connectionQuality;
-
     @Column(updatable = false, insertable = false)
     public Long trainNumber;
 
