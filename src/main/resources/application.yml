@@ -6,6 +6,9 @@ spring:
   jpa:
     properties:
       hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'
+  mvc:
+    async:
+      request-timeout: 5000
 server:
   port: 8081
 
