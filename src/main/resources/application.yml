@@ -5,6 +5,7 @@ spring:
     password: jaakko
   jpa:
     properties:
+      hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'
       javax:
         persistence:
           query:
