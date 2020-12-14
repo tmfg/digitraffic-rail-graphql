@@ -35,6 +35,8 @@ cache:
 
 digitraffic:
   max-returned-rows: 250
+  fields-that-can-be-queried-twice:
+    - "station"
   hidden-fields:
     - "Train.trainTypeId"
     - "Train.operatorShortCode"

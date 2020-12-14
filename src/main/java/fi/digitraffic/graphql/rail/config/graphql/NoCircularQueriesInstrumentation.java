@@ -5,11 +5,13 @@ import static graphql.execution.instrumentation.SimpleInstrumentationContext.whe
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
 import graphql.analysis.QueryTraverser;
 import graphql.analysis.QueryVisitorFieldEnvironment;
 import graphql.analysis.QueryVisitorStub;
@@ -19,13 +21,16 @@ import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
 import graphql.language.Definition;
 import graphql.language.OperationDefinition;
-import graphql.schema.GraphQLObjectType;
-import graphql.schema.GraphQLOutputType;
 import graphql.validation.ValidationError;
 
 public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
-
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    private Set<String> ALLOWED_FIELDS;
+
+    public NoCircularQueriesInstrumentation(DigitrafficConfig digitrafficConfig) {
+        this.ALLOWED_FIELDS = digitrafficConfig.getFieldsThatCanBeQueriedTwice();
+    }
 
     @Override
     public InstrumentationContext<List<ValidationError>> beginValidation(InstrumentationValidationParameters parameters) {
@@ -43,22 +48,20 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
             queryTraverser.visitPostOrder(new QueryVisitorStub() {
                 @Override
                 public void visitField(QueryVisitorFieldEnvironment env) {
-                    String type;
-                    GraphQLOutputType parentType = env.getParentType();
-                    if (parentType instanceof GraphQLObjectType) {
-                        type = parentType.getName();
-                    } else {
-                        type = parentType.getChildren().get(0).getName();
-                    }
                     Integer depth = calculateDepthForField(env);
 
-                    Integer typeLastDepth = typesSeenAtDepth.get(type);
-                    if (typeLastDepth != null && typeLastDepth != depth) {
-                        AbortExecutionException exception = new AbortExecutionException("Illegal query: " + type + " queried twice");
+                    String name = env.getField().getName();
+
+                    Integer typeLastDepth = typesSeenAtDepth.get(name);
+                    if (typeLastDepth != null &&
+                            typeLastDepth != depth &&
+                            env.getField().getSelectionSet() != null &&
+                            !ALLOWED_FIELDS.contains(name)) {
+                        AbortExecutionException exception = new AbortExecutionException("Illegal query: " + name + " queried twice");
                         log.info(exception.toString());
                         throw exception;
                     } else if (typeLastDepth == null) {
-                        typesSeenAtDepth.put(type, depth);
+                        typesSeenAtDepth.put(name, depth);
                     }
                 }
             });

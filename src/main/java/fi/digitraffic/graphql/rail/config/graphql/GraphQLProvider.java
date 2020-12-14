@@ -81,7 +81,7 @@ public class GraphQLProvider {
         this.graphQL = GraphQL.newGraphQL(graphQLSchema)
                 .instrumentation(new ChainedInstrumentation(Arrays.asList(
                         new ExecutionTimeInstrumentation(),
-                        new NoCircularQueriesInstrumentation()
+                        new NoCircularQueriesInstrumentation(digitrafficConfig)
                 ))).build();
     }
 
