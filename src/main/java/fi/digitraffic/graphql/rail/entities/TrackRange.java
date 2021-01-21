@@ -1,12 +1,9 @@
 package fi.digitraffic.graphql.rail.entities;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -14,22 +11,18 @@ public class TrackRange {
     @Id
     public Long id;
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "track", column = @Column(name = "start_track")),
-            @AttributeOverride(name = "kilometres", column = @Column(name = "start_kilometres")),
-            @AttributeOverride(name = "metres", column = @Column(name = "start_metres")),
-    })
-    @Embedded
-    public TrackLocation startLocation;
+    public String startTrack;
+    public String endTrack;
 
-    @AttributeOverrides({
-            @AttributeOverride(name = "track", column = @Column(name = "end_track")),
-            @AttributeOverride(name = "kilometres", column = @Column(name = "end_kilometres")),
-            @AttributeOverride(name = "metres", column = @Column(name = "end_metres")),
-    })
-    @Embedded
-    public TrackLocation endLocation;
+    public Integer startKilometres;
+    public Integer endKilometres;
+
+    public Integer startMetres;
+    public Integer endMetres;
+
+    public Long trackSectionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trackSection", nullable = false, insertable = false, updatable = false)
     public TrackSection trackSection;
 }

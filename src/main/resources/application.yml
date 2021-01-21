@@ -85,6 +85,8 @@ digitraffic:
     - "TrainTrackingMessage.stationShortCode"
     - "TrainTrackingMessage.previousStationShortCode"
     - "TrainTrackingMessage.nextStationShortCode"
+    - "TrackSectionCode.id"
+    - "TrackRange.trackSectionId"
     - "RoutesetMessage.trainNumber"
     - "RoutesetMessage.departureDate"
     - "Routesection.stationCode"

@@ -232,8 +232,20 @@ type Routesection {
 }
 
 type TrackSection {
+    id : Int!
     trackSectionCode: String!
     station: Station!
+    ranges: [TrackRange]!
+}
+
+type TrackRange {
+    trackSectionId: Int!
+    startTrack: String!
+    startKilometres: Int!
+    startMetres: Int!
+    endTrack: String!
+    endKilometres: Int!
+    endMetres: Int!
 }
 
 ## SCALARS

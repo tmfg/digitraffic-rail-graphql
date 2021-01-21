@@ -63,4 +63,20 @@ Sample query to be run:
 
 # How to add GraphlQL stuff
 
-See 
+## Query
+
+...
+
+## Link
+
+Basic workflow
+
+1. Modify schema.graphqls to include your new data
+1. Create Hibernate entity 
+1. Generate QueryDSL and GraphQL DTOs with `cleanGraphqlGen` and `graphqlCodegen`
+1. Add Hibernate fields to `AllFields`
+1. Create Hibernate -> GraphQL DTO converter (example `TrackSectionTOConverter`)
+1. Create GraphQL link (example `TrainTrackingMessageToTrackSectionLink`)
+1. Done
+
+See `0271e6a9926dfb1be99f08632f7f35f5ba654ffe` for an example

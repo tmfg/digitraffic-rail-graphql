@@ -13,6 +13,7 @@ import fi.digitraffic.graphql.rail.entities.QRouteset;
 import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.QThirdCategoryCode;
 import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
+import fi.digitraffic.graphql.rail.entities.QTrackRange;
 import fi.digitraffic.graphql.rail.entities.QTrackSection;
 import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.QTrainCategory;
@@ -209,6 +210,17 @@ public class AllFields {
     };
 
     public static Expression[] TRACK_SECTION = new Expression[]{
-            QTrackSection.trackSection.trackSectionCode
+            QTrackSection.trackSection.trackSectionCode,
+            QTrackSection.trackSection.id,
+    };
+
+    public static Expression[] TRACK_RANGE = new Expression[]{
+            QTrackRange.trackRange.trackSectionId,
+            QTrackRange.trackRange.startTrack,
+            QTrackRange.trackRange.startKilometres,
+            QTrackRange.trackRange.startMetres,
+            QTrackRange.trackRange.endTrack,
+            QTrackRange.trackRange.endKilometres,
+            QTrackRange.trackRange.endMetres
     };
 }
