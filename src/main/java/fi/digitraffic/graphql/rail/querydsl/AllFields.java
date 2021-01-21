@@ -13,6 +13,7 @@ import fi.digitraffic.graphql.rail.entities.QRouteset;
 import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.QThirdCategoryCode;
 import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
+import fi.digitraffic.graphql.rail.entities.QTrackSection;
 import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.QTrainCategory;
 import fi.digitraffic.graphql.rail.entities.QTrainLocation;
@@ -170,9 +171,9 @@ public class AllFields {
             QTrainTrackingMessage.trainTrackingMessage.nextStationShortCode,
             QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode,
             QTrainTrackingMessage.trainTrackingMessage.stationShortCode,
-            QTrainTrackingMessage.trainTrackingMessage.nextTrackSection,
-            QTrainTrackingMessage.trainTrackingMessage.previousTrackSection,
-            QTrainTrackingMessage.trainTrackingMessage.trackSection
+            QTrainTrackingMessage.trainTrackingMessage.nextStationShortCode,
+            QTrainTrackingMessage.trainTrackingMessage.previousTrackSectionCode,
+            QTrainTrackingMessage.trainTrackingMessage.trackSectionCode
     };
 
     public static Expression[] TIME_TABLE_ROW = new Expression[]{
@@ -205,5 +206,9 @@ public class AllFields {
             QStation.station.passengerTraffic,
             QStation.station.type,
             QStation.station.uicCode
+    };
+
+    public static Expression[] TRACK_SECTION = new Expression[]{
+            QTrackSection.trackSection.trackSectionCode
     };
 }

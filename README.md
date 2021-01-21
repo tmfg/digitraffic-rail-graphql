@@ -61,3 +61,6 @@ Sample query to be run:
 * to
     * Logic for converting entities to GraphQL objects (=TOs)
 
+# How to add GraphlQL stuff
+
+See 

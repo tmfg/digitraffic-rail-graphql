@@ -200,14 +200,15 @@ type TrainTrackingMessage {
     previousStationShortCode : String
     version : String!
     timestamp : DateTime!
-    trackSection : String!
-    nextTrackSection : String
-    previousTrackSection : String
+    trackSectionCode : String!
+    nextTrackSectionCode : String
+    previousTrackSectionCode : String
     type : TrainTrackingMessageType!
     station : Station!
     nextStation : Station
     previousStation : Station
     train : Train
+    trackSection: TrackSection
 }
 
 type RoutesetMessage {
@@ -228,6 +229,11 @@ type Routesection {
     stationCode : String!
     routesetId : Int!
     station : Station!
+}
+
+type TrackSection {
+    trackSectionCode: String!
+    station: Station!
 }
 
 ## SCALARS

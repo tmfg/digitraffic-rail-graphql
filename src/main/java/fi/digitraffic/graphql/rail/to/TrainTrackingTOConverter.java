@@ -20,11 +20,11 @@ public class TrainTrackingTOConverter {
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.version).toString(),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.timestamp),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trackSection),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextTrackSection),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousTrackSection),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trackSectionCode),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextTrackSectionCode),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousTrackSectionCode),
                 getType(tuple.get(QTrainTrackingMessage.trainTrackingMessage.type)),
-                null, null, null, null);
+                null, null, null, null, null);
     }
 
     private TrainTrackingMessageTypeTO getType(TrainTrackingMessageTypeEnum type) {
