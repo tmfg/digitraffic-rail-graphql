@@ -55,13 +55,15 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
 
     @Override
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
+        log.info("Starting query {} {}", parameters.getExecutionInput().getExecutionId(), parameters.getQuery());
+
         long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
             @Override
             public void onCompleted(ExecutionResult result, Throwable t) {
                 ExecutionTimesByFieldState state = parameters.getInstrumentationState();
 
-                log.info("Query {} took {}. Details: {}", parameters.getQuery(), Duration.ofNanos(System.nanoTime() - startNanos), state);
+                log.info("Ending query {} {} took {}. Details: {}", parameters.getExecutionInput().getExecutionId(), parameters.getQuery(), Duration.ofNanos(System.nanoTime() - startNanos), state);
             }
         };
     }
