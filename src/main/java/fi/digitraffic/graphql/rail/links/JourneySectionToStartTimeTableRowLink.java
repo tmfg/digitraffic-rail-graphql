@@ -35,7 +35,11 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
 
     @Override
     public TimeTableRowId createKeyFromParent(JourneySectionTO journeySectionTO) {
-        return new TimeTableRowId(journeySectionTO.getBeginTimeTableRowId(), journeySectionTO.getDepartureDate(), journeySectionTO.getTrainNumber().longValue());
+        return new TimeTableRowId(
+                journeySectionTO.getBeginTimeTableRowId(),
+                journeySectionTO.getDepartureDate(),
+                journeySectionTO.getTrainNumber().longValue()
+        );
     }
 
     @Override
