@@ -12,6 +12,8 @@ type Query {
     trainTrackingMessagesByVersionGreaterThan(version : String!) : [TrainTrackingMessage]
 
     routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage]
+
+    stations: [Station]
 }
 
 type Train {
@@ -69,6 +71,7 @@ type TimeTableRow {
     departureDate : Date!
 
     station : Station!
+    train: Train!
     causes : [Cause]
 }
 
@@ -162,6 +165,7 @@ type Station {
     shortCode : String!
     uicCode : Int!
     type : StationType!
+    timeTableRows: [TimeTableRow]
 }
 
 type CategoryCode {

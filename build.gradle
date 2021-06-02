@@ -13,10 +13,6 @@ def queryDslVersion = '4.1.3'
 
 repositories {
     mavenCentral()
-
-    maven {
-        url "https://dl.bintray.com/dicetechnology/dice-fairlink"
-    }
 }
 
 dependencies {
