@@ -22,7 +22,8 @@ public class StationTOConverter extends BaseConverter<StationTO> {
                 tuple.get(QStation.station.name),
                 tuple.get(QStation.station.shortCode),
                 tuple.get(QStation.station.uicCode),
-                parseStationType(tuple.get(QStation.station.type))
+                parseStationType(tuple.get(QStation.station.type)),
+                null
         );
     }
 

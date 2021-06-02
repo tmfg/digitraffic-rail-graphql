@@ -32,6 +32,7 @@ public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
                 tuple.get(QTimeTableRow.timeTableRow.id.trainNumber).intValue(),
                 tuple.get(QTimeTableRow.timeTableRow.id.departureDate),
                 null,
+                null,
                 null);
     }
 
