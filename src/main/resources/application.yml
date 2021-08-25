@@ -34,7 +34,7 @@ cache:
   maxCacheSize: 5
 
 digitraffic:
-  max-returned-rows: 250
+  max-returned-rows: 5000
   fields-that-can-be-queried-twice:
     - "station"
   hidden-fields:
