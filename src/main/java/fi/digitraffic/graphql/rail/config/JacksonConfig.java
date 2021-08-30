@@ -22,7 +22,7 @@ public class JacksonConfig {
     public Jackson2ObjectMapperBuilderCustomizer jacksonCustomizer() {
         return jackson2ObjectMapperBuilder -> {
             jackson2ObjectMapperBuilder.defaultViewInclusion(true);
-            jackson2ObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_NULL);
+            jackson2ObjectMapperBuilder.serializationInclusion(JsonInclude.Include.ALWAYS);
             jackson2ObjectMapperBuilder.indentOutput(false);
             jackson2ObjectMapperBuilder.serializers(new ZonedDateTimeSerializer(ISO_FIXED_FORMAT));
             jackson2ObjectMapperBuilder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
