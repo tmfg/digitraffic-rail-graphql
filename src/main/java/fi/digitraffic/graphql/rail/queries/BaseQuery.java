@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.queries;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -103,11 +104,26 @@ public abstract class BaseQuery<T> {
 
     private JPAQuery<Tuple> createWhereQuery(JPAQuery<Tuple> query, PathBuilder root, BooleanExpression basicWhere, Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
+            Map<String, Object> properWhereMap = this.replaceOffsetsWithZonedDateTimes(whereAsMap);
+
+            BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
             return query.where(basicWhere.and(whereExpression));
         } else {
             return query.where(basicWhere);
         }
+    }
+
+    private Map<String, Object> replaceOffsetsWithZonedDateTimes(Map<String, Object> whereAsMap) {
+        for (String key : whereAsMap.keySet()) {
+            Object value = whereAsMap.get(key);
+            if (value instanceof Map) {
+                this.replaceOffsetsWithZonedDateTimes((Map<String, Object>) value);
+            } else if (value instanceof OffsetDateTime) {
+                whereAsMap.put(key, ((OffsetDateTime) value).toZonedDateTime());
+            }
+        }
+
+        return whereAsMap;
     }
 
     private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, PathBuilder root, List<Map<String, Object>> orderByArgument) {

@@ -1,7 +1,6 @@
 package fi.digitraffic.graphql.rail.querydsl;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,9 +59,7 @@ public class WhereExpressionBuilder {
         Map.Entry<String, Object> entry = where.entrySet().iterator().next();
         String key = entry.getKey();
         Object value = entry.getValue();
-        if (value instanceof OffsetDateTime) {
-            value = ((OffsetDateTime) value).toZonedDateTime();
-        }
+
         if (key.equals("contains")) {
             start = contains(start, path, value);
         } else if (key.equals("and")) {
