@@ -9,6 +9,7 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.entities.QComposition;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
@@ -45,6 +46,11 @@ public class CompositionsGreaterThanVersionQuery extends BaseQuery<CompositionTO
     public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
         Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
         return QComposition.composition.version.gt(version);
+    }
+
+    @Override
+    protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
+        return super.createLimitQuery(query, 2000);
     }
 
     @Override
