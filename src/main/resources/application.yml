@@ -16,10 +16,17 @@ server:
 logging:
   level:
     root: INFO
-#    graphql.GraphQL: DEBUG
+    #    graphql.GraphQL: DEBUG
     #    org.springframework.web.servlet.DispatcherServlet: DEBUG
     org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+management:
+  health:
+    diskspace:
+      enabled: false
+    db:
+      enabled: false
 
 graphql:
   servlet:
