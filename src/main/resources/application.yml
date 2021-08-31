@@ -9,7 +9,10 @@ spring:
       javax:
         persistence:
           query:
-            timeout: 10000
+            timeout: 7500
+  mvc:
+    async:
+      request-timeout: 10000
 server:
   port: 8081
 

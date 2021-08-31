@@ -9,6 +9,7 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.TrainTO;
@@ -45,6 +46,11 @@ public class TrainsByVersionGreaterThanQuery extends BaseQuery<TrainTO> {
     public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
         Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
         return QTrain.train.version.gt(version);
+    }
+
+    @Override
+    protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
+        return super.createLimitQuery(query, 2000);
     }
 
     @Override
