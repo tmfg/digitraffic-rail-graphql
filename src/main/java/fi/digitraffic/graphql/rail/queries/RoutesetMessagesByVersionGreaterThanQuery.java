@@ -51,7 +51,7 @@ public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<Routese
 
     @Override
     protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
-        return super.createLimitQuery(query, 2000);
+        return super.createLimitQuery(query, Math.min((limitArgument != null ? (int) limitArgument : MAX_RESULTS), 2000));
     }
 
     @Override
