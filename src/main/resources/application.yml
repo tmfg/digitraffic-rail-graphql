@@ -30,6 +30,10 @@ management:
       enabled: false
     db:
       enabled: false
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
 
 graphql:
   servlet:
