@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import graphql.ExecutionResult;
+import graphql.execution.ExecutionId;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
@@ -55,7 +57,12 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
 
     @Override
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
-        log.info("Starting query {} {}", parameters.getExecutionInput().getExecutionId(), parameters.getQuery());
+        final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
+        final String query = parameters.getQuery();
+        MDC.put("query_hashcode",  String.valueOf(query.hashCode()));
+        MDC.put("execution_id", executionId.toString());
+        MDC.remove("execution_time");
+        log.info("Starting query {} {}", executionId, query);
 
         long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
@@ -63,7 +70,9 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
             public void onCompleted(ExecutionResult result, Throwable t) {
                 ExecutionTimesByFieldState state = parameters.getInstrumentationState();
 
-                log.info("Ending query {} {} took {}. Details: {}", parameters.getExecutionInput().getExecutionId(), parameters.getQuery(), Duration.ofNanos(System.nanoTime() - startNanos), state);
+                Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
+                log.info("Ending query {} {} took {}. Details: {}", executionId, query, duration, state);
+                MDC.put("execution_time", String.valueOf(duration.toMillis()));
             }
         };
     }
