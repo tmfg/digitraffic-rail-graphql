@@ -13,7 +13,7 @@ public class CategoryCodeTOConverter extends BaseConverter<CategoryCodeTO> {
         return new CategoryCodeTO(
                 tuple.get(QCategoryCode.categoryCode.code),
                 tuple.get(QCategoryCode.categoryCode.name),
-                tuple.get(QCategoryCode.categoryCode.id).intValue(),
+                tuple.get(QCategoryCode.categoryCode.oid),
                 tuple.get(QCategoryCode.categoryCode.validFrom),
                 tuple.get(QCategoryCode.categoryCode.validTo)
         );

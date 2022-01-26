@@ -9,8 +9,8 @@ import javax.persistence.Id;
 @Entity
 public class ThirdCategoryCode {
     @Id
-    public Long id;
-    public Long detailedCategoryCodeId;
+    public String oid;
+    public String detailedCategoryCodeOid;
     public String code;
     public String name;
     public String description;

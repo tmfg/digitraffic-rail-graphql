@@ -13,8 +13,8 @@ public class DetailedCategoryCodeTOConverter extends BaseConverter<DetailedCateg
         return new DetailedCategoryCodeTO(
                 tuple.get(QDetailedCategoryCode.detailedCategoryCode.code),
                 tuple.get(QDetailedCategoryCode.detailedCategoryCode.name),
-                tuple.get(QDetailedCategoryCode.detailedCategoryCode.id).intValue(),
-                tuple.get(QDetailedCategoryCode.detailedCategoryCode.categoryCodeId).intValue(),
+                tuple.get(QDetailedCategoryCode.detailedCategoryCode.oid),
+                tuple.get(QDetailedCategoryCode.detailedCategoryCode.categoryCodeOid),
                 tuple.get(QDetailedCategoryCode.detailedCategoryCode.validFrom),
                 tuple.get(QDetailedCategoryCode.detailedCategoryCode.validTo)
         );

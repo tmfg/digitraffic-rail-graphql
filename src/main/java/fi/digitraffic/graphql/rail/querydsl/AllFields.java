@@ -71,8 +71,8 @@ public class AllFields {
             QJourneySection.journeySection.trainId.departureDate
     };
     public static final Expression[] THIRD_CATEGORY_CODE = new Expression[]{
-            QThirdCategoryCode.thirdCategoryCode.id,
-            QThirdCategoryCode.thirdCategoryCode.detailedCategoryCodeId,
+            QThirdCategoryCode.thirdCategoryCode.oid,
+            QThirdCategoryCode.thirdCategoryCode.detailedCategoryCodeOid,
             QThirdCategoryCode.thirdCategoryCode.code,
             QThirdCategoryCode.thirdCategoryCode.name,
             QThirdCategoryCode.thirdCategoryCode.description,
@@ -80,15 +80,15 @@ public class AllFields {
             QThirdCategoryCode.thirdCategoryCode.validTo
     };
     public static final Expression[] DETAILED_CATEGORY_CODE = new Expression[]{
-            QDetailedCategoryCode.detailedCategoryCode.id,
-            QDetailedCategoryCode.detailedCategoryCode.categoryCodeId,
+            QDetailedCategoryCode.detailedCategoryCode.oid,
+            QDetailedCategoryCode.detailedCategoryCode.categoryCodeOid,
             QDetailedCategoryCode.detailedCategoryCode.code,
             QDetailedCategoryCode.detailedCategoryCode.name,
             QDetailedCategoryCode.detailedCategoryCode.validFrom,
             QDetailedCategoryCode.detailedCategoryCode.validTo
     };
     public static Expression[] CATEGORY_CODE = new Expression[]{
-            QCategoryCode.categoryCode.id,
+            QCategoryCode.categoryCode.oid,
             QCategoryCode.categoryCode.code,
             QCategoryCode.categoryCode.name,
             QCategoryCode.categoryCode.validFrom,
@@ -100,9 +100,9 @@ public class AllFields {
             QCause.cause.timeTableRowId.trainNumber,
             QCause.cause.timeTableRowId.departureDate,
             QCause.cause.timeTableRowId.attapId,
-            QCause.cause.categoryCodeId,
-            QCause.cause.detailedCategoryCodeId,
-            QCause.cause.thirdCategoryCodeId
+            QCause.cause.categoryCodeOid,
+            QCause.cause.detailedCategoryCodeOid,
+            QCause.cause.thirdCategoryCodeOid
     };
 
     public static Expression[] TRAIN_TYPE = new Expression[]{

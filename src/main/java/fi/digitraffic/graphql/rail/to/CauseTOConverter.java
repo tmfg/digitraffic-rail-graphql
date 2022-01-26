@@ -15,9 +15,9 @@ public class CauseTOConverter extends BaseConverter<CauseTO> {
                 tuple.get(QCause.cause.timeTableRowId.trainNumber).intValue(),
                 tuple.get(QCause.cause.timeTableRowId.departureDate),
                 tuple.get(QCause.cause.id).intValue(),
-                nullableInt(tuple.get(QCause.cause.categoryCodeId)),
-                nullableInt(tuple.get(QCause.cause.detailedCategoryCodeId)),
-                nullableInt(tuple.get(QCause.cause.thirdCategoryCodeId)),
+                tuple.get(QCause.cause.categoryCodeOid),
+                tuple.get(QCause.cause.detailedCategoryCodeOid),
+                tuple.get(QCause.cause.thirdCategoryCodeOid),
                 null,
                 null,
                 null

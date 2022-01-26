@@ -8,5 +8,5 @@ import fi.digitraffic.graphql.rail.entities.ThirdCategoryCode;
 
 @Repository
 @Transactional
-public interface ThirdCategoryCodeRepository extends JpaRepository<ThirdCategoryCode, Long> {
+public interface ThirdCategoryCodeRepository extends JpaRepository<ThirdCategoryCode, String> {
 }

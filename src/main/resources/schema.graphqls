@@ -81,9 +81,9 @@ type Cause {
     departureDate : Date!
 
     id : Int!
-    categoryCodeId : Int!
-    detailedCategoryCodeId : Int
-    thirdCategoryCodeId : Int
+    categoryCodeOid : String!
+    detailedCategoryCodeOid : String
+    thirdCategoryCodeOid : String
     categoryCode : CategoryCode!
     detailedCategoryCode : DetailedCategoryCode
     thirdCategoryCode : ThirdCategoryCode
@@ -171,7 +171,7 @@ type Station {
 type CategoryCode {
     code : String!
     name : String!
-    id : Int!
+    oid : String!
     validFrom : Date!
     validTo : Date
 }
@@ -179,8 +179,8 @@ type CategoryCode {
 type DetailedCategoryCode {
     code : String!
     name : String!
-    id : Int!
-    categoryCodeId : Int!
+    oid : String!
+    categoryCodeOid : String!
     validFrom : Date!
     validTo : Date
 }
@@ -189,10 +189,10 @@ type ThirdCategoryCode {
     code : String!
     name : String!
     description : String!
-    id : Int!
+    oid : String!
     validFrom : Date!
     validTo : Date
-    detailedCategoryCodeId : Int!
+    detailedCategoryCodeOid : String!
 }
 
 type TrainTrackingMessage {

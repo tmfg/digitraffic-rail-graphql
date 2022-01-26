@@ -14,19 +14,19 @@ public class Cause {
 
     @Embedded
     public TimeTableRowId timeTableRowId;
-    public Long categoryCodeId;
-    public Long detailedCategoryCodeId;
-    public Long thirdCategoryCodeId;
+    public String categoryCodeOid;
+    public String detailedCategoryCodeOid;
+    public String thirdCategoryCodeOid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryCodeId", referencedColumnName = "id", updatable = false, insertable = false)
+    @JoinColumn(name = "categoryCodeOid", referencedColumnName = "oid", updatable = false, insertable = false)
     private CategoryCode categoryCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "detailedCategoryCode", referencedColumnName = "id", updatable = false, insertable = false)
+    @JoinColumn(name = "detailedCategoryCodeOid", referencedColumnName = "oid", updatable = false, insertable = false)
     private DetailedCategoryCode detailedCategoryCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thirdCategoryCodeId", referencedColumnName = "id", updatable = false, insertable = false)
+    @JoinColumn(name = "thirdCategoryCodeOid", referencedColumnName = "oid", updatable = false, insertable = false)
     private ThirdCategoryCode thirdCategoryCode;
 }

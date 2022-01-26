@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.CategoryCodeTOConverter;
 
 @Component
-public class CauseToCategoryCodeLink extends OneToOneLink<Long, CauseTO, CategoryCode, CategoryCodeTO> {
+public class CauseToCategoryCodeLink extends OneToOneLink<String, CauseTO, CategoryCode, CategoryCodeTO> {
     @Autowired
     private CategoryCodeTOConverter categoryCodeTOConverter;
 
@@ -33,13 +33,13 @@ public class CauseToCategoryCodeLink extends OneToOneLink<Long, CauseTO, Categor
     }
 
     @Override
-    public Long createKeyFromParent(CauseTO causeTO) {
-        return causeTO.getCategoryCodeId().longValue();
+    public String createKeyFromParent(CauseTO causeTO) {
+        return causeTO.getCategoryCodeOid();
     }
 
     @Override
-    public Long createKeyFromChild(CategoryCodeTO categoryCodeTO) {
-        return categoryCodeTO.getId().longValue();
+    public String createKeyFromChild(CategoryCodeTO categoryCodeTO) {
+        return categoryCodeTO.getOid();
     }
 
     @Override
@@ -63,8 +63,8 @@ public class CauseToCategoryCodeLink extends OneToOneLink<Long, CauseTO, Categor
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
-        return QCategoryCode.categoryCode.id.in(keys);
+    public BooleanExpression createWhere(List<String> keys) {
+        return QCategoryCode.categoryCode.oid.in(keys);
     }
 
 }

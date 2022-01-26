@@ -14,10 +14,10 @@ public class ThirdCategoryCodeTOConverter extends BaseConverter<ThirdCategoryCod
                 tuple.get(QThirdCategoryCode.thirdCategoryCode.code),
                 tuple.get(QThirdCategoryCode.thirdCategoryCode.name),
                 tuple.get(QThirdCategoryCode.thirdCategoryCode.description),
-                tuple.get(QThirdCategoryCode.thirdCategoryCode.id).intValue(),
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.oid),
                 tuple.get(QThirdCategoryCode.thirdCategoryCode.validFrom),
                 tuple.get(QThirdCategoryCode.thirdCategoryCode.validTo),
-                tuple.get(QThirdCategoryCode.thirdCategoryCode.detailedCategoryCodeId).intValue()
+                tuple.get(QThirdCategoryCode.thirdCategoryCode.detailedCategoryCodeOid)
         );
     }
 }

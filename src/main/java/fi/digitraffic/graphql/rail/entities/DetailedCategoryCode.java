@@ -9,8 +9,8 @@ import javax.persistence.Id;
 @Entity
 public class DetailedCategoryCode {
     @Id
-    public Long id;
-    public Long categoryCodeId;
+    public String oid;
+    public String categoryCodeOid;
 
     @Column(name = "detailed_category_code")
     public String code;

@@ -9,7 +9,7 @@ import javax.persistence.Id;
 @Entity
 public class CategoryCode {
     @Id
-    public Long id;
+    public String oid;
     @Column(name = "category_code")
     public String code;
     @Column(name = "category_name")

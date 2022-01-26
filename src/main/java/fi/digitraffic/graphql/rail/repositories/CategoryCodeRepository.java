@@ -8,5 +8,5 @@ import fi.digitraffic.graphql.rail.entities.CategoryCode;
 
 @Repository
 @Transactional
-public interface CategoryCodeRepository extends JpaRepository<CategoryCode, Long> {
+public interface CategoryCodeRepository extends JpaRepository<CategoryCode, String> {
 }

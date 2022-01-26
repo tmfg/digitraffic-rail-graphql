@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.DetailedCategoryCodeTOConverter;
 
 @Component
-public class CauseToDetailedCategoryCodeLink extends OneToOneLink<Long, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
+public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
     @Autowired
     private DetailedCategoryCodeTOConverter detailedCategoryCodeTOConverter;
 
@@ -33,18 +33,18 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<Long, CauseTO,
     }
 
     @Override
-    public Long createKeyFromParent(CauseTO causeTO) {
-        Integer detailedCategoryCodeId = causeTO.getDetailedCategoryCodeId();
+    public String createKeyFromParent(CauseTO causeTO) {
+        String detailedCategoryCodeId = causeTO.getDetailedCategoryCodeOid();
         if (detailedCategoryCodeId == null) {
-            return -1L;
+            return "-";
         } else {
-            return detailedCategoryCodeId.longValue();
+            return detailedCategoryCodeId;
         }
     }
 
     @Override
-    public Long createKeyFromChild(DetailedCategoryCodeTO detailedCategoryCodeTO) {
-        return detailedCategoryCodeTO.getId().longValue();
+    public String createKeyFromChild(DetailedCategoryCodeTO detailedCategoryCodeTO) {
+        return detailedCategoryCodeTO.getOid();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<Long, CauseTO,
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
-        return QDetailedCategoryCode.detailedCategoryCode.id.in(keys);
+    public BooleanExpression createWhere(List<String> keys) {
+        return QDetailedCategoryCode.detailedCategoryCode.oid.in(keys);
     }
 }
