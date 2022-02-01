@@ -10,12 +10,14 @@ import org.slf4j.MDC;
 
 import graphql.ExecutionResult;
 import graphql.execution.ExecutionId;
+import graphql.execution.ExecutionStepInfo;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationFieldParameters;
+import graphql.schema.GraphQLNamedOutputType;
 
 class ExecutionTimesByFieldState implements InstrumentationState {
     private Map<String, Long> executionTimesByField = new HashMap<>();
@@ -49,8 +51,16 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
             @Override
             public void onCompleted(ExecutionResult result, Throwable t) {
                 ExecutionTimesByFieldState state = parameters.getInstrumentationState();
-                String fieldTypeAndName = parameters.getExecutionStepInfo().getParent().getType().getName() + "." + parameters.getField().getName();
-                state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
+                ExecutionStepInfo parent = parameters.getExecutionStepInfo().getParent();
+
+                if (parent.getType() instanceof GraphQLNamedOutputType) {
+                    GraphQLNamedOutputType parentType = (GraphQLNamedOutputType) parent.getType();
+                    String fieldTypeAndName = parentType.getName() + "." + parameters.getField().getName();
+                    state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
+                } else {
+                    log.warn("No type name found for field: {}, path: {}", parameters.getField().getName(),
+                            parameters.getExecutionStepInfo().getPath().toString());
+                }
             }
         };
     }
@@ -59,7 +69,7 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
         final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
         final String query = parameters.getQuery();
-        MDC.put("query_hashcode",  String.valueOf(query.hashCode()));
+        MDC.put("query_hashcode", String.valueOf(query.hashCode()));
         MDC.put("execution_id", executionId.toString());
         MDC.remove("execution_time");
         log.info("Starting query {} {}", executionId, query);
