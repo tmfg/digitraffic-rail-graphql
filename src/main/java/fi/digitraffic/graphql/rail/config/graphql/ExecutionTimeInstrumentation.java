@@ -51,15 +51,8 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
             @Override
             public void onCompleted(ExecutionResult result, Throwable t) {
                 ExecutionTimesByFieldState state = parameters.getInstrumentationState();
-                ExecutionStepInfo parent = parameters.getExecutionStepInfo().getParent();
 
-                if (parent.getType() instanceof GraphQLNamedOutputType) {
-                    GraphQLNamedOutputType parentType = (GraphQLNamedOutputType) parent.getType();
-                    String fieldTypeAndName = parentType.getName() + "." + parameters.getField().getName();
-                    state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
-                } else {
-                    state.recordTiming(parameters.getExecutionStepInfo().getPath().toString(), System.nanoTime() - startNanos);
-                }
+                state.recordTiming(parameters.getExecutionStepInfo().getPath().toString(), System.nanoTime() - startNanos);
             }
         };
     }
