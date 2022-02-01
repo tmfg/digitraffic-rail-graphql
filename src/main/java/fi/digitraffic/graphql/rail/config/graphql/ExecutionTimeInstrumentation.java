@@ -58,8 +58,7 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
                     String fieldTypeAndName = parentType.getName() + "." + parameters.getField().getName();
                     state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
                 } else {
-                    log.warn("No type name found for field: {}, path: {}", parameters.getField().getName(),
-                            parameters.getExecutionStepInfo().getPath().toString());
+                    state.recordTiming(parameters.getExecutionStepInfo().getPath().toString(), System.nanoTime() - startNanos);
                 }
             }
         };
