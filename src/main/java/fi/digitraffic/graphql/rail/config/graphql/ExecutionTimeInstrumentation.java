@@ -78,6 +78,10 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
         return new SimpleInstrumentationContext<>() {
             @Override
             public void onCompleted(ExecutionResult result, Throwable t) {
+                if (t != null) {
+                    log.error(String.format("Exception in query %s %s", executionId, query), t);
+                }
+
                 ExecutionTimesByFieldState state = parameters.getInstrumentationState();
 
                 Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
