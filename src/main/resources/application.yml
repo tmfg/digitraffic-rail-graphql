@@ -10,6 +10,7 @@ spring:
         persistence:
           query:
             timeout: 7500
+    open-in-view: false
   mvc:
     async:
       request-timeout: 10000
