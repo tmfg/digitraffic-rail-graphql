@@ -8,4 +8,4 @@ jobs:
         uses: tmfg/digitraffic-actions@mirror/v1
         with:
           mirror-repo: git@github.com:tmfg/digitraffic-rail-graphql.git
-          ssh-private-key: {{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
