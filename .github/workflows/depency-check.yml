@@ -15,7 +15,7 @@ jobs:
         with:
           java-version: 11
           distribution: corretto
-          cache: maven
+          cache: gradle
       - name: Dependency check
         run: ./gradlew dependencyCheckAnalyze
       - name: Upload report
