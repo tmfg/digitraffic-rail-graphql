@@ -27,6 +27,7 @@ jobs:
         run: ./gradlew dependencyCheckAnalyze
       - name: Upload report
         uses: actions/upload-artifact@v3
+        if: ${{ success() || failure() }}
         with:
           name: dependency-check-report.html
           path: build/reports/dependency-check-report.html
