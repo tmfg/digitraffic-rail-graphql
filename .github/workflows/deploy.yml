@@ -34,7 +34,7 @@ jobs:
       - name: Update GraphQL task definition
         uses: tmfg/digitraffic-actions@update-task-def/v1
         with:
-          task-def-file-name: rail-${{ github.event.inputs.env }}-graphql-task-def
+          task-def-file-name: rail-${{ github.event.inputs.env }}-graphql
           family-name: digitraffic-graphql
           image-arn: ${{ secrets.ECR_URL }}/rata-graphql:${{ github.event.inputs.commit-hash }}
           aws-role: ${{ secrets.AWS_ROLE }}
