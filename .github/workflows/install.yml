@@ -45,7 +45,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew clean build -x test
-          cp build/libs/digitraffic-rail-graphql-0.0.1-SNAPSHOT-plain.jar config/aws/rail-graphql.jar
+          cp build/libs/digitraffic-rail-graphql-0.0.1-SNAPSHOT.jar config/aws/rail-graphql.jar
           cd config/aws
           docker build --no-cache \
             --build-arg JAR_FILE=rail-graphql.jar \
