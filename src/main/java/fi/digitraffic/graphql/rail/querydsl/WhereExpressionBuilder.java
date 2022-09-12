@@ -14,10 +14,8 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.querydsl.core.types.Operator;
 import com.querydsl.core.types.Ops;
-import com.querydsl.core.types.Path;
 import com.querydsl.core.types.PathMetadataFactory;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.BooleanOperation;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
@@ -86,30 +84,8 @@ public class WhereExpressionBuilder {
     private BooleanExpression contains(BooleanExpression start, PathBuilder path, Object value) {
         SetPath setPath = Expressions.setPath(path.getType(), EntityPathBase.class, path.getMetadata());
         PathBuilder basePath = new PathBuilder(path.getType(), PathMetadataFactory.forCollectionAny(setPath));
-        Map<String, Object> valueAsMap = (Map<String, Object>) value;
-        ParsedExpression parsedExpression = getPathFromMap(valueAsMap, basePath);
-        BooleanOperation operation = Expressions.booleanOperation(parsedExpression.operator, parsedExpression.path, Expressions.constant(parsedExpression.value));
-        return operation;
-    }
 
-    private ParsedExpression getPathFromMap(Map<String, Object> map, PathBuilder builder) {
-        if (builder == null) {
-            builder = new PathBuilder(Object.class, "subAny");
-        }
-        Map.Entry<String, Object> entry = map.entrySet().iterator().next();
-        if (entry.getValue() instanceof Map) {
-            if (entry.getKey().equals("contains")) {
-                return getPathFromMap((Map<String, Object>) entry.getValue(), builder);
-            } else {
-                return getPathFromMap((Map<String, Object>) entry.getValue(), builder.get(entry.getKey()));
-            }
-        } else {
-            ParsedExpression parsedExpression = new ParsedExpression();
-            parsedExpression.operator = stringToOperationMap.get(entry.getKey());
-            parsedExpression.value = convertToEnumOrDefault(entry.getValue());
-            parsedExpression.path = builder;
-            return parsedExpression;
-        }
+        return create(null, basePath,(Map<String, Object>) value);
     }
 
     private Object convertToEnumOrDefault(Object value) {
@@ -217,11 +193,5 @@ public class WhereExpressionBuilder {
         }
         start = combinedExpression;
         return start;
-    }
-
-    private static class ParsedExpression {
-        public Path path;
-        public Operator operator;
-        public Object value;
     }
 }
