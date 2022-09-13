@@ -17,7 +17,7 @@ plugins {
 apply plugin: 'org.owasp.dependencycheck'
 
 dependencyCheck {
-    failBuildOnCVSS = 5
+    failBuildOnCVSS = 7
     suppressionFile = 'owasp-suppressions.xml'
 }
 
@@ -106,4 +106,3 @@ graphqlCodegen {
 test {
     useJUnitPlatform()
 }
-
