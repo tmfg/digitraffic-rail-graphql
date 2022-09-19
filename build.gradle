@@ -8,8 +8,8 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.5.12'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version '2.7.3'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'java'
     id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
 }
@@ -25,7 +25,7 @@ group = 'fi.digitraffic'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
-def queryDslVersion = '4.1.3'
+def queryDslVersion = '5.0.0'
 
 repositories {
     mavenCentral()
@@ -42,7 +42,7 @@ dependencies {
         exclude group: 'postgresql', module: 'org.postgresql'
     }
     runtimeOnly 'mysql:mysql-connector-java'
-    implementation 'technology.dice.open:dice-fairlink:1.2.4'
+    implementation 'technology.dice.open:dice-fairlink:2.1.11'
     implementation "com.querydsl:querydsl-core:${queryDslVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation 'javax.inject:javax.inject:1'
@@ -54,15 +54,14 @@ dependencies {
 
     implementation 'net.logstash.logback:logstash-logback-encoder:5.1'
 
-    implementation 'com.google.guava:guava:31.0.1-jre'
+    // QueryDSL v5 removed dependency to guava. We are using some functionality from
+    // com.google.common.base that guava provides.
+    implementation 'com.google.guava:guava:31.1-jre'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-}
 
-dependencies {
-    compile "com.querydsl:querydsl-jpa:${queryDslVersion}"
     annotationProcessor (
             "com.querydsl:querydsl-apt:${queryDslVersion}:jpa",
             "org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final",
