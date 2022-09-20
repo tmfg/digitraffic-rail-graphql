@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import com.querydsl.core.types.Order;
@@ -19,8 +19,8 @@ public class OrderByExpressionBuilder {
         List<OrderSpecifier> orderSpecifiers = new ArrayList<>();
         for (Map<String, Object> orderByMap : orderByArgument) {
             Pair<List<String>, Object> order = this.getPathAndDeepValueAsString(orderByMap, new ArrayList<>());
-            Path<Object> dynamicOrder = getProperty(root, order.getLeft());
-            Order orderAsDSL = order.getRight().equals("ASCENDING") ? Order.ASC : Order.DESC;
+            Path<Object> dynamicOrder = getProperty(root, order.getFirst());
+            Order orderAsDSL = order.getSecond().equals("ASCENDING") ? Order.ASC : Order.DESC;
             orderSpecifiers.add(new OrderSpecifier(orderAsDSL, dynamicOrder));
         }
 
