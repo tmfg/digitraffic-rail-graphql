@@ -38,7 +38,7 @@ dependencies {
 
     implementation 'com.vividsolutions:jts:1.13'
     implementation('org.hibernate:hibernate-spatial') {
-        exclude group: 'postgresql', module: 'org.postgresql'
+        exclude group: 'org.postgresql', module: 'postgresql'
     }
     runtimeOnly 'mysql:mysql-connector-java'
     implementation 'technology.dice.open:dice-fairlink:2.1.11'
