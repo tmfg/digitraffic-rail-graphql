@@ -15,7 +15,7 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.querydsl.JoinFields;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
@@ -55,7 +55,7 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
 
     @Override
     public Expression[] getFields() {
-        return AllFields.TIME_TABLE_ROW;
+        return JoinFields.TIME_TABLE_ROW;
     }
 
     @Override
