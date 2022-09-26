@@ -18,7 +18,9 @@ public class FieldsToSQLFieldsService {
         List<Expression<?>> paths = new ArrayList<>();
         paths.addAll(extraSQLFields);
         for (SelectedField field : fields) {
-            if (!field.getQualifiedName().contains("/") && field.getSelectionSet().getFields().isEmpty()) {
+            if (!field.getQualifiedName().contains("/") &&
+                    field.getSelectionSet().getFields().isEmpty() &&
+                    !field.getQualifiedName().equals("__typename")) {
                 paths.add(Expressions.path(Tuple.class, entityTable, field.getName()));
             }
         }
