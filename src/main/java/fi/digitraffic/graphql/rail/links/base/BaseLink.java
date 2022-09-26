@@ -1,7 +1,6 @@
 package fi.digitraffic.graphql.rail.links.base;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +25,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import fi.digitraffic.graphql.rail.querydsl.FieldsToSQLFieldsService;
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
 import graphql.schema.DataFetcher;
@@ -38,9 +36,6 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     @Autowired
     private OrderByExpressionBuilder orderByExpressionBuilder;
-
-    @Autowired
-    private FieldsToSQLFieldsService fieldsToSQLFieldsService;
 
     public abstract String getTypeName();
 
@@ -99,10 +94,8 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     Class<ChildEntityType> entityClass = getEntityClass();
                     PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-                    Expression<?>[] fields = this.fieldsToSQLFieldsService.getFields(getEntityTable(), dataFetchingEnvironment.getSelectionSet().getFields(), Arrays.asList(getFields()));
-
                     for (List<KeyType> partition : partitions) {
-                        JPAQuery<Tuple> queryAfterFrom = queryFactory.select(fields).from(getEntityTable());
+                        JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
                         BooleanExpression basicWhere = this.createWhere(partition);
                         JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
                         JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
