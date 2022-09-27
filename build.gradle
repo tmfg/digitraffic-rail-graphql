@@ -8,8 +8,8 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.7.3'
-    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
     id 'java'
     id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
 }
@@ -32,6 +32,9 @@ repositories {
 }
 
 dependencies {
+    /* Checkmarx falsely identifies graphql-java:18.3 as vulnerable to CVE-2022-37734
+       18.3 is the fixed version. See https://nvd.nist.gov/vuln/detail/CVE-2022-37734 */
+    implementation 'com.graphql-java:graphql-java:18.3'
     implementation 'com.graphql-java-kickstart:graphiql-spring-boot-starter:11.1.0'
     implementation 'com.graphql-java:graphql-java-extended-scalars:19.0'
     implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:2.0'
