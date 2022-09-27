@@ -44,7 +44,7 @@ dependencies {
         exclude group: 'org.postgresql', module: 'postgresql'
     }
     runtimeOnly 'mysql:mysql-connector-java'
-    implementation 'technology.dice.open:dice-fairlink:2.1.11'
+    implementation 'technology.dice.open:dice-fairlink:1.2.4'
     implementation "com.querydsl:querydsl-core:${queryDslVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation 'javax.inject:javax.inject:1'
