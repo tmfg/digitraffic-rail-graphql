@@ -10,81 +10,44 @@
         <notes><![CDATA[file name: snakeyaml-1.28.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
         <cve>CVE-2022-25857</cve>
+        <cve>CVE-2022-38749</cve>
+        <cve>CVE-2022-38750</cve>
+        <cve>CVE-2022-38751</cve>
+        <cve>CVE-2022-38752</cve>
     </suppress>
 
-    <suppress until="2022-09-15">
-        <!-- DPO-1926 -->
-        <notes><![CDATA[file name: querydsl-*-4.1.3.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.querydsl/querydsl\-.*@.*$</packageUrl>
-        <cve>CVE-2022-31548</cve>
+    <suppress until="2022-10-13">
+        <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
+        <notes><![CDATA[file name: graphql-java-spring-boot-starter-webmvc-2.0.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-boot\-starter\-webmvc@.*$</packageUrl>
+        <cve>CVE-2022-37734</cve>
     </suppress>
-    <suppress until="2022-09-15">
-        <!-- DPO-1926: transitive dependency from querydsl -->
-        <notes><![CDATA[file name: guava-18.0.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2018-10237</cve>
-        <cve>CVE-2020-8908</cve>
+    <suppress until="2022-10-13">
+        <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
+        <notes><![CDATA[file name: graphql-java-spring-webmvc-2.0.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-webmvc@.*$</packageUrl>
+        <cve>CVE-2022-37734</cve>
     </suppress>
-
-    <suppress until="2022-09-15">
-        <!-- DPO-1926 -->
-        <notes><![CDATA[file name: postgresql-42.2.25.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
-        <vulnerabilityName>CVE-2022-26520</vulnerabilityName>
-        <cve>CVE-2022-31197</cve>
-    </suppress>
-
-    <suppress until="2022-09-15">
-        <!-- DPO-1926: transitive dependency from dice-fairlink -->
-        <notes><![CDATA[file name: aws-java-sdk-*-1.11.251.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.amazonaws/aws\-java\-sdk\-.*@.*$</packageUrl>
-        <cve>CVE-2022-31159</cve>
-    </suppress>
-    <suppress until="2022-09-15">
-        <!-- DPO-1926: transitive dependency from dice-fairlink -->
-        <notes><![CDATA[file name: jmespath-java-1.11.251.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.amazonaws/jmespath\-java@.*$</packageUrl>
-        <cve>CVE-2022-31159</cve>
-    </suppress>
-
-    <suppress until="2022-09-15">
-        <!-- DPO-1926: transitive dependency from graphql-java-extended-scalars -->
-        <notes><![CDATA[file name: okhttp-3.14.9.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.squareup\.okhttp3/okhttp@.*$</packageUrl>
-        <vulnerabilityName>CVE-2021-0341</vulnerabilityName>
-    </suppress>
-
-    <suppress until="2022-09-15">
-        <!-- DPO-1926 -->
-        <notes><![CDATA[file name: spring-*-5.3.18.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@.*$</packageUrl>
-        <cve>CVE-2022-22968</cve>
-        <cve>CVE-2022-22970</cve>
-    </suppress>
-    <suppress until="2022-09-15">
-        <!-- DPO-1926: transitive dependency from spring boot -->
-        <notes><![CDATA[file name: mysql-connector-java-8.0.28.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/mysql/mysql\-connector\-java@.*$</packageUrl>
-        <cve>CVE-2022-21824</cve>
-    </suppress>
-    <suppress until="2022-09-15">
-        <!-- DPO-1926: version number comes from spring boot -->
-        <notes><![CDATA[file name: tomcat-embed-*-9.0.60.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-.*@.*$</packageUrl>
-        <cve>CVE-2022-29885</cve>
-        <cve>CVE-2022-34305</cve>
+    <suppress until="2022-10-13">
+        <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
+        <notes><![CDATA[file name: java-dataloader-3.1.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.graphql\-java/java\-dataloader@.*$</packageUrl>
+        <cve>CVE-2022-37734</cve>
     </suppress>
 
     <!--
         Permanent suppressions
     -->
-
+    <suppress>
+        <!-- False positive. We don't have a dependency to nrlakin/homepage repository. -->
+        <notes><![CDATA[file name: querydsl-*-5.0.0.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.querydsl/querydsl\-(.)*@.*$</packageUrl>
+        <cve>CVE-2022-31548</cve>
+    </suppress>
     <suppress>
         <!-- Our version of spring is not affected -->
-        <notes><![CDATA[file name: spring-*-5.3.18.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-.*@.*$</packageUrl>
+        <notes><![CDATA[file name: spring-web-5.3.23.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-web@.*$</packageUrl>
         <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2022-22971</cve>
     </suppress>
-
 </suppressions>
