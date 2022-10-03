@@ -90,7 +90,7 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
         return depth;
     }
 
-    QueryTraverser newQueryTraverser(InstrumentationValidationParameters parameters) {
+    private QueryTraverser newQueryTraverser(InstrumentationValidationParameters parameters) {
         return QueryTraverser.newQueryTraverser()
                 .schema(parameters.getSchema())
                 .document(parameters.getDocument())

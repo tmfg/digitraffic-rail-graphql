@@ -4,10 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
-
+@ResponseStatus(value= HttpStatus.BAD_REQUEST)
 public class CustomException extends RuntimeException implements GraphQLError {
     private final int errorCode;
 

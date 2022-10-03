@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.dataloader.BatchLoader;
 import org.dataloader.DataLoader;
+import org.dataloader.DataLoaderFactory;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -40,7 +41,7 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
 
         for (BaseLink fetcher : fetchers) {
             BatchLoader<?, ?> dataLoader = fetcher.createLoader();
-            DataLoader<?, ?> loader = DataLoader.newDataLoader(dataLoader);
+            DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader);
             dataLoaderRegistry.register(fetcher.getTypeName() + "." + fetcher.getFieldName(), loader);
         }
 
