@@ -23,10 +23,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void dateTimeFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getLeft();
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getFirst();
 
         ZonedDateTime baseTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Helsinki"));
         train66.timetableAcceptanceDate = baseTime;
@@ -65,10 +65,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void enumFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getLeft();
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
 
         train67.timetableType = Train.TimetableType.ADHOC;
         trainRepository.save(train67);
@@ -88,10 +88,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void stringFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getLeft();
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
 
         train66.commuterLineid = "A";
         trainRepository.save(train66);
@@ -117,10 +117,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void booleanFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getLeft();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getLeft();
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
 
         train66.deleted = true;
         trainRepository.save(train66);

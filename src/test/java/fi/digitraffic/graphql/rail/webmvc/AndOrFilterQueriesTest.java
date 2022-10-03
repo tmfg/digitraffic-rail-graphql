@@ -5,9 +5,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
@@ -47,38 +47,38 @@ public class AndOrFilterQueriesTest extends BaseWebMVCTest {
         Pair<Train, List<TimeTableRow>> train72 = trainFactory.createBaseTrain(new TrainId(72L, LocalDate.of(2020, 9, 17)));
         Pair<Train, List<TimeTableRow>> train73 = trainFactory.createBaseTrain(new TrainId(73L, LocalDate.of(2020, 9, 17)));
 
-        train66.getLeft().deleted = true;
-        train66.getLeft().cancelled = true;
-        train66.getLeft().runningCurrently = true;
+        train66.getFirst().deleted = true;
+        train66.getFirst().cancelled = true;
+        train66.getFirst().runningCurrently = true;
 
-        train67.getLeft().deleted = true;
-        train67.getLeft().cancelled = true;
-        train66.getLeft().runningCurrently = false;
+        train67.getFirst().deleted = true;
+        train67.getFirst().cancelled = true;
+        train66.getFirst().runningCurrently = false;
 
-        train68.getLeft().deleted = true;
-        train68.getLeft().cancelled = false;
-        train66.getLeft().runningCurrently = true;
+        train68.getFirst().deleted = true;
+        train68.getFirst().cancelled = false;
+        train66.getFirst().runningCurrently = true;
 
-        train69.getLeft().deleted = true;
-        train69.getLeft().cancelled = false;
-        train69.getLeft().runningCurrently = false;
+        train69.getFirst().deleted = true;
+        train69.getFirst().cancelled = false;
+        train69.getFirst().runningCurrently = false;
 
-        train70.getLeft().deleted = false;
-        train70.getLeft().cancelled = true;
-        train70.getLeft().runningCurrently = true;
+        train70.getFirst().deleted = false;
+        train70.getFirst().cancelled = true;
+        train70.getFirst().runningCurrently = true;
 
-        train71.getLeft().deleted = false;
-        train71.getLeft().cancelled = true;
-        train71.getLeft().runningCurrently = false;
+        train71.getFirst().deleted = false;
+        train71.getFirst().cancelled = true;
+        train71.getFirst().runningCurrently = false;
 
-        train72.getLeft().deleted = false;
-        train72.getLeft().cancelled = false;
-        train72.getLeft().runningCurrently = true;
+        train72.getFirst().deleted = false;
+        train72.getFirst().cancelled = false;
+        train72.getFirst().runningCurrently = true;
 
-        train73.getLeft().deleted = false;
-        train73.getLeft().cancelled = false;
-        train73.getLeft().runningCurrently = false;
+        train73.getFirst().deleted = false;
+        train73.getFirst().cancelled = false;
+        train73.getFirst().runningCurrently = false;
 
-        trainRepository.saveAll(List.of(train66.getLeft(), train67.getLeft(), train68.getLeft(), train69.getLeft(), train70.getLeft(), train71.getLeft(), train72.getLeft(), train73.getLeft()));
+        trainRepository.saveAll(List.of(train66.getFirst(), train67.getFirst(), train68.getFirst(), train69.getFirst(), train70.getFirst(), train71.getFirst(), train72.getFirst(), train73.getFirst()));
     }
 }

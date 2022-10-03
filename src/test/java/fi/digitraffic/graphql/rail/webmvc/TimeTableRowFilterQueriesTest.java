@@ -51,12 +51,12 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void childrenCollectionFilteringShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train70 = trainFactory.createBaseTrain(new TrainId(70L, LocalDate.of(2000, 1, 1))).getLeft();
-        Train train71 = trainFactory.createBaseTrain(new TrainId(71L, LocalDate.of(2000, 1, 1))).getLeft();
+        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train70 = trainFactory.createBaseTrain(new TrainId(70L, LocalDate.of(2000, 1, 1))).getFirst();
+        Train train71 = trainFactory.createBaseTrain(new TrainId(71L, LocalDate.of(2000, 1, 1))).getFirst();
 
         train66.timetableType = Train.TimetableType.ADHOC;
         train67.timetableType = Train.TimetableType.ADHOC;

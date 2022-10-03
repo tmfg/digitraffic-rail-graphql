@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+
 import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
 import fi.digitraffic.graphql.rail.queries.BaseQuery;
@@ -114,7 +116,7 @@ public class GraphQLProvider {
                         if (childType.getName().equals("Float")) {
                             newFieldDefinitions.add(fieldDefinition);
                         } else {
-                            List<InputValueDefinition> inputValueDefinitions = fieldDefinition.getInputValueDefinitions();
+                            List<InputValueDefinition> inputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(childType.getName() + "Where").build()).build());
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
                             inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
@@ -156,7 +158,7 @@ public class GraphQLProvider {
                         ListType listType = (ListType) fieldDefinition.getType();
                         TypeName namedType = (TypeName) listType.getType();
 
-                        List<InputValueDefinition> newInputValueDefinitions = fieldDefinition.getInputValueDefinitions();
+                        List<InputValueDefinition> newInputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(namedType.getName() + "Where").build()).build());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
@@ -329,14 +331,12 @@ public class GraphQLProvider {
                         toBeRemoved.add(fieldDefinition);
                     }
                 }
-                if (!toBeRemoved.isEmpty()) {
-                    newDefinitions.removeAll(toBeRemoved);
-                }
+                List<FieldDefinition> filteredDefinitions = newDefinitions.stream().filter(d -> !toBeRemoved.contains(d)).collect(Collectors.toList());
 
                 ObjectTypeDefinition newObjectTypeDefiniton = objectTypeDefinition.withNewChildren(newNodeChildrenContainer()
                         .children(CHILD_IMPLEMENTZ, objectTypeDefinition.getImplements())
                         .children(CHILD_DIRECTIVES, objectTypeDefinition.getDirectives())
-                        .children(CHILD_FIELD_DEFINITIONS, newDefinitions)
+                        .children(CHILD_FIELD_DEFINITIONS, filteredDefinitions)
                         .build());
 
                 typeRegistry.remove(entry.getValue());

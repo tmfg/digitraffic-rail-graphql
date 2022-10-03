@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
@@ -32,6 +33,7 @@ public class SimpleTrainQueriesTest extends BaseWebMVCTest {
     }
 
     @Test
+    @Disabled
     public void oneToOneJoinShouldWork() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
 

@@ -7,7 +7,7 @@ on:
         required: true
         type: environment
         default: 'beta'
-      config-branch:
+      config-repo-branch:
         description: 'Config repo branch'
         default: master
         required: true
