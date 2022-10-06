@@ -107,7 +107,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
                     return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
                 }
-                , ExecutorHolder.executor);
+        );
     }
 
     private JPAQuery<Tuple> createWhereQuery(JPAQuery<Tuple> query, PathBuilder root, BooleanExpression basicWhere, Map<String, Object> whereAsMap) {
