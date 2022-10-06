@@ -46,7 +46,6 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         }
 
         executionInputBuilder.dataLoaderRegistry(dataLoaderRegistry);
-        executionInputBuilder.context(dataLoaderRegistry);
 
         ExecutionInput executionInput = executionInputBuilder.build();
 
