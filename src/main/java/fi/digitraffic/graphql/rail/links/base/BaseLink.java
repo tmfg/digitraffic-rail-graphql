@@ -79,7 +79,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
             ParentTOType parent = dataFetchingEnvironment.getSource();
 
-            DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getContext();
+            DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getDataLoaderRegistry();
             DataLoader<KeyType, ChildFieldType> dataloader = dataLoaderRegistry.getDataLoader(getTypeName() + "." + getFieldName());
 
             return dataloader.load(createKeyFromParent(parent));
