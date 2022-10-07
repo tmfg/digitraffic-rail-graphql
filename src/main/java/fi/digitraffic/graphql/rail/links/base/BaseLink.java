@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.dataloader.BatchLoader;
+import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public abstract ChildTOType createChildTOFromTuple(Tuple tuple);
 
-    public abstract BatchLoader<KeyType, ChildFieldType> createLoader();
+    public abstract BatchLoaderWithContext<KeyType, ChildFieldType> createLoader();
 
     public abstract Class<ChildEntityType> getEntityClass();
 
@@ -61,8 +61,6 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         return null;
     }
 
-    protected DataFetchingEnvironment dataFetchingEnvironment;
-
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -75,39 +73,43 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
-            this.dataFetchingEnvironment = dataFetchingEnvironment;
-
             ParentTOType parent = dataFetchingEnvironment.getSource();
 
             DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getDataLoaderRegistry();
             DataLoader<KeyType, ChildFieldType> dataloader = dataLoaderRegistry.getDataLoader(getTypeName() + "." + getFieldName());
 
-            return dataloader.load(createKeyFromParent(parent));
+            return dataloader.load(createKeyFromParent(parent), dataFetchingEnvironment);
         };
     }
 
-    protected <ResultType> BatchLoader<KeyType, ResultType> createDataLoader(Function<List<ChildTOType>, Map<KeyType, ResultType>> childGroupFunction) {
-        return parentIds -> CompletableFuture.supplyAsync(() -> {
-                    List<List<KeyType>> partitions = Lists.partition(parentIds, 2499);
-                    List<ChildTOType> children = new ArrayList<>(parentIds.size());
+    protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction) {
+        BatchLoaderWithContext<KeyType, ResultType> batchLoaderWithCtx = (keys, loaderContext) -> {
+            DataFetchingEnvironment dataFetchingEnvironment = (DataFetchingEnvironment) loaderContext.getKeyContextsList().get(0);
 
-                    Class<ChildEntityType> entityClass = getEntityClass();
-                    PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+            return CompletableFuture.supplyAsync(() -> {
+                List<List<KeyType>> partitions = Lists.partition(keys, 2499);
+                List<ChildTOType> children = new ArrayList<>(keys.size());
 
-                    for (List<KeyType> partition : partitions) {
-                        JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
-                        BooleanExpression basicWhere = this.createWhere(partition);
-                        JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-                        JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+                Class<ChildEntityType> entityClass = getEntityClass();
+                PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-                        children.addAll(queryAfterOrderBy.fetch().stream().map(s -> this.createChildTOFromTuple(s)).collect(Collectors.toList()));
-                    }
+                for (List<KeyType> partition : partitions) {
+                    JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
+                    BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
+                    JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere,  dataFetchingEnvironment.getArgument("where"));
+                    JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
-                    Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children);
-
-                    return parentIds.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
+                    children.addAll(queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList()));
                 }
-                , ExecutorHolder.executor);
+
+                Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children, dataFetchingEnvironment);
+
+                return keys.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
+            });
+        };
+
+
+        return batchLoaderWithCtx;
     }
 
     private JPAQuery<Tuple> createWhereQuery(JPAQuery<Tuple> query, PathBuilder root, BooleanExpression basicWhere, Map<String, Object> whereAsMap) {

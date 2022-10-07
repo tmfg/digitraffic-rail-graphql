@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.dataloader.BatchLoader;
+import org.dataloader.BatchLoaderWithContext;
+
+import graphql.schema.DataFetchingEnvironment;
 
 public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, ChildTOType> extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, List<ChildTOType>> {
-    public BatchLoader<KeyType, List<ChildTOType>> createLoader() {
-        return createDataLoader((children) -> {
+    public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {
+        return createDataLoader((children, dataFetchingEnvironment) -> {
                     Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
                     for (ChildTOType child1 : children) {
                         KeyType parentId = ((Function<ChildTOType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
@@ -22,7 +24,7 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
                         childTOs.add(child1);
                     }
 
-                    filterWithSkipAndTake(childrenGroupedBy);
+                    filterWithSkipAndTake(childrenGroupedBy, dataFetchingEnvironment);
 
                     return childrenGroupedBy;
                 }
@@ -30,7 +32,7 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
     }
 
     // This should be done in database, but Mysql 5.7 does not support partition...over
-    private void filterWithSkipAndTake(Map<KeyType, List<ChildTOType>> childrenGroupedBy) {
+    private void filterWithSkipAndTake(Map<KeyType, List<ChildTOType>> childrenGroupedBy, DataFetchingEnvironment dataFetchingEnvironment) {
         Integer skip = dataFetchingEnvironment.getArgument("skip");
         Integer take = dataFetchingEnvironment.getArgument("take");
         if (skip != null || take != null) {

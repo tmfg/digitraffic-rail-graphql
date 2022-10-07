@@ -3,7 +3,7 @@ package fi.digitraffic.graphql.rail.config;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.dataloader.BatchLoader;
+import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderFactory;
 import org.dataloader.DataLoaderRegistry;
@@ -40,7 +40,7 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
         DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
         for (BaseLink fetcher : fetchers) {
-            BatchLoader<?, ?> dataLoader = fetcher.createLoader();
+            BatchLoaderWithContext<?, ?> dataLoader =  fetcher.createLoader();
             DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader);
             dataLoaderRegistry.register(fetcher.getTypeName() + "." + fetcher.getFieldName(), loader);
         }
