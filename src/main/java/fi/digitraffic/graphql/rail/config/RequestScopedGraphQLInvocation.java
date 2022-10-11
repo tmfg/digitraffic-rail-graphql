@@ -49,7 +49,7 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
 
         ExecutionInput executionInput = executionInputBuilder.build();
 
-        return CompletableFuture.completedFuture(graphQL.execute(executionInput));
+        return graphQL.executeAsync(executionInput);
     }
 
 }

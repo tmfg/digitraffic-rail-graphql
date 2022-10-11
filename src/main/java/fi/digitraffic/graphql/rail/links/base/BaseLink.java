@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,8 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
+    private static ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(20);
+
     @Autowired
     private WhereExpressionBuilder whereExpressionBuilder;
 
@@ -96,7 +100,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 for (List<KeyType> partition : partitions) {
                     JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
                     BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
-                    JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere,  dataFetchingEnvironment.getArgument("where"));
+                    JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
                     JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
                     children.addAll(queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList()));
@@ -105,7 +109,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children, dataFetchingEnvironment);
 
                 return keys.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
-            });
+            }, executor);
         };
 
 
