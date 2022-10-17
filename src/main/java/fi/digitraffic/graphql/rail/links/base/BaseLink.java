@@ -33,7 +33,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
-    private static ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(20, r -> new Thread(r, "baselink"));
+    private static ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(20, r -> new Thread(r, "baselink-%d"));
 
     @Autowired
     private WhereExpressionBuilder whereExpressionBuilder;
