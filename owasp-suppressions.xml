@@ -5,7 +5,22 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
+        <!-- Vulnerable features are not enabled -->
+        <notes><![CDATA[file name: jackson-databind-2.13.3.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
+
+    <suppress until="2022-12-01">
+        <!-- We don't directly use common-text -->
+        <notes><![CDATA[file name: commons-text-1.9.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
+        <cve>CVE-2022-42889</cve>
+    </suppress>
+
+    <suppress until="2022-12-01">
         <!-- Requires update in upstream org.springframework.boot/spring-boot-starter-parent -->
         <notes><![CDATA[file name: snakeyaml-1.28.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
@@ -16,7 +31,7 @@
         <cve>CVE-2022-38752</cve>
     </suppress>
 
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
         <!-- Transitive dependencies from technology.dice.open:dice-fairlink:1.2.4. We are not using these libraries in our code,
              and therefore we are not using downloadDirectory method that causes this vulnerability. -->
         <notes><![CDATA[file name: aws-java-sdk-core-1.11.251|aws-java-sdk-rds-1.11.251.jar|jmespath-java-1.11.251.jar]]></notes>
@@ -24,19 +39,19 @@
         <cve>CVE-2022-31159</cve>
     </suppress>
 
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
         <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
         <notes><![CDATA[file name: graphql-java-spring-boot-starter-webmvc-2.0.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-boot\-starter\-webmvc@.*$</packageUrl>
         <cve>CVE-2022-37734</cve>
     </suppress>
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
         <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
         <notes><![CDATA[file name: graphql-java-spring-webmvc-2.0.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-webmvc@.*$</packageUrl>
         <cve>CVE-2022-37734</cve>
     </suppress>
-    <suppress until="2022-10-13">
+    <suppress until="2022-12-01">
         <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
         <notes><![CDATA[file name: java-dataloader-3.1.2.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.graphql\-java/java\-dataloader@.*$</packageUrl>
