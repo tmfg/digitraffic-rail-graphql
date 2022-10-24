@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -16,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -33,7 +33,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
-    private static ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(20, r -> new Thread(r, "baselink-%d"));
+    private static ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
 
     @Autowired
     private WhereExpressionBuilder whereExpressionBuilder;
@@ -91,6 +91,8 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
             DataFetchingEnvironment dataFetchingEnvironment = (DataFetchingEnvironment) loaderContext.getKeyContextsList().get(0);
 
             return CompletableFuture.supplyAsync(() -> {
+                MDC.put("execution_id", dataFetchingEnvironment.getExecutionId().toString());
+
                 List<List<KeyType>> partitions = Lists.partition(keys, 2499);
                 List<ChildTOType> children = new ArrayList<>(keys.size());
 
