@@ -14,6 +14,7 @@ public class TrainLocationTOConverter {
         return new TrainLocationTO(
                 tuple.get(QTrainLocation.trainLocation.trainLocationId.departureDate),
                 tuple.get(QTrainLocation.trainLocation.speed),
+                tuple.get(QTrainLocation.trainLocation.accuracy),
                 tuple.get(QTrainLocation.trainLocation.trainLocationId.timestamp),
                 tuple.get(QTrainLocation.trainLocation.trainLocationId.trainNumber).intValue(),
                 List.of((float) tuple.get(QTrainLocation.trainLocation.location).getX(), (float) tuple.get(QTrainLocation.trainLocation.location).getY()),

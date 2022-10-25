@@ -33,6 +33,8 @@ public class TrainLocation {
 
     public Integer speed;
 
+    public Integer accuracy;
+
     @Column(updatable = false, insertable = false)
     public Long trainNumber;
 

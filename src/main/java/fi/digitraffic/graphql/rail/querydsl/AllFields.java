@@ -144,6 +144,7 @@ public class AllFields {
             QTrainLocation.trainLocation.id,
             QTrainLocation.trainLocation.location,
             QTrainLocation.trainLocation.speed,
+            QTrainLocation.trainLocation.accuracy,
             QTrainLocation.trainLocation.trainLocationId.departureDate,
             QTrainLocation.trainLocation.trainLocationId.timestamp,
             QTrainLocation.trainLocation.trainLocationId.trainNumber

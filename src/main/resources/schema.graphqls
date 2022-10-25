@@ -98,6 +98,7 @@ type Operator {
 type TrainLocation {
     departureDate : Date!
     speed : Int!
+    accuracy: Int
     timestamp : DateTime!
     trainNumber : Int!
     location : [Float]
