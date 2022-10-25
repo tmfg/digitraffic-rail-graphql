@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: mirror
-        uses: tmfg/digitraffic-actions@mirror/v1
+        uses: tmfg/digitraffic-actions@mirror/v2
         with:
           mirror-repo: git@github.com:tmfg/digitraffic-rail-graphql.git
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
