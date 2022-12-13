@@ -3,6 +3,7 @@ spring:
     url: jdbc:mysql://localhost/avoindata?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
     password: jaakko
+    driver-class-name: 'software.aws.rds.jdbc.mysql.Driver'
   jpa:
     properties:
       hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'
