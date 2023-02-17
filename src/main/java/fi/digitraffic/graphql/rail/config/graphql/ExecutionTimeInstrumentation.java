@@ -72,7 +72,7 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
         MDC.put("query_hashcode", String.valueOf(query.hashCode()));
         MDC.put("execution_id", executionId.toString());
         MDC.remove("execution_time");
-        log.info("Starting query {} {}", executionId, query);
+        // log.info("Starting query {} {}", executionId, query);
 
         long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
