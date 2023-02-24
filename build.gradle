@@ -40,6 +40,8 @@ dependencies {
     implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:2.0'
 
     implementation 'com.vividsolutions:jts:1.13'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.4'
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.3'
     implementation('org.hibernate:hibernate-spatial') {
         exclude group: 'org.postgresql', module: 'postgresql'
     }
