@@ -7,6 +7,10 @@ on:
         required: true
         type: environment
         default: 'beta'
+      ref:
+        description: 'Branch/tag/SHA of digitraffic-road-private'
+        required: true
+        default: 'master'
       config-repo-branch:
         description: 'Config repo branch'
         default: master
@@ -24,6 +28,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.ref }}
       - name: Checkout CI-repo
         uses: actions/checkout@v3
         with:
