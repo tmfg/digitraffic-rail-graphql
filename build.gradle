@@ -19,6 +19,12 @@ apply plugin: 'org.owasp.dependencycheck'
 dependencyCheck {
     failBuildOnCVSS = 7
     suppressionFile = 'owasp-suppressions.xml'
+    analyzers {
+        ossIndex {
+            // OSS Index can be unstable
+            warnOnlyOnRemoteErrors = true
+        }
+    }
 }
 
 group = 'fi.digitraffic'
