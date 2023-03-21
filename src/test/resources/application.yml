@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost/avoindata_ci?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
+    url: jdbc:mysql://localhost/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
-    password: jaakko
+    password:
   jpa:
     properties:
       hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'

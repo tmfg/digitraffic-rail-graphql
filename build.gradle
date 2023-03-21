@@ -3,12 +3,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.owasp:dependency-check-gradle:7.1.1'
+        classpath 'org.owasp:dependency-check-gradle:8.1.2'
     }
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.7.5'
+    id 'org.springframework.boot' version '2.7.8'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
@@ -40,12 +40,12 @@ dependencies {
     implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:2.0'
 
     implementation 'com.vividsolutions:jts:1.13'
-    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.4'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.6'
     implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.3'
     implementation('org.hibernate:hibernate-spatial') {
         exclude group: 'org.postgresql', module: 'postgresql'
     }
-    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
     implementation 'technology.dice.open:dice-fairlink:1.2.4'
     implementation "com.querydsl:querydsl-core:${queryDslVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
