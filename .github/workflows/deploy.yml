@@ -3,16 +3,16 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Environment'
+        description: "Environment"
         required: true
         type: environment
-        default: 'beta'
+        default: "beta"
       commit-hash:
-        description: 'Commit hash/ECR image tag'
+        description: "Commit hash/ECR image tag"
         required: true
         type: string
       config-branch:
-        description: 'Config repo branch'
+        description: "Config repo branch"
         default: master
         required: true
         type: string
@@ -20,20 +20,20 @@ jobs:
   deploy:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
     environment: ${{ github.event.inputs.env }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       id-token: write
       contents: read
       actions: read
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: gh-actions-deploy-rail-graphql-${{ github.event.inputs.env }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Update GraphQL task definition
-        uses: tmfg/digitraffic-actions@update-task-def/v1
+        uses: tmfg/digitraffic-actions@update-task-def/v2
         with:
           task-def-file-name: rail-${{ github.event.inputs.env }}-graphql
           family-name: digitraffic-graphql
