@@ -26,14 +26,6 @@
     </suppress>
 
     <suppress until="2023-05-01">
-        <!-- Transitive dependencies from technology.dice.open:dice-fairlink:1.2.4. We are not using these libraries in our code,
-             and therefore we are not using downloadDirectory method that causes this vulnerability. -->
-        <notes><![CDATA[file name: aws-java-sdk-core-1.11.251|aws-java-sdk-rds-1.11.251.jar|jmespath-java-1.11.251.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws|jmespath)\-java(-sdk-core|-sdk-rds)?@.*$</packageUrl>
-        <cve>CVE-2022-31159</cve>
-    </suppress>
-
-    <suppress until="2023-05-01">
         <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
         <notes><![CDATA[file name: graphql-java-spring-boot-starter-webmvc-2.0.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-boot\-starter\-webmvc@.*$</packageUrl>
