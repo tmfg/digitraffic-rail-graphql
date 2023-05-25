@@ -99,7 +99,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
             return CompletableFuture.supplyAsync(() -> {
                 MDC.put("execution_id", dataFetchingEnvironment.getExecutionId().toString());
 
-                List<List<KeyType>> partitions = Lists.partition(keys, Math.max(300, keys.size() / 4));
+                List<List<KeyType>> partitions = Lists.partition(keys, 500);
                 List<ChildTOType> children = new ArrayList<>(keys.size());
 
                 Class<ChildEntityType> entityClass = getEntityClass();
