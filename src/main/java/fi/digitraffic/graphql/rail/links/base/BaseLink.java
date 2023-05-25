@@ -36,8 +36,8 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
-    private static ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(10);
-    private static ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(15);
+    private static ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
+    private static ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(10);
 
     private static Logger log = LoggerFactory.getLogger(BaseLink.class);
 
