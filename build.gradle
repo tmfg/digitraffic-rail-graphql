@@ -52,7 +52,8 @@ dependencies {
     implementation('org.hibernate:hibernate-spatial') {
         exclude group: 'org.postgresql', module: 'postgresql'
     }
-    implementation group: 'software.aws.rds', name: 'aws-mysql-jdbc', version: '1.1.7'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
+    implementation 'technology.dice.open:dice-fairlink:1.2.4'
     implementation "com.querydsl:querydsl-core:${queryDslVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
     implementation 'javax.inject:javax.inject:1'
