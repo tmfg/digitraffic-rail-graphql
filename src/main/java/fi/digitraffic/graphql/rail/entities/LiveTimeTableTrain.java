@@ -2,8 +2,8 @@ package fi.digitraffic.graphql.rail.entities;
 
 import java.time.ZonedDateTime;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
 
 @Entity
 public class LiveTimeTableTrain {

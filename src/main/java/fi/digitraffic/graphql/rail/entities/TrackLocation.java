@@ -1,6 +1,6 @@
 package fi.digitraffic.graphql.rail.entities;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class TrackLocation {

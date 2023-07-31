@@ -30,7 +30,7 @@ dependencyCheck {
 
 group = 'fi.digitraffic'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 def queryDslVersion = '5.0.0'
 
