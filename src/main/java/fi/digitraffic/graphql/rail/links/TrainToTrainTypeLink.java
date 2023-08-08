@@ -33,17 +33,17 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
     }
 
     @Override
-    public Long createKeyFromParent(TrainTO trainTO) {
-        return trainTO.getTrainTypeId().longValue();
+    public Long createKeyFromParent(final TrainTO trainTO) {
+        return trainTO.getTrainTypeId();
     }
 
     @Override
-    public Long createKeyFromChild(TrainTypeTO trainTypeTO) {
-        return trainTypeTO.getId().longValue();
+    public Long createKeyFromChild(final TrainTypeTO trainTypeTO) {
+        return trainTypeTO.getId();
     }
 
     @Override
-    public TrainTypeTO createChildTOFromTuple(Tuple tuple) {
+    public TrainTypeTO createChildTOFromTuple(final Tuple tuple) {
         return trainTypeTOConverter.convert(tuple);
     }
 
@@ -63,7 +63,7 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
+    public BooleanExpression createWhere(final List<Long> keys) {
         return QTrainType.trainType.id.in(keys);
     }
 }

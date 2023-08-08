@@ -10,9 +10,9 @@ import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
 
 @Component
 public class TrainTrackingTOConverter {
-    public TrainTrackingMessageTO convert(Tuple tuple) {
+    public TrainTrackingMessageTO convert(final Tuple tuple) {
         return new TrainTrackingMessageTO(
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.id).intValue(),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.id).longValue(),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.trainNumber),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.virtualDepartureDate),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.stationShortCode),

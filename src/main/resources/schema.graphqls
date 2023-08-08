@@ -1,8 +1,8 @@
 type Query {
-    train(trainNumber : Int!, departureDate : Date!) : [Train]
+    train(trainNumber : Long!, departureDate : Date!) : [Train]
     trainsByDepartureDate(departureDate : Date!) : [Train]
     trainsByVersionGreaterThan(version : String!) : [Train]
-    trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
+    trainsByStationAndQuantity(station : String!, arrivedTrains : Long, arrivingTrains : Long,departedTrains : Long,departingTrains : Long, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
     currentlyRunningTrains : [Train]
 
     latestTrainLocations : [TrainLocation]
@@ -25,10 +25,10 @@ type Train {
     runningCurrently : Boolean!
     timetableAcceptanceDate : DateTime!
     timetableType : TimetableType!
-    trainNumber : Int!
+    trainNumber : Long!
     version : String!
-    trainTypeId : Int!
-    trainCategoryId : Int!
+    trainTypeId : Long!
+    trainCategoryId : Long!
     operator : Operator!
     trainType : TrainType!
     timeTableRows : [TimeTableRow]
@@ -39,14 +39,14 @@ type Train {
 }
 
 type TrainType {
-    id : Int!
+    id : Long!
     name : String!
-    trainCategoryId : Int!
+    trainCategoryId : Long!
     trainCategory : TrainCategory!
 }
 
 type TrainCategory {
-    id : Int!
+    id : Long!
     name : String!
 }
 
@@ -61,13 +61,13 @@ type TimeTableRow {
     cancelled : Boolean!
     scheduledTime : DateTime!
     actualTime : DateTime
-    differenceInMinutes : Int
+    differenceInMinutes : Long
     liveEstimateTime : DateTime
     estimateSourceType : EstimateSourceType
     unknownDelay : Boolean
 
-    id : Int!
-    trainNumber : Int!
+    id : Long!
+    trainNumber : Long!
     departureDate : Date!
 
     station : Station!
@@ -76,11 +76,11 @@ type TimeTableRow {
 }
 
 type Cause {
-    timeTableRowId : Int!
-    trainNumber : Int!
+    timeTableRowId : Long!
+    trainNumber : Long!
     departureDate : Date!
 
-    id : Int!
+    id : Long!
     categoryCodeOid : String!
     detailedCategoryCodeOid : String
     thirdCategoryCodeOid : String
@@ -92,7 +92,7 @@ type Cause {
 type Operator {
     name : String!
     shortCode : String!
-    uicCode : Int!
+    uicCode : Long!
 }
 
 type TrainLocation {
@@ -100,17 +100,17 @@ type TrainLocation {
     speed : Int!
     accuracy: Int
     timestamp : DateTime!
-    trainNumber : Int!
+    trainNumber : Long!
     location : [Float]
     train : Train
 }
 
 type Composition {
     departureDate : Date!
-    trainNumber : Int!
+    trainNumber : Long!
     operatorShortCode : String!
-    trainCategoryId : Int!
-    trainTypeId : Int!
+    trainCategoryId : Long!
+    trainTypeId : Long!
     version : String!
     operatorUicCode : Int!
     train : Train
@@ -118,11 +118,11 @@ type Composition {
 }
 
 type JourneySection {
-    id : Int!
+    id : Long!
     departureDate : Date!
-    trainNumber : Int!
-    beginTimeTableRowId : Int
-    endTimeTableRowId : Int
+    trainNumber : Long!
+    beginTimeTableRowId : Long
+    endTimeTableRowId : Long
     maximumSpeed : Int!
     totalLength : Int!
     startTimeTableRow : TimeTableRow
@@ -132,20 +132,20 @@ type JourneySection {
 }
 
 type Locomotive {
-    id : Int!
+    id : Long!
     location : Int!
     locomotiveType : String!
     powerTypeAbbreviation : String!
-    journeysectionId : Int!
+    journeysectionId : Long!
     vehicleNumber : String
 }
 
 type Wagon {
-    id : Int!
+    id : Long!
     length : Int!
     location : Int!
     salesNumber : Int!
-    journeysectionId : Int!
+    journeysectionId : Long!
     catering : Boolean
     disabled : Boolean
     luggage : Boolean
@@ -158,7 +158,7 @@ type Wagon {
 }
 
 type Station {
-    id : Int!
+    id : Long!
     passengerTraffic : Boolean!
     countryCode : String!
     location : [Float]
@@ -197,7 +197,7 @@ type ThirdCategoryCode {
 }
 
 type TrainTrackingMessage {
-    id : Int!
+    id : Long!
     trainNumber : String!
     departureDate : Date!
     stationShortCode : String!
@@ -217,7 +217,7 @@ type TrainTrackingMessage {
 }
 
 type RoutesetMessage {
-    id : Int!
+    id : Long!
     version : String!
     messageTime : DateTime!
     trainNumber : String!
@@ -232,19 +232,19 @@ type Routesection {
     sectionId : String!
     commercialTrackId : String!
     stationCode : String!
-    routesetId : Int!
+    routesetId : Long!
     station : Station!
 }
 
 type TrackSection {
-    id : Int!
+    id : Long!
     trackSectionCode: String!
     station: Station!
     ranges: [TrackRange]!
 }
 
 type TrackRange {
-    trackSectionId: Int!
+    trackSectionId: Long!
     startTrack: String!
     startKilometres: Int!
     startMetres: Int!
@@ -300,11 +300,11 @@ input StringWhere {
     unequals : String
 }
 
-input IntWhere {
-    equals : Int
-    unequals : Int
-    greaterThan : Int
-    lessThan : Int
+input LongWhere {
+    equals : Long
+    unequals : Long
+    greaterThan : Long
+    lessThan : Long
 }
 
 input EnumWhere {

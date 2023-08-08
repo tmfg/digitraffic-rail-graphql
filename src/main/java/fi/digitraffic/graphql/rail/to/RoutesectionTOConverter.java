@@ -14,7 +14,7 @@ public class RoutesectionTOConverter extends BaseConverter<RoutesectionTO> {
                 tuple.get(QRoutesection.routesection.sectionId),
                 tuple.get(QRoutesection.routesection.commercialTrackId),
                 tuple.get(QRoutesection.routesection.stationCode),
-                tuple.get(QRoutesection.routesection.routesetId).intValue(),
+                tuple.get(QRoutesection.routesection.routesetId).longValue(),
                 null
         );
     }

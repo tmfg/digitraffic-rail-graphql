@@ -9,11 +9,11 @@ import fi.digitraffic.graphql.rail.model.OperatorTO;
 @Component
 public class OperatorTOConverter extends BaseConverter<OperatorTO> {
     @Override
-    public OperatorTO convert(Tuple tuple) {
+    public OperatorTO convert(final Tuple tuple) {
         return new OperatorTO(
                 tuple.get(QOperator.operator.name),
                 tuple.get(QOperator.operator.shortCode),
-                tuple.get(QOperator.operator.operatorUicCode).intValue()
+                tuple.get(QOperator.operator.operatorUicCode).longValue()
         );
     }
 }

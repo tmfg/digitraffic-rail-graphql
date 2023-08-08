@@ -34,25 +34,25 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
     }
 
     @Override
-    public TimeTableRowId createKeyFromParent(JourneySectionTO journeySectionTO) {
-        Integer beginTimeTableRowId = journeySectionTO.getBeginTimeTableRowId();
+    public TimeTableRowId createKeyFromParent(final JourneySectionTO journeySectionTO) {
+        Long beginTimeTableRowId = journeySectionTO.getBeginTimeTableRowId();
         if (beginTimeTableRowId == null) {
-            beginTimeTableRowId = -1;
+            beginTimeTableRowId = -1L;
         }
         return new TimeTableRowId(
                 beginTimeTableRowId,
                 journeySectionTO.getDepartureDate(),
-                journeySectionTO.getTrainNumber().longValue()
+                journeySectionTO.getTrainNumber()
         );
     }
 
     @Override
-    public TimeTableRowId createKeyFromChild(TimeTableRowTO timeTableRowTO) {
-        return new TimeTableRowId(timeTableRowTO.getId(), timeTableRowTO.getDepartureDate(), timeTableRowTO.getTrainNumber().longValue());
+    public TimeTableRowId createKeyFromChild(final TimeTableRowTO timeTableRowTO) {
+        return new TimeTableRowId(timeTableRowTO.getId(), timeTableRowTO.getDepartureDate(), timeTableRowTO.getTrainNumber());
     }
 
     @Override
-    public TimeTableRowTO createChildTOFromTuple(Tuple tuple) {
+    public TimeTableRowTO createChildTOFromTuple(final Tuple tuple) {
         return timeTableRowTOConverter.convert(tuple);
     }
 
@@ -72,7 +72,7 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
     }
 
     @Override
-    public BooleanExpression createWhere(List<TimeTableRowId> keys) {
+    public BooleanExpression createWhere(final List<TimeTableRowId> keys) {
         return QTimeTableRow.timeTableRow.id.in(keys);
     }
 

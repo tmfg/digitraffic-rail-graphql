@@ -34,17 +34,17 @@ public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, Time
     }
 
     @Override
-    public TimeTableRowId createKeyFromParent(TimeTableRowTO timeTableRow) {
-        return new TimeTableRowId(timeTableRow.getId().longValue(), timeTableRow.getDepartureDate(), timeTableRow.getTrainNumber().longValue());
+    public TimeTableRowId createKeyFromParent(final TimeTableRowTO timeTableRow) {
+        return new TimeTableRowId(timeTableRow.getId(), timeTableRow.getDepartureDate(), timeTableRow.getTrainNumber());
     }
 
     @Override
-    public TimeTableRowId createKeyFromChild(CauseTO causeTO) {
-        return new TimeTableRowId(causeTO.getTimeTableRowId().longValue(), causeTO.getDepartureDate(), causeTO.getTrainNumber().longValue());
+    public TimeTableRowId createKeyFromChild(final CauseTO causeTO) {
+        return new TimeTableRowId(causeTO.getTimeTableRowId(), causeTO.getDepartureDate(), causeTO.getTrainNumber());
     }
 
     @Override
-    public CauseTO createChildTOFromTuple(Tuple tuple) {
+    public CauseTO createChildTOFromTuple(final Tuple tuple) {
         return causeTOConverter.convert(tuple);
     }
 
@@ -64,7 +64,7 @@ public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, Time
     }
 
     @Override
-    public BooleanExpression createWhere(List<TimeTableRowId> keys) {
+    public BooleanExpression createWhere(final List<TimeTableRowId> keys) {
         return QCause.cause.timeTableRowId.in(keys);
     }
 }

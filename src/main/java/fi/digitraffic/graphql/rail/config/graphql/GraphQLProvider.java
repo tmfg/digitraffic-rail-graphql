@@ -1,3 +1,4 @@
+/*
 package fi.digitraffic.graphql.rail.config.graphql;
 
 import static graphql.language.NodeChildrenContainer.newNodeChildrenContainer;
@@ -367,3 +368,4 @@ public class GraphQLProvider {
 
 
 }
+*/

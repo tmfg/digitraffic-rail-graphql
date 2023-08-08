@@ -35,17 +35,17 @@ public class TrackSectionToTrackRangesLink extends OneToManyLink<Long, TrackSect
     }
 
     @Override
-    public Long createKeyFromParent(TrackSectionTO trackSectionTO) {
-        return trackSectionTO.getId().longValue();
+    public Long createKeyFromParent(final TrackSectionTO trackSectionTO) {
+        return trackSectionTO.getId();
     }
 
     @Override
-    public Long createKeyFromChild(TrackRangeTO trackRangeTO) {
-        return trackRangeTO.getTrackSectionId().longValue();
+    public Long createKeyFromChild(final TrackRangeTO trackRangeTO) {
+        return trackRangeTO.getTrackSectionId();
     }
 
     @Override
-    public TrackRangeTO createChildTOFromTuple(Tuple tuple) {
+    public TrackRangeTO createChildTOFromTuple(final Tuple tuple) {
         return trackRangeTOConverter.convert(tuple);
     }
 
@@ -65,7 +65,7 @@ public class TrackSectionToTrackRangesLink extends OneToManyLink<Long, TrackSect
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
+    public BooleanExpression createWhere(final List<Long> keys) {
         return QTrackRange.trackRange.trackSectionId.in(keys);
     }
 

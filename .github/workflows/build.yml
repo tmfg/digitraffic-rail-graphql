@@ -14,7 +14,9 @@ jobs:
           distribution: temurin
           cache: gradle
       - name: Compile
-        run: ./gradlew clean build -x test
+        run: mvn -f pom.xml install -e -U -DskipTests=true -Ddependency-check.skip=true
+      - name: Run tests
+        run: mvn -f pom.xml test
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3

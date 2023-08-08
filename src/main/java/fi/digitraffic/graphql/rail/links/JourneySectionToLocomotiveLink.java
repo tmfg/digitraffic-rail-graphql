@@ -33,17 +33,17 @@ public class JourneySectionToLocomotiveLink extends OneToManyLink<Long, JourneyS
     }
 
     @Override
-    public Long createKeyFromParent(JourneySectionTO journeySectionTO) {
-        return journeySectionTO.getId().longValue();
+    public Long createKeyFromParent(final JourneySectionTO journeySectionTO) {
+        return journeySectionTO.getId();
     }
 
     @Override
-    public Long createKeyFromChild(LocomotiveTO locomotiveTO) {
-        return locomotiveTO.getJourneysectionId().longValue();
+    public Long createKeyFromChild(final LocomotiveTO locomotiveTO) {
+        return locomotiveTO.getJourneysectionId();
     }
 
     @Override
-    public LocomotiveTO createChildTOFromTuple(Tuple tuple) {
+    public LocomotiveTO createChildTOFromTuple(final Tuple tuple) {
         return locomotiveTOConverter.convert(tuple);
     }
 
@@ -63,7 +63,7 @@ public class JourneySectionToLocomotiveLink extends OneToManyLink<Long, JourneyS
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
+    public BooleanExpression createWhere(final List<Long> keys) {
         return QLocomotive.locomotive.journeysectionId.in(keys);
     }
 }

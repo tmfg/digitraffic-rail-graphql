@@ -1,5 +1,5 @@
 package fi.digitraffic.graphql.rail.config;
-
+/*
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -53,3 +53,4 @@ public class RequestScopedGraphQLInvocation implements GraphQLInvocation {
     }
 
 }
+*/

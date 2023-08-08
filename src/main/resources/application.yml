@@ -5,7 +5,7 @@ spring:
     password: 
   jpa:
     properties:
-      hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLDialect'
+      hibernate.dialect: 'org.hibernate.dialect.MySQL8Dialect'
       javax:
         persistence:
           query:
