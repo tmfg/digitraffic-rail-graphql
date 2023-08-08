@@ -5,7 +5,7 @@ spring:
     password: 
   jpa:
     properties:
-      hibernate.dialect: 'org.hibernate.dialect.MySQL8Dialect'
+      hibernate.dialect: 'org.hibernate.dialect.MySQLDialect'
       javax:
         persistence:
           query:
@@ -14,8 +14,26 @@ spring:
   mvc:
     async:
       request-timeout: 20000
+  graphql:
+    enabled: true
+    servlet:
+      mapping: /graphql
+    graphiql:
+      enabled: true
+      endpoint: /graphiql
+      pageTitle: Local GraphiQL
+
 server:
   port: 8081
+
+graphql:
+  enabled: true
+  servlet:
+    mapping: /graphql
+  graphiql:
+    enabled: true
+    endpoint: /graphiql
+    pageTitle: Local GraphiQL
 
 logging:
   level:
@@ -35,14 +53,6 @@ management:
     health:
       show-details: always
       show-components: always
-
-graphql:
-  servlet:
-    mapping: /graphql
-    enabled: true
-
-graphiql:
-  pageTitle: Local GraphiQL
 
 cache:
   expiryInSeconds: 15

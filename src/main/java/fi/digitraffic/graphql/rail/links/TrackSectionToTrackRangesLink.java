@@ -36,12 +36,12 @@ public class TrackSectionToTrackRangesLink extends OneToManyLink<Long, TrackSect
 
     @Override
     public Long createKeyFromParent(final TrackSectionTO trackSectionTO) {
-        return trackSectionTO.getId();
+        return Long.valueOf(trackSectionTO.getId());
     }
 
     @Override
     public Long createKeyFromChild(final TrackRangeTO trackRangeTO) {
-        return trackRangeTO.getTrackSectionId();
+        return Long.valueOf(trackRangeTO.getTrackSectionId());
     }
 
     @Override

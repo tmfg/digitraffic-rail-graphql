@@ -12,7 +12,7 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: gradle
+          cache: maven
       - name: Compile
         run: mvn -f pom.xml install -e -U -DskipTests=true -Ddependency-check.skip=true
       - name: Run tests

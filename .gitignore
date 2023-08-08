@@ -13,3 +13,5 @@ out/
 
 ### GraphQL schema based generated sources
 src/main/graphqlGen
+
+target/classes/

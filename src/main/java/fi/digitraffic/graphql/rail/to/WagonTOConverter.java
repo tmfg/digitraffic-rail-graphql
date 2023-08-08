@@ -11,11 +11,11 @@ public class WagonTOConverter extends BaseConverter<WagonTO> {
     @Override
     public WagonTO convert(final Tuple tuple) {
         return new WagonTO(
-                tuple.get(QWagon.wagon.id),
+                tuple.get(QWagon.wagon.id).intValue(),
                 tuple.get(QWagon.wagon.length),
                 tuple.get(QWagon.wagon.location),
                 tuple.get(QWagon.wagon.salesNumber),
-                tuple.get(QWagon.wagon.journeysectionId),
+                tuple.get(QWagon.wagon.journeysectionId).intValue(),
                 tuple.get(QWagon.wagon.catering),
                 tuple.get(QWagon.wagon.disabled),
                 tuple.get(QWagon.wagon.luggage),

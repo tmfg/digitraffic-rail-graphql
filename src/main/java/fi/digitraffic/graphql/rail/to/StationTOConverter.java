@@ -15,7 +15,7 @@ public class StationTOConverter extends BaseConverter<StationTO> {
     @Override
     public StationTO convert(final Tuple tuple) {
         return new StationTO(
-                tuple.get(QStation.station.id),
+                tuple.get(QStation.station.id).intValue(),
                 tuple.get(QStation.station.passengerTraffic),
                 tuple.get(QStation.station.countryCode),
                 List.of(tuple.get(QStation.station.longitude).doubleValue(), tuple.get(QStation.station.latitude).doubleValue()),

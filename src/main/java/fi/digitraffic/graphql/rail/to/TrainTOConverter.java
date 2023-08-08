@@ -9,7 +9,7 @@ import fi.digitraffic.graphql.rail.model.TimetableTypeTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 
 @Component
-public class TrainTOConverter extends BaseConverter {
+public class TrainTOConverter extends BaseConverter<TrainTO> {
     public TrainTO convert(final Tuple row) {
         return new TrainTO(
                 row.get(QTrain.train.cancelled),
@@ -20,10 +20,10 @@ public class TrainTOConverter extends BaseConverter {
                 row.get(QTrain.train.runningCurrently),
                 row.get(QTrain.train.timetableAcceptanceDate),
                 convert(row.get(QTrain.train.timetableType)),
-                row.get(QTrain.train.id.trainNumber).longValue(),
+                row.get(QTrain.train.id.trainNumber).intValue(),
                 nullableString(row.get(QTrain.train.version)),
-                row.get(QTrain.train.trainTypeId),
-                row.get(QTrain.train.trainCategoryId),
+                nullableInt(row.get(QTrain.train.trainTypeId)),
+                nullableInt(row.get(QTrain.train.trainCategoryId)),
 
                 null, null, null, null, null, null, null
         );

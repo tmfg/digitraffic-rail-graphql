@@ -10,7 +10,7 @@ import fi.digitraffic.graphql.rail.model.TrackSectionTO;
 public class TrackSectionTOConverter {
     public TrackSectionTO convert(final Tuple tuple) {
         return new TrackSectionTO(
-                tuple.get(QTrackSection.trackSection.id).longValue(),
+                tuple.get(QTrackSection.trackSection.id).intValue(),
                 tuple.get(QTrackSection.trackSection.trackSectionCode),
                 null, null);
     }

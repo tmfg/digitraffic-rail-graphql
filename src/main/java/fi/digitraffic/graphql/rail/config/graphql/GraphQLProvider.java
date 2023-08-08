@@ -1,4 +1,3 @@
-/*
 package fi.digitraffic.graphql.rail.config.graphql;
 
 import static graphql.language.NodeChildrenContainer.newNodeChildrenContainer;
@@ -78,9 +77,10 @@ public class GraphQLProvider {
 
     @PostConstruct
     public void init() throws IOException {
-        URL url = Resources.getResource("schema.graphqls");
-        String sdl = Resources.toString(url, Charsets.UTF_8);
-        GraphQLSchema graphQLSchema = buildSchema(sdl);
+        final URL url = Resources.getResource("schema.graphqls");
+        final String sdl = Resources.toString(url, Charsets.UTF_8);
+        final GraphQLSchema graphQLSchema = buildSchema(sdl);
+
         this.graphQL = GraphQL.newGraphQL(graphQLSchema)
                 .instrumentation(new ChainedInstrumentation(Arrays.asList(
                         new ExecutionTimeInstrumentation(),
@@ -88,8 +88,8 @@ public class GraphQLProvider {
                 ))).build();
     }
 
-    private GraphQLSchema buildSchema(String sdl) {
-        TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
+    private GraphQLSchema buildSchema(final String sdl) {
+        final TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
 
         removeBlacklistedFields(typeRegistry);
         addGenericArgumentsToQueries(typeRegistry);
@@ -98,8 +98,9 @@ public class GraphQLProvider {
         generateWhereTypes(typeRegistry);
         generateCollectionWhereTypes(typeRegistry);
 
-        RuntimeWiring runtimeWiring = buildWiring();
-        SchemaGenerator schemaGenerator = new SchemaGenerator();
+        final RuntimeWiring runtimeWiring = buildWiring();
+        final SchemaGenerator schemaGenerator = new SchemaGenerator();
+
         return schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
     }
 
@@ -320,21 +321,23 @@ public class GraphQLProvider {
         return Optional.empty();
     }
 
-    private void removeBlacklistedFields(TypeDefinitionRegistry typeRegistry) {
-        for (Map.Entry<String, TypeDefinition> entry : typeRegistry.types().entrySet()) {
+    private void removeBlacklistedFields(final TypeDefinitionRegistry typeRegistry) {
+        for (final Map.Entry<String, TypeDefinition> entry : typeRegistry.types().entrySet()) {
             if (entry.getValue() instanceof ObjectTypeDefinition) {
-                ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) entry.getValue();
-                List<FieldDefinition> newDefinitions = objectTypeDefinition.getFieldDefinitions();
-                Set<FieldDefinition> toBeRemoved = new HashSet<>();
-                for (FieldDefinition fieldDefinition : newDefinitions) {
-                    String fieldKey = entry.getKey() + "." + fieldDefinition.getName();
+                final ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) entry.getValue();
+                final List<FieldDefinition> newDefinitions = objectTypeDefinition.getFieldDefinitions();
+                final Set<FieldDefinition> toBeRemoved = new HashSet<>();
+
+                for (final FieldDefinition fieldDefinition : newDefinitions) {
+                    final String fieldKey = entry.getKey() + "." + fieldDefinition.getName();
                     if (digitrafficConfig.getHiddenFields().contains(fieldKey)) {
                         toBeRemoved.add(fieldDefinition);
                     }
                 }
-                List<FieldDefinition> filteredDefinitions = newDefinitions.stream().filter(d -> !toBeRemoved.contains(d)).collect(Collectors.toList());
 
-                ObjectTypeDefinition newObjectTypeDefiniton = objectTypeDefinition.withNewChildren(newNodeChildrenContainer()
+                final List<FieldDefinition> filteredDefinitions = newDefinitions.stream().filter(d -> !toBeRemoved.contains(d)).collect(Collectors.toList());
+
+                final ObjectTypeDefinition newObjectTypeDefiniton = objectTypeDefinition.withNewChildren(newNodeChildrenContainer()
                         .children(CHILD_IMPLEMENTZ, objectTypeDefinition.getImplements())
                         .children(CHILD_DIRECTIVES, objectTypeDefinition.getDirectives())
                         .children(CHILD_FIELD_DEFINITIONS, filteredDefinitions)
@@ -347,25 +350,22 @@ public class GraphQLProvider {
     }
 
     private RuntimeWiring buildWiring() {
-        RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring()
+        final TypeRuntimeWiring.Builder query = newTypeWiring("Query");
+        final RuntimeWiring.Builder builder = RuntimeWiring.newRuntimeWiring()
+                .scalar(ExtendedScalars.GraphQLLong)
                 .scalar(ExtendedScalars.Date)
                 .scalar(ExtendedScalars.DateTime);
 
-        TypeRuntimeWiring.Builder query = newTypeWiring("Query");
-        for (BaseQuery fetcher : rootFetchers) {
+        for (final BaseQuery fetcher : rootFetchers) {
             query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
         }
-        builder = builder.type(query);
+        builder.type(query);
 
-        for (BaseLink fetcher : this.fetchers) {
-            builder = builder.type(newTypeWiring(fetcher.getTypeName())
+        for (final BaseLink fetcher : this.fetchers) {
+            builder.type(newTypeWiring(fetcher.getTypeName())
                     .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
         }
 
-        return builder
-                .build();
+        return builder.build();
     }
-
-
 }
-*/

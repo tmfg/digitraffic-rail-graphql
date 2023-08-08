@@ -36,12 +36,12 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
 
     @Override
     public Long createKeyFromParent(final RoutesetMessageTO routesetMessageTO) {
-        return routesetMessageTO.getId();
+        return Long.valueOf(routesetMessageTO.getId());
     }
 
     @Override
     public Long createKeyFromChild(final RoutesectionTO routesectionTO) {
-        return routesectionTO.getRoutesetId();
+        return Long.valueOf(routesectionTO.getRoutesetId());
     }
 
     @Override

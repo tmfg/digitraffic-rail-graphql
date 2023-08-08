@@ -10,11 +10,11 @@ import fi.digitraffic.graphql.rail.model.LocomotiveTO;
 public class LocomotiveTOConverter extends BaseConverter<LocomotiveTO> {
     public LocomotiveTO convert(Tuple tuple) {
         return new LocomotiveTO(
-                tuple.get(QLocomotive.locomotive.id).longValue(),
+                tuple.get(QLocomotive.locomotive.id).intValue(),
                 tuple.get(QLocomotive.locomotive.location),
                 tuple.get(QLocomotive.locomotive.locomotiveType),
                 tuple.get(QLocomotive.locomotive.powerTypeAbbreviation),
-                tuple.get(QLocomotive.locomotive.journeysectionId).longValue(),
+                tuple.get(QLocomotive.locomotive.journeysectionId).intValue(),
                 tuple.get(QLocomotive.locomotive.vehicleNumber)
         );
     }

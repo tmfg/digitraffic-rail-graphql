@@ -11,7 +11,7 @@ public class TrainCategoryTOConverter extends BaseConverter<TrainCategoryTO> {
     @Override
     public TrainCategoryTO convert(final Tuple tuple) {
         return new TrainCategoryTO(
-                tuple.get(QTrainCategory.trainCategory.id).longValue(),
+                tuple.get(QTrainCategory.trainCategory.id).intValue(),
                 tuple.get(QTrainCategory.trainCategory.name)
         );
     }
