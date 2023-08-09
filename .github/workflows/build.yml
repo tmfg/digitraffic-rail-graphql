@@ -3,7 +3,21 @@ on: [push]
 jobs:
   build:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    services:
+      dt-rail-mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD:
+        # Set health checks to wait until mysql has started
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306:3306
     steps:
       - name: Checkout
         uses: actions/checkout@v3
