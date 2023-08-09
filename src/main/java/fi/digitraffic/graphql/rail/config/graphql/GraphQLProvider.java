@@ -55,8 +55,6 @@ import graphql.schema.idl.TypeRuntimeWiring;
 public class GraphQLProvider {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private GraphQL graphQL;
-
     @Autowired
     private DigitrafficConfig digitrafficConfig;
 
@@ -66,29 +64,23 @@ public class GraphQLProvider {
     @Autowired
     private List<BaseQuery> rootFetchers;
 
-    @Bean
-    public GraphQL graphQL() {
-        return graphQL;
-    }
-
     private Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
     private Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
     private Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
 
-    @PostConstruct
-    public void init() throws IOException {
-        final URL url = Resources.getResource("schema.graphqls");
-        final String sdl = Resources.toString(url, Charsets.UTF_8);
-        final GraphQLSchema graphQLSchema = buildSchema(sdl);
-
-        this.graphQL = GraphQL.newGraphQL(graphQLSchema)
+    @Bean
+    public GraphQL graphQL(final GraphQLSchema graphQLSchema) {
+        return GraphQL.newGraphQL(graphQLSchema)
                 .instrumentation(new ChainedInstrumentation(Arrays.asList(
                         new ExecutionTimeInstrumentation(),
                         new NoCircularQueriesInstrumentation(digitrafficConfig)
                 ))).build();
     }
 
-    private GraphQLSchema buildSchema(final String sdl) {
+    @Bean
+    public GraphQLSchema graphQLSchema() throws IOException {
+        final URL url = Resources.getResource("schema.graphqls");
+        final String sdl = Resources.toString(url, Charsets.UTF_8);
         final TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
 
         removeBlacklistedFields(typeRegistry);
