@@ -39,7 +39,7 @@ public class TrainFactory {
 
         final LocalDate departureDate = id.departureDate;
 
-        final Train train = new Train();
+        Train train = new Train();
         train.id = id;
         train.cancelled = cancelled;
         train.commuterLineid = commuterLineID;
