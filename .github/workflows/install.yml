@@ -37,6 +37,12 @@ jobs:
           ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
           ref: ${{ inputs.config-repo-branch }}
           path: config
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
