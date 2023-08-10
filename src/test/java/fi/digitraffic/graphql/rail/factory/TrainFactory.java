@@ -28,7 +28,7 @@ public class TrainFactory {
     private StationFactory stationFactory;
 
     @Transactional
-    public Pair<Train, List<TimeTableRow>> createBaseTrain(TrainId id) {
+    public Pair<Train, List<TimeTableRow>> createBaseTrain(final TrainId id) {
         final String operatorShortCode = "test";
         final long trainCategoryId = 1;
         final long trainTypeId = 1;
@@ -39,7 +39,7 @@ public class TrainFactory {
 
         final LocalDate departureDate = id.departureDate;
 
-        Train train = new Train();
+        final Train train = new Train();
         train.id = id;
         train.cancelled = cancelled;
         train.commuterLineid = commuterLineID;
@@ -57,26 +57,26 @@ public class TrainFactory {
 
         final ZonedDateTime now = ZonedDateTime.now().withYear(departureDate.getYear()).withMonth(departureDate.getMonthValue())
                 .withDayOfMonth(departureDate.getDayOfMonth());
-        List<TimeTableRow> timeTableRowList = new ArrayList<>();
-        Station hkiStation = stationFactory.create("HKI", 1, "FI");
+        final List<TimeTableRow> timeTableRowList = new ArrayList<>();
+        final Station hkiStation = stationFactory.create("HKI", 1, "FI");
         timeTableRowList.add(ttrf.create(train, now.plusHours(1), now.plusHours(1).plusMinutes(1), hkiStation,
                 TimeTableRow.TimeTableRowType.DEPARTURE));
-        Station pslStation = stationFactory.create("PSL", 2, "FI");
+        final Station pslStation = stationFactory.create("PSL", 2, "FI");
         timeTableRowList.add(ttrf.create(train, now.plusHours(2), now.plusHours(2).plusMinutes(3), pslStation,
                 TimeTableRow.TimeTableRowType.ARRIVAL));
         timeTableRowList.add(ttrf.create(train, now.plusHours(3), now.plusHours(3).plusMinutes(4), pslStation,
                 TimeTableRow.TimeTableRowType.DEPARTURE));
-        Station tpeStation = stationFactory.create("TPE", 3, "FI");
+        final Station tpeStation = stationFactory.create("TPE", 3, "FI");
         timeTableRowList.add(ttrf.create(train, now.plusHours(4), now.plusHours(4).plusMinutes(5), tpeStation,
                 TimeTableRow.TimeTableRowType.ARRIVAL));
         timeTableRowList.add(ttrf.create(train, now.plusHours(5), now.plusHours(5).plusMinutes(1), tpeStation,
                 TimeTableRow.TimeTableRowType.DEPARTURE));
-        Station jyStation = stationFactory.create("JY", 4, "FI");
+        final Station jyStation = stationFactory.create("JY", 4, "FI");
         timeTableRowList.add(ttrf.create(train, now.plusHours(5), now.plusHours(5).plusMinutes(1), jyStation,
                 TimeTableRow.TimeTableRowType.ARRIVAL));
         timeTableRowList.add(
                 ttrf.create(train, now.plusHours(7), null, jyStation, TimeTableRow.TimeTableRowType.DEPARTURE));
-        Station olStation = stationFactory.create("OL", 5, "FI");
+        final Station olStation = stationFactory.create("OL", 5, "FI");
         timeTableRowList.add(
                 ttrf.create(train, now.plusHours(8), null, olStation, TimeTableRow.TimeTableRowType.ARRIVAL));
 
