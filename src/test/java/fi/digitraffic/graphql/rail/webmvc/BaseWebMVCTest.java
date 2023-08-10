@@ -42,15 +42,15 @@ public abstract class BaseWebMVCTest {
         trainLocationRepository.deleteAll();
     }
 
-    public ResultActions query(final String query) throws Exception {
-        return this.mockMvc.perform(
-                post("/graphql")
-                        .content("{\"query\":\"" + query + "\"}")
-                        .header("Content-Type", "application/json")
-                        .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"));
-//                .andReturn();
-        //return this.mockMvc.perform(asyncDispatch(first)).andExpect(content().contentType("application/json;charset=UTF-8")).andExpect(status().isOk());
+    public ResultActions query(String query) throws Exception {
+        final MvcResult first = this.mockMvc.perform(
+                        post("/graphql")
+                                .content("{\"query\":\"" + query + "\"}")
+                                .header("Content-Type", "application/json")
+                                .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
+                .andReturn();
+        return this.mockMvc.perform(asyncDispatch(first))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isOk());
     }
 }

@@ -15,9 +15,11 @@ spring:
     async:
       request-timeout: 20000
   graphql:
-    enabled: true
     servlet:
       mapping: /graphql
+      enabled: true
+    schema:
+      locations: classpath*:**/
     graphiql:
       enabled: true
       endpoint: /graphiql
@@ -25,15 +27,6 @@ spring:
 
 server:
   port: 8081
-
-graphql:
-  enabled: true
-  servlet:
-    mapping: /graphql
-  graphiql:
-    enabled: true
-    endpoint: /graphiql
-    pageTitle: Local GraphiQL
 
 logging:
   level:
@@ -57,6 +50,8 @@ management:
 cache:
   expiryInSeconds: 15
   maxCacheSize: 5
+
+debug: true
 
 digitraffic:
   max-returned-rows: 5000

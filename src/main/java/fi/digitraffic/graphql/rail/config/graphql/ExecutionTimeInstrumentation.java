@@ -3,6 +3,7 @@ package fi.digitraffic.graphql.rail.config.graphql;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +23,15 @@ import graphql.schema.GraphQLNamedOutputType;
 class ExecutionTimesByFieldState implements InstrumentationState {
     private Map<String, Long> executionTimesByField = new HashMap<>();
 
-    void recordTiming(String key, Long time) {
+    void recordTiming(final String key, final Long time) {
         executionTimesByField.put(key, time);
     }
 
     @Override
     public String toString() {
-        String output = "";
-        for (Map.Entry<String, Long> stringObjectEntry : executionTimesByField.entrySet()) {
-            output += stringObjectEntry.getKey() + "=" + Duration.ofNanos(stringObjectEntry.getValue()) + "\n";
-        }
-        return output;
+        return executionTimesByField.entrySet().stream()
+                .map(e -> e.getKey() + "=" + Duration.ofNanos(e.getValue()))
+                .collect(Collectors.joining("\n"));
     }
 }
 
@@ -45,28 +44,29 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
     }
 
     @Override
-    public InstrumentationContext<ExecutionResult> beginField(InstrumentationFieldParameters parameters) {
-        long startNanos = System.nanoTime();
+    public InstrumentationContext<ExecutionResult> beginField(final InstrumentationFieldParameters parameters) {
+        final long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
             @Override
-            public void onCompleted(ExecutionResult result, Throwable t) {
-                ExecutionTimesByFieldState state = parameters.getInstrumentationState();
-                ExecutionStepInfo parent = parameters.getExecutionStepInfo().getParent();
+            public void onCompleted(final ExecutionResult result, final Throwable t) {
+                final ExecutionTimesByFieldState state = parameters.getInstrumentationState();
+                final ExecutionStepInfo parent = parameters.getExecutionStepInfo().getParent();
 
+                final String fieldTypeAndName;
                 if (parent.getType() instanceof GraphQLNamedOutputType) {
-                    GraphQLNamedOutputType parentType = (GraphQLNamedOutputType) parent.getType();
-                    String fieldTypeAndName = parentType.getName() + "." + parameters.getField().getName();
-                    state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
+                    final GraphQLNamedOutputType parentType = (GraphQLNamedOutputType) parent.getType();
+                    fieldTypeAndName = parentType.getName() + "." + parameters.getField().getName();
                 } else {
-                    String unnamedTypeAndFieldName = "null." + parameters.getField().getName();
-                    state.recordTiming(unnamedTypeAndFieldName, System.nanoTime() - startNanos);
+                    fieldTypeAndName = "null." + parameters.getField().getName();
                 }
+
+                state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
             }
         };
     }
 
     @Override
-    public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
+    public InstrumentationContext<ExecutionResult> beginExecution(final InstrumentationExecutionParameters parameters) {
         final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
         final String query = parameters.getQuery();
         MDC.put("query_hashcode", String.valueOf(query.hashCode()));
@@ -74,17 +74,17 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
         MDC.remove("execution_time");
         // log.info("Starting query {} {}", executionId, query);
 
-        long startNanos = System.nanoTime();
+        final long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
             @Override
-            public void onCompleted(ExecutionResult result, Throwable t) {
+            public void onCompleted(final ExecutionResult result, final Throwable t) {
                 if (t != null) {
                     log.error(String.format("Exception in query %s %s", executionId, query), t);
                 }
 
-                ExecutionTimesByFieldState state = parameters.getInstrumentationState();
+                final ExecutionTimesByFieldState state = parameters.getInstrumentationState();
+                final Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
 
-                Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
                 log.info("Ending query {} {} took {}. Details: {}", executionId, query, duration, state);
                 MDC.put("execution_time", String.valueOf(duration.toMillis()));
             }

@@ -51,11 +51,11 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public abstract String getFieldName();
 
-    public abstract KeyType createKeyFromParent(ParentTOType parent);
+    public abstract KeyType createKeyFromParent(final ParentTOType parent);
 
-    public abstract KeyType createKeyFromChild(ChildTOType child);
+    public abstract KeyType createKeyFromChild(final ChildTOType child);
 
-    public abstract ChildTOType createChildTOFromTuple(Tuple tuple);
+    public abstract ChildTOType createChildTOFromTuple(final Tuple tuple);
 
     public abstract BatchLoaderWithContext<KeyType, ChildFieldType> createLoader();
 
@@ -65,7 +65,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public abstract EntityPath getEntityTable();
 
-    public abstract BooleanExpression createWhere(List<KeyType> keys);
+    public abstract BooleanExpression createWhere(final List<KeyType> keys);
 
     public OrderSpecifier createDefaultOrder() {
         return null;
@@ -83,39 +83,39 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
-            ParentTOType parent = dataFetchingEnvironment.getSource();
+            final ParentTOType parent = dataFetchingEnvironment.getSource();
 
-            DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getDataLoaderRegistry();
-            DataLoader<KeyType, ChildFieldType> dataloader = dataLoaderRegistry.getDataLoader(getTypeName() + "." + getFieldName());
+            final DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getDataLoaderRegistry();
+            final DataLoader<KeyType, ChildFieldType> dataloader = dataLoaderRegistry.getDataLoader(getTypeName() + "." + getFieldName());
 
             return dataloader.load(createKeyFromParent(parent), dataFetchingEnvironment);
         };
     }
 
-    protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction) {
-        BatchLoaderWithContext<KeyType, ResultType> batchLoaderWithCtx = (keys, loaderContext) -> {
-            DataFetchingEnvironment dataFetchingEnvironment = (DataFetchingEnvironment) loaderContext.getKeyContextsList().get(0);
+    protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(final BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction) {
+        final BatchLoaderWithContext<KeyType, ResultType> batchLoaderWithCtx = (keys, loaderContext) -> {
+            final DataFetchingEnvironment dataFetchingEnvironment = (DataFetchingEnvironment) loaderContext.getKeyContextsList().get(0);
 
             return CompletableFuture.supplyAsync(() -> {
                 MDC.put("execution_id", dataFetchingEnvironment.getExecutionId().toString());
 
-                List<List<KeyType>> partitions = Lists.partition(keys, 500);
-                List<ChildTOType> children = new ArrayList<>(keys.size());
+                final List<List<KeyType>> partitions = Lists.partition(keys, 500);
+                final List<ChildTOType> children = new ArrayList<>(keys.size());
 
-                Class<ChildEntityType> entityClass = getEntityClass();
-                PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+                final Class<ChildEntityType> entityClass = getEntityClass();
+                final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-                List<Future<List<ChildTOType>>> futures = new ArrayList<>();
-                for (List<KeyType> partition : partitions) {
-                    JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
-                    BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
-                    JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-                    JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+                final List<Future<List<ChildTOType>>> futures = new ArrayList<>();
+                for (final List<KeyType> partition : partitions) {
+                    final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
+                    final BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
+                    final JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+                    final JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
                     futures.add(sqlExecutor.submit(() -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
                 }
 
-                for (Future<List<ChildTOType>> future : futures) {
+                for (final Future<List<ChildTOType>> future : futures) {
                     try {
                         children.addAll(future.get());
                     } catch (Exception e) {
@@ -123,7 +123,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     }
                 }
 
-                Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children, dataFetchingEnvironment);
+                final Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children, dataFetchingEnvironment);
 
                 return keys.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
             }, executor);
@@ -133,24 +133,24 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         return batchLoaderWithCtx;
     }
 
-    private JPAQuery<Tuple> createWhereQuery(JPAQuery<Tuple> query, PathBuilder root, BooleanExpression basicWhere, Map<String, Object> whereAsMap) {
+    private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere, final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
+            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
             return query.where(basicWhere.and(whereExpression));
         } else {
             return query.where(basicWhere);
         }
     }
 
-    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, PathBuilder root, List<Map<String, Object>> orderByArgument) {
+    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, final PathBuilder root, final List<Map<String, Object>> orderByArgument) {
         if (orderByArgument != null) {
-            List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
-            for (OrderSpecifier orderSpecifier : orderSpecifiers) {
+            final List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
+            for (final OrderSpecifier orderSpecifier : orderSpecifiers) {
                 query = query.orderBy(orderSpecifier);
             }
             return query;
         } else {
-            OrderSpecifier defaultOrder = this.createDefaultOrder();
+            final OrderSpecifier defaultOrder = this.createDefaultOrder();
             if (defaultOrder != null) {
                 return query.orderBy(defaultOrder);
             } else {

@@ -6,6 +6,14 @@ spring:
   jpa:
     properties:
       hibernate.dialect: 'org.hibernate.dialect.MySQLDialect'
+  graphql:
+    servlet:
+      mapping: /graphql
+      enabled: true
+    schema:
+      locations: classpath*:**/
+#  graphiql:
+#    pageTitle: Local GraphiQL
 server:
   port: 8081
 
@@ -16,13 +24,6 @@ logging:
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-graphql:
-  servlet:
-    mapping: /graphql
-    enabled: true
-
-graphiql:
-  pageTitle: Local GraphiQL
 
 cache:
   expiryInSeconds: 15
