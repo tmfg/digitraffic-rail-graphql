@@ -2,12 +2,12 @@
 
 # Build and test:
 ```
-$ ./gradlew clean build
+$ mvn clean test
 ```
 
 # Run:
 ```
-$ ./gradlew bootRun
+$ mvn spring-boot:run
 ```
 
 GraphiQL, an in-browser IDE for exploring GraphQL, is embedded through `graphiql-spring-boot-starter`
@@ -73,16 +73,10 @@ Basic workflow
 
 1. Modify schema.graphqls to include your new data
 1. Create Hibernate entity 
-1. Generate QueryDSL and GraphQL DTOs with `cleanGraphqlGen` and `graphqlCodegen`
+1. Generate QueryDSL and GraphQL DTOs with `mvn compile`
 1. Add Hibernate fields to `AllFields`
 1. Create Hibernate -> GraphQL DTO converter (example `TrackSectionTOConverter`)
 1. Create GraphQL link (example `TrainTrackingMessageToTrackSectionLink`)
 1. Done
 
 See `0271e6a9926dfb1be99f08632f7f35f5ba654ffe` for an example
-
-# Check dependency updates
-
-```
-$ ./gradlew dependencyUpdates -Drevision=release
-```
