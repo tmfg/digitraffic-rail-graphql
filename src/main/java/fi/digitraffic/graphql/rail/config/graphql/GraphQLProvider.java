@@ -23,11 +23,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.DefaultExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions;
+import org.springframework.web.servlet.function.ServerResponse;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.graphql.server.webmvc.GraphiQlHandler;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -79,6 +86,19 @@ public class GraphQLProvider {
             wiringBuilder.scalar(ExtendedScalars.DateTime);
             wiringBuilder.scalar(ExtendedScalars.Date);
         };
+    }
+
+    @Bean
+    @Order(0)
+    /**
+     * Manually create GraphiQl router function so graphql-path for it can be configured
+     */
+    public RouterFunction<ServerResponse> graphiQlRouterFunction(@Value("${digitraffic.graphiql.graphqlPath:/graphql}") final String graphqlPath) {
+        final RouterFunctions.Builder builder = RouterFunctions.route();
+        final ClassPathResource graphiQlPage = new ClassPathResource("graphiql/index.html");
+        final GraphiQlHandler graphiQLHandler = new GraphiQlHandler(graphqlPath, "", graphiQlPage);
+
+        return builder.GET("/graphiql", graphiQLHandler::handleRequest).build();
     }
 
     @Bean

@@ -15,15 +15,10 @@ spring:
     async:
       request-timeout: 20000
   graphql:
-    servlet:
-      mapping: /graphql
-      enabled: true
     schema:
       locations: classpath*:**/
     graphiql:
       enabled: true
-      endpoint: /graphiql
-      pageTitle: Local GraphiQL
 
 server:
   port: 8081

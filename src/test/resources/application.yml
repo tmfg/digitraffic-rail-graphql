@@ -12,8 +12,7 @@ spring:
       enabled: true
     schema:
       locations: classpath*:**/
-#  graphiql:
-#    pageTitle: Local GraphiQL
+
 server:
   port: 8081
 
