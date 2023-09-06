@@ -3,15 +3,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.owasp:dependency-check-gradle:8.1.2'
+        classpath 'org.owasp:dependency-check-gradle:8.2.1'
     }
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.7.8'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.springframework.boot' version '2.7.11'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
     id "io.github.kobylynskyi.graphql.codegen" version "1.2.2"
+    id "com.github.ben-manes.versions" version "0.46.0"
 }
 
 apply plugin: 'org.owasp.dependencycheck'
@@ -42,16 +43,16 @@ dependencies {
        18.3 is the fixed version. See https://nvd.nist.gov/vuln/detail/CVE-2022-37734 */
     implementation 'com.graphql-java:graphql-java:18.3'
     implementation 'com.graphql-java-kickstart:graphiql-spring-boot-starter:11.1.0'
-    implementation 'com.graphql-java:graphql-java-extended-scalars:19.0'
+    implementation 'com.graphql-java:graphql-java-extended-scalars:19.1'
     implementation 'com.graphql-java:graphql-java-spring-boot-starter-webmvc:2.0'
 
     implementation 'com.vividsolutions:jts:1.13'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.6'
-    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.3'
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
     implementation('org.hibernate:hibernate-spatial') {
         exclude group: 'org.postgresql', module: 'postgresql'
     }
-    runtimeOnly 'com.mysql:mysql-connector-j:8.0.32'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
     implementation 'technology.dice.open:dice-fairlink:1.2.4'
     implementation "com.querydsl:querydsl-core:${queryDslVersion}"
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"

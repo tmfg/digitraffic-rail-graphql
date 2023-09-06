@@ -1,6 +1,6 @@
 # GraphlQL implementation for rata.digitraffic.fi
 
-# Build:
+# Build and test:
 ```
 $ ./gradlew clean build
 ```
@@ -80,3 +80,9 @@ Basic workflow
 1. Done
 
 See `0271e6a9926dfb1be99f08632f7f35f5ba654ffe` for an example
+
+# Check dependency updates
+
+```
+$ ./gradlew dependencyUpdates -Drevision=release
+```

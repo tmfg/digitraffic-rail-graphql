@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ import javax.persistence.PersistenceContext;
 import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,6 +37,9 @@ import graphql.schema.DataFetchingEnvironment;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     private static ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
+    private static ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(10);
+
+    private static Logger log = LoggerFactory.getLogger(BaseLink.class);
 
     @Autowired
     private WhereExpressionBuilder whereExpressionBuilder;
@@ -93,19 +99,28 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
             return CompletableFuture.supplyAsync(() -> {
                 MDC.put("execution_id", dataFetchingEnvironment.getExecutionId().toString());
 
-                List<List<KeyType>> partitions = Lists.partition(keys, 2499);
+                List<List<KeyType>> partitions = Lists.partition(keys, 500);
                 List<ChildTOType> children = new ArrayList<>(keys.size());
 
                 Class<ChildEntityType> entityClass = getEntityClass();
                 PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
+                List<Future<List<ChildTOType>>> futures = new ArrayList<>();
                 for (List<KeyType> partition : partitions) {
                     JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
                     BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
                     JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
                     JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
-                    children.addAll(queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList()));
+                    futures.add(sqlExecutor.submit(() -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
+                }
+
+                for (Future<List<ChildTOType>> future : futures) {
+                    try {
+                        children.addAll(future.get());
+                    } catch (Exception e) {
+                        log.error("Exception fetching children", e);
+                    }
                 }
 
                 Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children, dataFetchingEnvironment);

@@ -8,7 +8,7 @@ on:
         type: environment
         default: "beta"
       ref:
-        description: "Branch/tag/SHA of digitraffic-road-private"
+        description: "Branch/tag/SHA of digitraffic-rail-graphql-private"
         required: true
         default: "master"
       config-repo-branch:
@@ -37,6 +37,10 @@ jobs:
           ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
           ref: ${{ inputs.config-repo-branch }}
           path: config
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -54,12 +58,18 @@ jobs:
           ./gradlew clean build -x test
           cp build/libs/digitraffic-rail-graphql-0.0.1-SNAPSHOT.jar config/aws/rail-graphql.jar
           cd config/aws
-          docker build --no-cache \
+          
+          docker buildx build \
+            --no-cache \
             --build-arg JAR_FILE=rail-graphql.jar \
             --build-arg PROPERTY_FILE=conf/rail-graphql-${{ github.event.inputs.env }}.properties \
             --build-arg LOGCONF_FILE=conf/graphql-logback.xml \
-            -t ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA} \
-            --pull=true --file=Dockerfile-rail-graphql .
+            --platform linux/arm64 \
+            --output type=docker \
+            --tag ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA} \
+            --pull=true \
+            --file=Dockerfile-rail-graphql .
+          
           docker push ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA}
       - name: Notify Slack
         if: failure()
