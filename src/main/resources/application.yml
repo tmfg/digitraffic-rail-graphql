@@ -46,8 +46,6 @@ cache:
   expiryInSeconds: 15
   maxCacheSize: 5
 
-debug: true
-
 digitraffic:
   max-returned-rows: 5000
   fields-that-can-be-queried-twice:
