@@ -1,8 +1,10 @@
+scalar Long
+
 type Query {
     train(trainNumber : Int!, departureDate : Date!) : [Train]
     trainsByDepartureDate(departureDate : Date!) : [Train]
     trainsByVersionGreaterThan(version : String!) : [Train]
-    trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
+    trainsByStationAndQuantity(station : String!, arrivedTrains : Long, arrivingTrains : Long,departedTrains : Long,departingTrains : Long, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
     currentlyRunningTrains : [Train]
 
     latestTrainLocations : [TrainLocation]

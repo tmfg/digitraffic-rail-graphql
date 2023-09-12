@@ -33,17 +33,17 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
     }
 
     @Override
-    public Long createKeyFromParent(JourneySectionTO journeySectionTO) {
-        return journeySectionTO.getId().longValue();
+    public Long createKeyFromParent(final JourneySectionTO journeySectionTO) {
+        return Long.valueOf(journeySectionTO.getId());
     }
 
     @Override
-    public Long createKeyFromChild(WagonTO wagonTO) {
-        return wagonTO.getJourneysectionId().longValue();
+    public Long createKeyFromChild(final WagonTO wagonTO) {
+        return Long.valueOf(wagonTO.getJourneysectionId());
     }
 
     @Override
-    public WagonTO createChildTOFromTuple(Tuple tuple) {
+    public WagonTO createChildTOFromTuple(final Tuple tuple) {
         return wagonTOConverter.convert(tuple);
     }
 
@@ -63,7 +63,7 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
+    public BooleanExpression createWhere(final List<Long> keys) {
         return QWagon.wagon.journeysectionId.in(keys);
     }
 }

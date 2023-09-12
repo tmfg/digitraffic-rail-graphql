@@ -29,7 +29,7 @@ public class PropertyLogger {
     @EventListener(ContextRefreshedEvent.class)
     private void printPropertyValues() {
         final MutablePropertySources sources = ((AbstractEnvironment) environment).getPropertySources();
-        List<String> propertyKeys = StreamSupport.stream(sources.spliterator(), false)
+        final List<String> propertyKeys = StreamSupport.stream(sources.spliterator(), false)
                 .filter(ps -> ps instanceof EnumerablePropertySource)
                 .map(ps -> ((EnumerablePropertySource) ps).getPropertyNames())
                 .flatMap(Arrays::stream)

@@ -34,17 +34,17 @@ public class TrainToCompositionsLink extends OneToManyLink<TrainId, TrainTO, Com
     }
 
     @Override
-    public TrainId createKeyFromParent(TrainTO trainTO) {
-        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
+    public TrainId createKeyFromParent(final TrainTO trainTO) {
+        return new TrainId(trainTO.getTrainNumber(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainId createKeyFromChild(CompositionTO compositionTO) {
-        return new TrainId(compositionTO.getTrainNumber().longValue(), compositionTO.getDepartureDate());
+    public TrainId createKeyFromChild(final CompositionTO compositionTO) {
+        return new TrainId(compositionTO.getTrainNumber(), compositionTO.getDepartureDate());
     }
 
     @Override
-    public CompositionTO createChildTOFromTuple(Tuple tuple) {
+    public CompositionTO createChildTOFromTuple(final Tuple tuple) {
         return compositionTOConverter.convert(tuple);
     }
 
@@ -64,7 +64,7 @@ public class TrainToCompositionsLink extends OneToManyLink<TrainId, TrainTO, Com
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return QComposition.composition.id.in(keys);
     }
 }

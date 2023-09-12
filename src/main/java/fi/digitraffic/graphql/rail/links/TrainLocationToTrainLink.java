@@ -35,12 +35,12 @@ public class TrainLocationToTrainLink extends OneToOneLink<TrainId, TrainLocatio
 
     @Override
     public TrainId createKeyFromParent(TrainLocationTO trainLocationTO) {
-        return new TrainId(trainLocationTO.getTrainNumber().longValue(), trainLocationTO.getDepartureDate());
+        return new TrainId(trainLocationTO.getTrainNumber(), trainLocationTO.getDepartureDate());
     }
 
     @Override
     public TrainId createKeyFromChild(TrainTO trainTO) {
-        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
+        return new TrainId(trainTO.getTrainNumber(), trainTO.getDepartureDate());
     }
 
     @Override

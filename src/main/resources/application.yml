@@ -5,7 +5,7 @@ spring:
     password: 
   jpa:
     properties:
-      hibernate.dialect: 'org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect'
+      hibernate.dialect: 'org.hibernate.dialect.MySQLDialect'
       javax:
         persistence:
           query:
@@ -14,6 +14,12 @@ spring:
   mvc:
     async:
       request-timeout: 20000
+  graphql:
+    schema:
+      locations: classpath*:**/
+    graphiql:
+      enabled: true
+
 server:
   port: 8081
 
@@ -36,17 +42,11 @@ management:
       show-details: always
       show-components: always
 
-graphql:
-  servlet:
-    mapping: /graphql
-    enabled: true
-
-graphiql:
-  pageTitle: Local GraphiQL
-
 cache:
   expiryInSeconds: 15
   maxCacheSize: 5
+
+debug: true
 
 digitraffic:
   max-returned-rows: 5000

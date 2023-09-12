@@ -19,11 +19,11 @@ public class DigitrafficConfig {
         return fieldsThatCanBeQueriedTwice;
     }
 
-    public void setFieldsThatCanBeQueriedTwice(Set<String> fieldsThatCanBeQueriedTwice) {
+    public void setFieldsThatCanBeQueriedTwice(final Set<String> fieldsThatCanBeQueriedTwice) {
         this.fieldsThatCanBeQueriedTwice = fieldsThatCanBeQueriedTwice;
     }
 
-    public void setHiddenFields(Set<String> hiddenFields) {
+    public void setHiddenFields(final Set<String> hiddenFields) {
         this.hiddenFields = hiddenFields;
     }
 }

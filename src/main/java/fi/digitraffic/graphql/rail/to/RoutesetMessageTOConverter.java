@@ -8,7 +8,7 @@ import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 
 @Component
 public class RoutesetMessageTOConverter extends BaseConverter<RoutesetMessageTO> {
-    public RoutesetMessageTO convert(Tuple tuple) {
+    public RoutesetMessageTO convert(final Tuple tuple) {
         return new RoutesetMessageTO(
                 tuple.get(QRouteset.routeset.id).intValue(),
                 tuple.get(QRouteset.routeset.version).toString(),

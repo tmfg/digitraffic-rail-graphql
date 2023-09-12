@@ -34,17 +34,17 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public TrainId createKeyFromParent(TrainTO trainTO) {
-        return new TrainId(trainTO.getTrainNumber().longValue(), trainTO.getDepartureDate());
+    public TrainId createKeyFromParent(final TrainTO trainTO) {
+        return new TrainId(trainTO.getTrainNumber(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainId createKeyFromChild(TimeTableRowTO child) {
+    public TrainId createKeyFromChild(final TimeTableRowTO child) {
         return new TrainId(child.getTrainNumber(), child.getDepartureDate());
     }
 
     @Override
-    public TimeTableRowTO createChildTOFromTuple(Tuple tuple) {
+    public TimeTableRowTO createChildTOFromTuple(final Tuple tuple) {
         return timeTableRowTOConverter.convert(tuple);
     }
 
@@ -64,7 +64,7 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return QTimeTableRow.timeTableRow.train.id.in(keys);
     }
 }

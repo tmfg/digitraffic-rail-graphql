@@ -9,15 +9,15 @@ import fi.digitraffic.graphql.rail.entities.QTrainLocation;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 
 @Component
-public class TrainLocationTOConverter {
-    public TrainLocationTO convert(Tuple tuple) {
+public class TrainLocationTOConverter extends BaseConverter<TrainLocationTO> {
+    public TrainLocationTO convert(final Tuple tuple) {
         return new TrainLocationTO(
                 tuple.get(QTrainLocation.trainLocation.trainLocationId.departureDate),
                 tuple.get(QTrainLocation.trainLocation.speed),
                 tuple.get(QTrainLocation.trainLocation.accuracy),
                 tuple.get(QTrainLocation.trainLocation.trainLocationId.timestamp),
-                tuple.get(QTrainLocation.trainLocation.trainLocationId.trainNumber).intValue(),
-                List.of((float) tuple.get(QTrainLocation.trainLocation.location).getX(), (float) tuple.get(QTrainLocation.trainLocation.location).getY()),
+                nullableInt(tuple.get(QTrainLocation.trainLocation.trainLocationId.trainNumber)),
+                List.of((double) tuple.get(QTrainLocation.trainLocation.location).getX(), (double) tuple.get(QTrainLocation.trainLocation.location).getY()),
                 null
         );
     }

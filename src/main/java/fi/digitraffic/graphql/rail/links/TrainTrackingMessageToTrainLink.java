@@ -34,7 +34,7 @@ public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, Train
     }
 
     @Override
-    public TrainId createKeyFromParent(TrainTrackingMessageTO trainTrackingMessageTO) {
+    public TrainId createKeyFromParent(final TrainTrackingMessageTO trainTrackingMessageTO) {
         try {
             return new TrainId(Long.parseLong(trainTrackingMessageTO.getTrainNumber()), trainTrackingMessageTO.getDepartureDate());
         } catch (NumberFormatException e) {
@@ -43,12 +43,12 @@ public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, Train
     }
 
     @Override
-    public TrainId createKeyFromChild(TrainTO trainTO) {
+    public TrainId createKeyFromChild(final TrainTO trainTO) {
         return new TrainId(trainTO.getTrainNumber(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainTO createChildTOFromTuple(Tuple tuple) {
+    public TrainTO createChildTOFromTuple(final Tuple tuple) {
         return trainTOConverter.convert(tuple);
     }
 
@@ -68,7 +68,7 @@ public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, Train
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return QTrain.train.id.in(keys);
     }
 }

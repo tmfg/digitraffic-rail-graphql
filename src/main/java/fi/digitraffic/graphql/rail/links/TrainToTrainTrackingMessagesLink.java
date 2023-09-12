@@ -34,17 +34,17 @@ public class TrainToTrainTrackingMessagesLink extends OneToManyLink<StringVirtua
     }
 
     @Override
-    public StringVirtualDepartureDateTrainId createKeyFromParent(TrainTO trainTO) {
-        return new StringVirtualDepartureDateTrainId(trainTO.getTrainNumber().toString(), trainTO.getDepartureDate());
+    public StringVirtualDepartureDateTrainId createKeyFromParent(final TrainTO trainTO) {
+        return new StringVirtualDepartureDateTrainId(String.valueOf(trainTO.getTrainNumber()), trainTO.getDepartureDate());
     }
 
     @Override
-    public StringVirtualDepartureDateTrainId createKeyFromChild(TrainTrackingMessageTO trainTrackingMessageTO) {
-        return new StringVirtualDepartureDateTrainId(trainTrackingMessageTO.getTrainNumber(), trainTrackingMessageTO.getDepartureDate());
+    public StringVirtualDepartureDateTrainId createKeyFromChild(final TrainTrackingMessageTO trainTrackingMessageTO) {
+        return new StringVirtualDepartureDateTrainId(String.valueOf(trainTrackingMessageTO.getTrainNumber()), trainTrackingMessageTO.getDepartureDate());
     }
 
     @Override
-    public TrainTrackingMessageTO createChildTOFromTuple(Tuple tuple) {
+    public TrainTrackingMessageTO createChildTOFromTuple(final Tuple tuple) {
         return trainTrackingTOConverter.convert(tuple);
     }
 
@@ -64,7 +64,7 @@ public class TrainToTrainTrackingMessagesLink extends OneToManyLink<StringVirtua
     }
 
     @Override
-    public BooleanExpression createWhere(List<StringVirtualDepartureDateTrainId> keys) {
+    public BooleanExpression createWhere(final List<StringVirtualDepartureDateTrainId> keys) {
         return QTrainTrackingMessage.trainTrackingMessage.trainId.in(keys);
     }
 }

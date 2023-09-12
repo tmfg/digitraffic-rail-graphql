@@ -35,17 +35,17 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
     }
 
     @Override
-    public Long createKeyFromParent(RoutesetMessageTO routesetMessageTO) {
-        return routesetMessageTO.getId().longValue();
+    public Long createKeyFromParent(final RoutesetMessageTO routesetMessageTO) {
+        return Long.valueOf(routesetMessageTO.getId());
     }
 
     @Override
-    public Long createKeyFromChild(RoutesectionTO routesectionTO) {
-        return routesectionTO.getRoutesetId().longValue();
+    public Long createKeyFromChild(final RoutesectionTO routesectionTO) {
+        return Long.valueOf(routesectionTO.getRoutesetId());
     }
 
     @Override
-    public RoutesectionTO createChildTOFromTuple(Tuple tuple) {
+    public RoutesectionTO createChildTOFromTuple(final Tuple tuple) {
         return routesectionTOConverter.convert(tuple);
     }
 
@@ -65,7 +65,7 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
     }
 
     @Override
-    public BooleanExpression createWhere(List<Long> keys) {
+    public BooleanExpression createWhere(final List<Long> keys) {
         return QRoutesection.routesection.routesetId.in(keys);
     }
 

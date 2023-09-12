@@ -8,7 +8,7 @@ import fi.digitraffic.graphql.rail.model.TrackRangeTO;
 
 @Component
 public class TrackRangeTOConverter {
-    public TrackRangeTO convert(Tuple tuple) {
+    public TrackRangeTO convert(final Tuple tuple) {
         return new TrackRangeTO(
                 tuple.get(QTrackRange.trackRange.trackSectionId).intValue(),
                 tuple.get(QTrackRange.trackRange.startTrack),

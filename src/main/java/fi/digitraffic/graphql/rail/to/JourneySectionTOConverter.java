@@ -9,7 +9,7 @@ import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 @Component
 public class JourneySectionTOConverter extends BaseConverter<JourneySectionTO> {
     @Override
-    public JourneySectionTO convert(Tuple tuple) {
+    public JourneySectionTO convert(final Tuple tuple) {
         return new JourneySectionTO(
                 tuple.get(QJourneySection.journeySection.id).intValue(),
                 tuple.get(QJourneySection.journeySection.trainId.departureDate),

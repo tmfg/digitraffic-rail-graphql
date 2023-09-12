@@ -4,17 +4,42 @@ jobs:
   build:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
     runs-on: ubuntu-22.04
+    services:
+      dt-rail-mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD:
+        # Set health checks to wait until mysql has started
+        options: >-
+          --health-cmd "mysqladmin ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 3306:3306
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: 11
+          java-version: 17
           distribution: temurin
-          cache: gradle
+          cache: maven
       - name: Compile
-        run: ./gradlew clean build -x test
+        run: mvn -f pom.xml install -e -U -DskipTests=true -Ddependency-check.skip=true
+      - name: Setup database
+        run: mysql --protocol=TCP --host=localhost --port=3306 --user=root --execute="CREATE DATABASE avoindata_test;"
+      - name: Run tests
+        run: mvn -f pom.xml test
+      - name: Publish test results
+        uses: dorny/test-reporter@v1.6.0
+        if: success() || failure()
+        with:
+          name: jUnit tests
+          path: target/surefire-reports/*.xml
+          reporter: java-junit
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3

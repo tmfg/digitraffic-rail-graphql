@@ -9,8 +9,8 @@ import fi.digitraffic.graphql.rail.model.TimetableTypeTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 
 @Component
-public class TrainTOConverter extends BaseConverter {
-    public TrainTO convert(Tuple row) {
+public class TrainTOConverter extends BaseConverter<TrainTO> {
+    public TrainTO convert(final Tuple row) {
         return new TrainTO(
                 row.get(QTrain.train.cancelled),
                 row.get(QTrain.train.commuterLineid),

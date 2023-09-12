@@ -14,11 +14,11 @@ public class JourneySectionToEndTimeTableRowLink extends JourneySectionToStartTi
     }
 
     @Override
-    public TimeTableRowId createKeyFromParent(JourneySectionTO journeySectionTO) {
+    public TimeTableRowId createKeyFromParent(final JourneySectionTO journeySectionTO) {
         Integer endTimeTableRowId = journeySectionTO.getEndTimeTableRowId();
         if (endTimeTableRowId == null) {
             endTimeTableRowId = -1;
         }
-        return new TimeTableRowId(endTimeTableRowId, journeySectionTO.getDepartureDate(), journeySectionTO.getTrainNumber().longValue());
+        return new TimeTableRowId(endTimeTableRowId, journeySectionTO.getDepartureDate(), journeySectionTO.getTrainNumber());
     }
 }

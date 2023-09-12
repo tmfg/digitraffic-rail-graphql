@@ -7,7 +7,7 @@ import fi.digitraffic.graphql.rail.entities.QComposition;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
 
 @Component
-public class CompositionTOConverter {
+public class CompositionTOConverter extends BaseConverter<CompositionTO>{
     public CompositionTO convert(Tuple tuple) {
         return new CompositionTO(
                 tuple.get(QComposition.composition.id.departureDate),

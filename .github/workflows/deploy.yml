@@ -51,7 +51,7 @@ jobs:
           task-definition: digitraffic-graphql
           service-name: digitraffic-graphql
           cluster-name: ${{ secrets.CLUSTER_NAME }}
-          desired-count: 3
+          desired-count: ${{ secrets.CONTAINER_COUNT }}
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3

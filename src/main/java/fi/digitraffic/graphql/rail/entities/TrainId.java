@@ -3,7 +3,7 @@ package fi.digitraffic.graphql.rail.entities;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 public class TrainId implements Serializable {
     @Column

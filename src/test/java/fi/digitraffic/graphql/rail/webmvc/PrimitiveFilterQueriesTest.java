@@ -23,12 +23,12 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void dateTimeFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getFirst();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getFirst();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getFirst();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getFirst();
 
-        ZonedDateTime baseTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Helsinki"));
+        final ZonedDateTime baseTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Helsinki"));
         train66.timetableAcceptanceDate = baseTime;
         train67.timetableAcceptanceDate = baseTime.plusDays(1);
         train68.timetableAcceptanceDate = baseTime.plusDays(2);
@@ -36,13 +36,13 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
         trainRepository.saveAll(List.of(train66, train67, train68, train69));
 
-        ResultActions result = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{equals:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train66.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        final ResultActions result = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{equals:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train66.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
-        ResultActions result2 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{greaterThan:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train67.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        final ResultActions result2 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{greaterThan:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train67.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(2));
 
-        ResultActions result3 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{lessThan:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train69.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
+        final ResultActions result3 = this.query(String.format("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { timetableAcceptanceDate:{lessThan:\\\"%s\\\"}}) {   trainNumber, timetableAcceptanceDate  }}", train69.timetableAcceptanceDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)));
         result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
     }
 
@@ -65,33 +65,33 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void enumFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
 
         train67.timetableType = Train.TimetableType.ADHOC;
         trainRepository.save(train67);
 
-        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{timetableType:{equals:\\\"ADHOC\\\"}}) {   trainNumber, version, timetableType  }}");
+        final ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{timetableType:{equals:\\\"ADHOC\\\"}}) {   trainNumber, version, timetableType  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
-        ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{timetableType:{equals:\\\"REGULAR\\\"}}) {   trainNumber, version, timetableType  }}");
+        final ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{timetableType:{equals:\\\"REGULAR\\\"}}) {   trainNumber, version, timetableType  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
 
-        ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: { timeTableRows:{contains:{station:{type:{equals:\\\"TURNOUT_IN_THE_OPEN_LINE\\\"}}}}}) {    cancelled  }}");
+        final ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: { timeTableRows:{contains:{station:{type:{equals:\\\"TURNOUT_IN_THE_OPEN_LINE\\\"}}}}}) {    cancelled  }}");
         result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(0));
 
-        ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: { timeTableRows:{contains:{station:{type:{equals:\\\"STATION\\\"}}}}}) {    cancelled  }}");
+        final ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: { timeTableRows:{contains:{station:{type:{equals:\\\"STATION\\\"}}}}}) {    cancelled  }}");
         result4.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(4));
     }
 
     @Test
     public void stringFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
 
         train66.commuterLineid = "A";
         trainRepository.save(train66);
@@ -105,22 +105,22 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
         train69.commuterLineid = null;
         trainRepository.save(train69);
 
-        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{equals:\\\"A\\\"}}) {   trainNumber, version, commuterLineid  }}");
+        final ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{equals:\\\"A\\\"}}) {   trainNumber, version, commuterLineid  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
-        ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{equals:\\\"B\\\"}}) {   trainNumber, version, commuterLineid  }}");
+        final ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{equals:\\\"B\\\"}}) {   trainNumber, version, commuterLineid  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
-        ResultActions result3 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{equals:null}}) {   trainNumber, version, commuterLineid  }}");
+        final ResultActions result3 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{commuterLineid:{equals:null}}) {   trainNumber, version, commuterLineid  }}");
         result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(2));
     }
 
     @Test
     public void booleanFilterShouldWork() throws Exception {
-        Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
-        Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17))).getFirst();
+        final Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17))).getFirst();
 
         train66.deleted = true;
         trainRepository.save(train66);
@@ -134,10 +134,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
         train69.deleted = null;
         trainRepository.save(train69);
 
-        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{equals:true}}) {   trainNumber, version, deleted  }}");
+        final ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{equals:true}}) {   trainNumber, version, deleted  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(2));
 
-        ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{equals:false}}) {   trainNumber, version, deleted  }}");
+        final ResultActions result2 = this.query("{ trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where:{deleted:{equals:false}}) {   trainNumber, version, deleted  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
     }
 
@@ -146,7 +146,7 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
         trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1)));
 
-        ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { trainNumber: {unequals: 66 } }) {   trainNumber, version  }}");
+        final ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \\\"2000-01-01\\\", where: { trainNumber: {unequals: 66 } }) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainNumber").value(67));
     }

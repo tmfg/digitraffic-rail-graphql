@@ -37,6 +37,12 @@ jobs:
           ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
           ref: ${{ inputs.config-repo-branch }}
           path: config
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -55,8 +61,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build
         run: |
-          ./gradlew clean build -x test
-          cp build/libs/digitraffic-rail-graphql-0.0.1-SNAPSHOT.jar config/aws/rail-graphql.jar
+          mvn -f pom.xml install -e -U -DskipTests=true -Ddependency-check.skip=true
+          
+          cp target/rail-graphql-0.0.1-SNAPSHOT.jar config/aws/rail-graphql.jar
           cd config/aws
           
           docker buildx build \
@@ -68,7 +75,7 @@ jobs:
             --output type=docker \
             --tag ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA} \
             --pull=true \
-            --file=Dockerfile-rail-graphql .
+            --file=docker/Dockerfile-rail-graphql .
           
           docker push ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA}
       - name: Notify Slack

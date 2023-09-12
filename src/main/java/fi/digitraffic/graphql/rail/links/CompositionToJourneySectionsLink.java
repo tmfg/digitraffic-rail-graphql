@@ -34,17 +34,17 @@ public class CompositionToJourneySectionsLink extends OneToManyLink<TrainId, Com
     }
 
     @Override
-    public TrainId createKeyFromParent(CompositionTO parent) {
-        return new TrainId(parent.getTrainNumber().longValue(), parent.getDepartureDate());
+    public TrainId createKeyFromParent(final CompositionTO parent) {
+        return new TrainId(parent.getTrainNumber(), parent.getDepartureDate());
     }
 
     @Override
-    public TrainId createKeyFromChild(JourneySectionTO journeySectionTO) {
-        return new TrainId(journeySectionTO.getTrainNumber().longValue(), journeySectionTO.getDepartureDate());
+    public TrainId createKeyFromChild(final JourneySectionTO journeySectionTO) {
+        return new TrainId(journeySectionTO.getTrainNumber(), journeySectionTO.getDepartureDate());
     }
 
     @Override
-    public JourneySectionTO createChildTOFromTuple(Tuple tuple) {
+    public JourneySectionTO createChildTOFromTuple(final Tuple tuple) {
         return journeySectionTOConverter.convert(tuple);
     }
 
@@ -64,7 +64,7 @@ public class CompositionToJourneySectionsLink extends OneToManyLink<TrainId, Com
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return QJourneySection.journeySection.trainId.in(keys);
     }
 }
