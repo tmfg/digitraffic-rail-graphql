@@ -160,6 +160,32 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>depcheck</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <defaultGoal>dependency-check:aggregate</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>8.1.2</version>
+                        <configuration>
+                            <failBuildOnCVSS>7</failBuildOnCVSS>
+                            <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                            <formats>html,xml</formats>
+                            <!-- OSS Index can be unstable -->
+                            <ossIndexWarnOnlyOnRemoteErrors>true</ossIndexWarnOnlyOnRemoteErrors>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
