@@ -25,7 +25,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dependency-check-
       - name: Dependency check
-        run: ./gradlew dependencyCheckAnalyze
+        run: mvn -Pdepcheck
       - name: Publish report on GitHub Pages
         if: ${{ success() || failure() }}
         uses: tmfg/digitraffic-actions@gh-pages-publish/v1
