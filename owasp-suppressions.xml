@@ -5,53 +5,60 @@
         Temporary suppressions, check and update these periodically
     -->
 
-    <suppress until="2023-05-01">
-        <!-- We don't directly use common-text -->
-        <notes><![CDATA[file name: commons-text-1.9.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
-        <cve>CVE-2022-42889</cve>
+    <suppress until="2023-12-01Z">
+        <!-- We don't use com.amazonaws.services.s3.transfer.TransferManager::downloadDirectory -->
+        <notes><![CDATA[file name: aws-java-sdk-(secretsmanager|ec2).jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.amazonaws/(aws\-java\-sdk\-secretsmanager|aws\-java\-sdk\-ec2)@.*$</packageUrl>
+        <cve>CVE-2022-31159</cve>
     </suppress>
 
-    <suppress until="2023-05-01">
-        <!-- Requires update in upstream org.springframework.boot/spring-boot-starter-parent -->
-        <notes><![CDATA[file name: snakeyaml-1.30.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <cve>CVE-2022-25857</cve>
-        <cve>CVE-2022-38749</cve>
-        <cve>CVE-2022-38750</cve>
-        <cve>CVE-2022-38751</cve>
-        <cve>CVE-2022-38752</cve>
-        <cve>CVE-2022-1471</cve>
-        <cve>CVE-2022-41854</cve>
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: bcprov-jdk15on-1.73.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.bouncycastle/bcprov\-jdk15on@.*$</packageUrl>
+        <vulnerabilityName>CVE-2023-33201</vulnerabilityName>
     </suppress>
 
-    <suppress until="2023-05-01">
-        <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
-        <notes><![CDATA[file name: graphql-java-spring-boot-starter-webmvc-2.0.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-boot\-starter\-webmvc@.*$</packageUrl>
-        <cve>CVE-2022-37734</cve>
-    </suppress>
-    <suppress until="2023-05-01">
-        <!-- CVE-2022-37734 is for graphql-java. We are using graphql-java-18.3 that is not affected. -->
-        <notes><![CDATA[file name: graphql-java-spring-webmvc-2.0.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.graphql\-java/graphql\-java\-spring\-webmvc@.*$</packageUrl>
-        <cve>CVE-2022-37734</cve>
-    </suppress>
-
-    <suppress until="2023-05-01">
-        <notes><![CDATA[file name: guava-31.1-jre.jar]]></notes>
+    <suppress until="2023-12-01">
+        <!-- we don't have other users in the container -->
+        <notes><![CDATA[file name: graphql-java-20.2.jar (shaded: com.google.guava:guava:31.0.1-jre)]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <!-- Currently not using vulnerability-creating method com.google.common.io.Files.createTempDir() -->
+        <cve>CVE-2023-2976</cve>
         <cve>CVE-2020-8908</cve>
     </suppress>
 
-    <suppress until="2023-05-01">
-        <notes><![CDATA[file name: spring-security-crypto-*.jar]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
-
-        <!-- Crypto vulnerability, not using vulnerable version of Spring Security -->
-        <cve>CVE-2020-5408</cve>
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: jackson-databind-2.15.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+        <cve>CVE-2023-35116</cve>
     </suppress>
+
+    <suppress until="2023-12-01">
+        <!-- fixed download directories -->
+        <notes><![CDATA[file name: jmespath-java-1.11.251.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.amazonaws/jmespath\-java@.*$</packageUrl>
+        <cve>CVE-2022-31159</cve>
+    </suppress>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: snakeyaml-1.33.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cve>CVE-2022-1471</cve>
+    </suppress>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: tomcat-embed-core-10.1.11.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+        <cve>CVE-2023-34981</cve>
+        <cve>CVE-2023-41080</cve>
+    </suppress>
+
+    <suppress until="2023-12-01">
+        <notes><![CDATA[file name: tomcat-embed-websocket-10.1.11.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+        <cve>CVE-2023-34981</cve>
+        <cve>CVE-2023-41080</cve>
+    </suppress>
+
 
     <!--
         Permanent suppressions
