@@ -30,7 +30,8 @@ jobs:
         if: ${{ success() || failure() }}
         uses: tmfg/digitraffic-actions@gh-pages-publish/v1
         with:
-          FILE_PATH: build/reports/dependency-check-report.html
+          GH_PAGES_BRANCH: gh-pages
+          FILE_PATH: target/dependency-check-report.html
           COMMIT_MESSAGE: Upload dependency check report
           LINK_TEXT: Dependency check report
       - name: Notify Slack
