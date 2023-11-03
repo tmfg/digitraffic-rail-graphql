@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.2</version>
+        <version>3.1.5</version>
         <relativePath/>
     </parent>
 
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <version>8.1.0</version>
+            <version>8.2.0</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -106,13 +106,13 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>6.2.7.Final</version>
+            <version>6.3.1.Final</version>
         </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.1.2-jre</version>
+            <version>32.1.3-jre</version>
         </dependency>
 
         <dependency>
@@ -156,7 +156,7 @@
         <dependency>
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java-extended-scalars</artifactId>
-            <version>20.2</version>
+            <version>21.0</version>
         </dependency>
     </dependencies>
 
@@ -172,7 +172,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>8.1.2</version>
+                        <version>8.4.2</version>
                         <configuration>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <suppressionFile>owasp-suppressions.xml</suppressionFile>

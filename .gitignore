@@ -1,17 +1,16 @@
-.gradle
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**
-!**/src/test/**
+*
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
+!/.gitignore
+!/pom.xml
+!/LICENSE
+!/README.md
 
-### GraphQL schema based generated sources
-src/main/graphqlGen
+!src/
+!src/**/
+!src/**/java/**/*.java
+!src/**/resources/*
 
-target/classes/
+!.github/
+!.github/**/
+!.github/workflows/**/*.yml
+!.github/CODEOWNERS
