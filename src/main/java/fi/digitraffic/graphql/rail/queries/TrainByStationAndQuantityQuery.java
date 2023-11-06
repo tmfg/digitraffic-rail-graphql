@@ -24,6 +24,8 @@ import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
+
 @Component
 public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     @Autowired
@@ -56,46 +58,32 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     }
 
     @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        String station = dataFetchingEnvironment.getArgument("station");
-        Integer arrivedTrains = dataFetchingEnvironment.getArgument("arrivedTrains");
-        Integer arrivingTrains = dataFetchingEnvironment.getArgument("arrivingTrains");
-        Integer departedTrains = dataFetchingEnvironment.getArgument("departedTrains");
-        Integer departingTrains = dataFetchingEnvironment.getArgument("departingTrains");
-        Boolean includeNonStopping = dataFetchingEnvironment.getArgument("includeNonStopping");
-        List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
-
-        if (arrivedTrains == null) {
-            arrivedTrains = 5;
-        }
-        if (arrivingTrains == null) {
-            arrivingTrains = 5;
-        }
-        if (departedTrains == null) {
-            departedTrains = 5;
-        }
-        if (departingTrains == null) {
-            departingTrains = 5;
-        }
-        if (includeNonStopping == null) {
-            includeNonStopping = false;
-        }
+    public BooleanExpression createWhereFromArguments(final DataFetchingEnvironment dataFetchingEnvironment) {
+        final String station = dataFetchingEnvironment.getArgument("station");
+        final long arrivedTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivedTrains"), 5L);
+        final long arrivingTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivingTrains"), 5L);
+        final long departedTrains = firstNonNull(dataFetchingEnvironment.getArgument("departedTrains"), 5L);
+        final long departingTrains = firstNonNull(dataFetchingEnvironment.getArgument("departingTrains"), 5L);
+        final Boolean includeNonStopping = firstNonNull(dataFetchingEnvironment.getArgument("includeNonStopping"), false);
+        final List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
 
         if (arrivedTrains + arrivingTrains + departedTrains + departingTrains > MAX_RESULTS) {
             throw new CustomException(400, "Can not return more than " + MAX_RESULTS + " rows");
         }
 
-        List<Long> trainCategoryIds;
+        final List<Long> trainCategoryIds;
         if (trainCategoryNames == null) {
             trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
         } else {
             trainCategoryIds = trainCategoryRepository.findAllByNameIn(trainCategoryNames);
         }
 
-
-        List<TrainId> trainIds = getLiveTrainsUsingQuantityFiltering(station, -1L, arrivedTrains, arrivingTrains, departedTrains, departingTrains, includeNonStopping, trainCategoryIds);
-
-
+        final List<TrainId> trainIds = getLiveTrainsUsingQuantityFiltering(station, -1L,
+                (int)arrivedTrains,
+                (int)arrivingTrains,
+                (int)departedTrains,
+                (int)departingTrains,
+                includeNonStopping, trainCategoryIds);
         if (!trainIds.isEmpty()) {
             return QTrain.train.id.in(trainIds);
         } else {
@@ -104,13 +92,19 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     }
 
     @Override
-    public TrainTO convertEntityToTO(Tuple tuple) {
+    public TrainTO convertEntityToTO(final Tuple tuple) {
         return trainTOConverter.convert(tuple);
     }
 
-    private List<TrainId> getLiveTrainsUsingQuantityFiltering(String station, long version, int arrived_trains, int arriving_trains,
-                                                              int departedTrains, int departingTrains, Boolean includeNonstopping, List<Long> trainCategoryIds) {
-        List<Object[]> liveTrains = trainRepository.findLiveTrainsIds(station, departedTrains, departingTrains, arrived_trains,
+    private List<TrainId> getLiveTrainsUsingQuantityFiltering(final String station,
+                                                              final long version,
+                                                              final int arrived_trains,
+                                                              final int arriving_trains,
+                                                              final int departedTrains,
+                                                              final int departingTrains,
+                                                              final Boolean includeNonstopping,
+                                                              final List<Long> trainCategoryIds) {
+        final List<Object[]> liveTrains = trainRepository.findLiveTrainsIds(station, departedTrains, departingTrains, arrived_trains,
                 arriving_trains, !includeNonstopping, trainCategoryIds);
 
         return extractNewerTrainIds(version, liveTrains);
@@ -118,11 +112,11 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
 
     }
 
-    private List<TrainId> extractNewerTrainIds(long version, List<Object[]> liveTrains) {
-        return liveTrains.stream().filter(train -> ((BigInteger) train[3]).longValue() > version).map(tuple -> {
-            LocalDate departureDate = LocalDate.from(((Date) tuple[1]).toLocalDate());
-            BigInteger trainNumber = (BigInteger) tuple[2];
-            return new TrainId(trainNumber.longValue(), departureDate);
+    private List<TrainId> extractNewerTrainIds(final long version, final List<Object[]> liveTrains) {
+        return liveTrains.stream().filter(train -> ((Long) train[3]) > version).map(tuple -> {
+            final LocalDate departureDate = LocalDate.from(((Date) tuple[1]).toLocalDate());
+            final Long trainNumber = (Long) tuple[2];
+            return new TrainId(trainNumber, departureDate);
         }).collect(Collectors.toList());
     }
 }

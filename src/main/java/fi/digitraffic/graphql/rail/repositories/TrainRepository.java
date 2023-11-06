@@ -17,12 +17,12 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 public interface TrainRepository extends JpaRepository<Train, TrainId> {
 
     @Query("select train from Train train where train.id.departureDate = ?1 order by train.id.trainNumber")
-    List<Train> findByDepartureDate(LocalDate departureDate, Pageable pageable);
+    List<Train> findByDepartureDate(final LocalDate departureDate, final Pageable pageable);
 
     @Query("select train from Train train where train.id.departureDate = ?1 and train.id.trainNumber > ?2 order by train.id.trainNumber")
-    List<Train> findByDepartureDateWithTrainNumberGreaterThan(LocalDate departureDate, Long trainNumber, Pageable pageable);
+    List<Train> findByDepartureDateWithTrainNumberGreaterThan(final LocalDate departureDate, final Long trainNumber, final Pageable pageable);
 
-    List<Train> findByVersionGreaterThanOrderByVersionAsc(Long version, Pageable pageable);
+    List<Train> findByVersionGreaterThanOrderByVersionAsc(final Long version, final Pageable pageable);
 
     @Query(value = "select * from ((SELECT " +
             "    '1', t.departure_date, t.train_number, t.version" +
@@ -73,6 +73,6 @@ public interface TrainRepository extends JpaRepository<Train, TrainId> {
             "   AND (t.deleted IS NULL OR t.deleted = 0)" +
             " ORDER BY t.predict_time ASC" +
             " LIMIT ?5)) unionedTable", nativeQuery = true)
-    List<Object[]> findLiveTrainsIds(String station, Integer departedTrains, Integer departingTrains, Integer arrivedTrains,
-                                     Integer arrivingTrains, Boolean excludeNonstopping, List<Long> trainCategoryIds);
+    List<Object[]> findLiveTrainsIds(final String station, final Integer departedTrains, final Integer departingTrains, final Integer arrivedTrains,
+                                     final Integer arrivingTrains, final Boolean excludeNonstopping, final List<Long> trainCategoryIds);
 }

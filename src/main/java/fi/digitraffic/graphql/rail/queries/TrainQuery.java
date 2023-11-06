@@ -44,17 +44,17 @@ public class TrainQuery extends BaseQuery<TrainTO> {
     }
 
     @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
-        LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
+    public BooleanExpression createWhereFromArguments(final DataFetchingEnvironment dataFetchingEnvironment) {
+        final Integer trainNumber = dataFetchingEnvironment.getArgument("trainNumber");
+        final LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
 
-        TrainId trainId = new TrainId(trainNumber, departureDate);
+        final TrainId trainId = new TrainId(trainNumber, departureDate);
 
         return QTrain.train.id.eq(trainId);
     }
 
     @Override
-    public TrainTO convertEntityToTO(Tuple tuple) {
+    public TrainTO convertEntityToTO(final Tuple tuple) {
         return trainTOConverter.convert(tuple);
     }
 }
