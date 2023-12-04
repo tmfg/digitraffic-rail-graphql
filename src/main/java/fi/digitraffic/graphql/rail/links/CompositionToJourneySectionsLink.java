@@ -16,6 +16,7 @@ import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.JourneySectionTOConverter;
 
 @Component
@@ -64,7 +65,7 @@ public class CompositionToJourneySectionsLink extends OneToManyLink<TrainId, Com
     }
 
     @Override
-    public BooleanExpression createWhere(final List<TrainId> keys) {
-        return QJourneySection.journeySection.trainId.in(keys);
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return TrainIdOptimizer.optimize(QJourneySection.journeySection.trainId, keys);
     }
 }

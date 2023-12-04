@@ -16,6 +16,7 @@ import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
@@ -64,7 +65,7 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public BooleanExpression createWhere(final List<TrainId> keys) {
-        return QTimeTableRow.timeTableRow.train.id.in(keys);
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return TrainIdOptimizer.optimize(QTimeTableRow.timeTableRow.train.id, keys);
     }
 }

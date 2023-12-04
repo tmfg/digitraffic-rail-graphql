@@ -16,6 +16,7 @@ import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
 @Component
@@ -68,7 +69,7 @@ public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, Train
     }
 
     @Override
-    public BooleanExpression createWhere(final List<TrainId> keys) {
-        return QTrain.train.id.in(keys);
+    public BooleanExpression createWhere(List<TrainId> keys) {
+        return TrainIdOptimizer.optimize(QTrain.train.id, keys);
     }
 }

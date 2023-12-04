@@ -16,6 +16,7 @@ import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
 @Component
@@ -65,6 +66,6 @@ public class TimeTableRowToTrainLink extends OneToOneLink<TrainId, TimeTableRowT
 
     @Override
     public BooleanExpression createWhere(List<TrainId> keys) {
-        return QTrain.train.id.in(keys);
+        return TrainIdOptimizer.optimize(QTrain.train.id, keys);
     }
 }
