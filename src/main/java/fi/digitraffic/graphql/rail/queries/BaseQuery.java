@@ -60,40 +60,40 @@ public abstract class BaseQuery<T> {
 
     public DataFetcher<List<T>> createFetcher() {
         return dataFetchingEnvironment -> {
-            Class entityClass = getEntityClass();
-            PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+            final Class entityClass = getEntityClass();
+            final PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-            JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
+            final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
                     getFields())
                     .from(getEntityTable());
 
-            BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
+            final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
 
-            JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-            JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
-            JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
-            JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
+            final JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+            final JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+            final JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
+            final JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
 
-            List<Tuple> rows = queryAfterLimit.fetch();
+            final List<Tuple> rows = queryAfterLimit.fetch();
 
             return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
         };
-    }
+    }//2023-11-04T17:42:48+02:00
 
     public OrderSpecifier createDefaultOrder() {
         return null;
     }
 
-    protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
+    protected JPAQuery<Tuple> createLimitQuery(final JPAQuery<Tuple> query, final Object limitArgument) {
         if (limitArgument != null) {
-            long limit = Math.min(MAX_RESULTS, (Integer) limitArgument);
+            final long limit = Math.min(MAX_RESULTS, (Integer) limitArgument);
             return query.limit(limit);
         } else {
             return query.limit(MAX_RESULTS);
         }
     }
 
-    private JPAQuery<Tuple> createOffsetQuery(JPAQuery<Tuple> query, Object skipArgument) {
+    private JPAQuery<Tuple> createOffsetQuery(final JPAQuery<Tuple> query, final Object skipArgument) {
         if (skipArgument != null) {
             return query.offset(((Integer) skipArgument).longValue());
         } else {
@@ -102,20 +102,20 @@ public abstract class BaseQuery<T> {
     }
 
 
-    private JPAQuery<Tuple> createWhereQuery(JPAQuery<Tuple> query, PathBuilder root, BooleanExpression basicWhere, Map<String, Object> whereAsMap) {
+    private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere, final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            Map<String, Object> properWhereMap = this.replaceOffsetsWithZonedDateTimes(whereAsMap);
+            final Map<String, Object> properWhereMap = this.replaceOffsetsWithZonedDateTimes(whereAsMap);
 
-            BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
+            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
             return query.where(basicWhere.and(whereExpression));
         } else {
             return query.where(basicWhere);
         }
     }
 
-    private Map<String, Object> replaceOffsetsWithZonedDateTimes(Map<String, Object> whereAsMap) {
-        for (String key : whereAsMap.keySet()) {
-            Object value = whereAsMap.get(key);
+    private Map<String, Object> replaceOffsetsWithZonedDateTimes(final Map<String, Object> whereAsMap) {
+        for (final String key : whereAsMap.keySet()) {
+            final Object value = whereAsMap.get(key);
             if (value instanceof Map) {
                 this.replaceOffsetsWithZonedDateTimes((Map<String, Object>) value);
             } else if (value instanceof OffsetDateTime) {
@@ -126,15 +126,15 @@ public abstract class BaseQuery<T> {
         return whereAsMap;
     }
 
-    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, PathBuilder root, List<Map<String, Object>> orderByArgument) {
+    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, final PathBuilder root, final List<Map<String, Object>> orderByArgument) {
         if (orderByArgument != null) {
-            List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
-            for (OrderSpecifier orderSpecifier : orderSpecifiers) {
+            final List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
+            for (final OrderSpecifier orderSpecifier : orderSpecifiers) {
                 query = query.orderBy(orderSpecifier);
             }
             return query;
         } else {
-            OrderSpecifier defaultOrder = this.createDefaultOrder();
+            final OrderSpecifier defaultOrder = this.createDefaultOrder();
             if (defaultOrder != null) {
                 return query.orderBy(defaultOrder);
             } else {
