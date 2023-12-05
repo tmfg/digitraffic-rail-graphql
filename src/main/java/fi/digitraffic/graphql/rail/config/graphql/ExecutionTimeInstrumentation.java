@@ -14,8 +14,8 @@ import graphql.execution.ExecutionId;
 import graphql.execution.ExecutionStepInfo;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
-import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
+import graphql.execution.instrumentation.SimplePerformantInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationFieldParameters;
 import graphql.schema.GraphQLNamedOutputType;
@@ -35,7 +35,7 @@ class ExecutionTimesByFieldState implements InstrumentationState {
     }
 }
 
-public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
+public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentation {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override

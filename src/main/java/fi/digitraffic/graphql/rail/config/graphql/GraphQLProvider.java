@@ -9,7 +9,6 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,26 +16,21 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.DefaultExecutionGraphQlService;
 import org.springframework.graphql.execution.GraphQlSource;
+import org.springframework.graphql.execution.RuntimeWiringConfigurer;
+import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-
 import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
 import fi.digitraffic.graphql.rail.queries.BaseQuery;
-import graphql.GraphQL;
-import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.language.FieldDefinition;
 import graphql.language.InputObjectTypeDefinition;
 import graphql.language.InputValueDefinition;
@@ -87,15 +81,6 @@ public class GraphQLProvider {
     }
 
     @Bean
-    public GraphQL graphQL(final GraphQlSource graphQlSource) {
-        return GraphQL.newGraphQL(graphQlSource.schema())
-                .instrumentation(new ChainedInstrumentation(Arrays.asList(
-                        new ExecutionTimeInstrumentation(),
-                        new NoCircularQueriesInstrumentation(digitrafficConfig)
-                ))).build();
-    }
-
-    @Bean
     public GraphQlSource graphQlSource() throws IOException {
         final URL url = Resources.getResource("schema.graphqls");
         final String sdl = Resources.toString(url, Charsets.UTF_8);
@@ -112,7 +97,13 @@ public class GraphQLProvider {
         final SchemaGenerator schemaGenerator = new SchemaGenerator();
         final GraphQLSchema schema = schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
 
-        return GraphQlSource.builder(schema).build();
+        return GraphQlSource
+            .builder(schema)
+            .instrumentation(List.of(
+                new ExecutionTimeInstrumentation(),
+                new NoCircularQueriesInstrumentation(digitrafficConfig))
+            )
+            .build();
     }
 
     private void addGenericArgumentsToCollections(final TypeDefinitionRegistry typeRegistry) {
