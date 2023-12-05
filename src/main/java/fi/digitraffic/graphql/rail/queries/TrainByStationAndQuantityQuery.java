@@ -60,10 +60,10 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     @Override
     public BooleanExpression createWhereFromArguments(final DataFetchingEnvironment dataFetchingEnvironment) {
         final String station = dataFetchingEnvironment.getArgument("station");
-        final long arrivedTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivedTrains"), 5L);
-        final long arrivingTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivingTrains"), 5L);
-        final long departedTrains = firstNonNull(dataFetchingEnvironment.getArgument("departedTrains"), 5L);
-        final long departingTrains = firstNonNull(dataFetchingEnvironment.getArgument("departingTrains"), 5L);
+        final int arrivedTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivedTrains"), 5);
+        final int arrivingTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivingTrains"), 5);
+        final int departedTrains = firstNonNull(dataFetchingEnvironment.getArgument("departedTrains"), 5);
+        final int departingTrains = firstNonNull(dataFetchingEnvironment.getArgument("departingTrains"), 5);
         final Boolean includeNonStopping = firstNonNull(dataFetchingEnvironment.getArgument("includeNonStopping"), false);
         final List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
 
@@ -79,10 +79,10 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
         }
 
         final List<TrainId> trainIds = getLiveTrainsUsingQuantityFiltering(station, -1L,
-                (int)arrivedTrains,
-                (int)arrivingTrains,
-                (int)departedTrains,
-                (int)departingTrains,
+                arrivedTrains,
+                arrivingTrains,
+                departedTrains,
+                departingTrains,
                 includeNonStopping, trainCategoryIds);
         if (!trainIds.isEmpty()) {
             return QTrain.train.id.in(trainIds);

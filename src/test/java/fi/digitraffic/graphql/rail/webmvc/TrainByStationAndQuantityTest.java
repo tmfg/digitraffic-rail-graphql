@@ -27,7 +27,13 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStationAndArrivedTrains() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \\\"HKI\\\", arrivedTrains: 1) {   trainNumber, version  }}");
+        final ResultActions result = this.query("query trains($arrivedTrains: Int = 0) {\\n" +
+                "  trainsByStationAndQuantity(\\n" +
+                "    arrivedTrains: $arrivedTrains\\n" +
+                "    station: \\\"HKI\\\"\\n" +
+                "  ) { trainNumber, version }\\n" +
+                "}");
+
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 
