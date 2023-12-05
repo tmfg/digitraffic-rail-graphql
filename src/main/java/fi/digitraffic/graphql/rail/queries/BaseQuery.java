@@ -78,7 +78,7 @@ public abstract class BaseQuery<T> {
 
             return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
         };
-    }//2023-11-04T17:42:48+02:00
+    }
 
     public OrderSpecifier createDefaultOrder() {
         return null;

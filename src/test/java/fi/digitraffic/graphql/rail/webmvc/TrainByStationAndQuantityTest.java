@@ -34,8 +34,6 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
                 "  ) { trainNumber, version }\\n" +
                 "}");
 
-        System.out.println("result " + result.toString());
-
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 
