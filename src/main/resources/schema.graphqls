@@ -1,5 +1,3 @@
-scalar Long
-
 type Query {
     train(trainNumber : Int!, departureDate : Date!) : [Train]
     trainsByDepartureDate(departureDate : Date!) : [Train]
