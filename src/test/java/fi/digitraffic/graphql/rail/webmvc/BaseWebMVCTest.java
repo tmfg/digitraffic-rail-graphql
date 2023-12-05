@@ -42,7 +42,7 @@ public abstract class BaseWebMVCTest {
         trainLocationRepository.deleteAll();
     }
 
-    public ResultActions query(final String query) {
+    public ResultActions query(final String query) throws Exception {
         final MvcResult first = this.mockMvc.perform(
                         post("/graphql")
                                 .content("{\"query\":\"" + query + "\"}")
