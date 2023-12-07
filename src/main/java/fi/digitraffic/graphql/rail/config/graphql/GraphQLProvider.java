@@ -100,9 +100,10 @@ public class GraphQLProvider {
         return GraphQlSource
             .builder(schema)
             .instrumentation(List.of(
-                new ExecutionTimeInstrumentation(),
-                new NoCircularQueriesInstrumentation(digitrafficConfig))
-            )
+                new ExecutionTimeInstrumentation()
+                // Fails if a query contains null-variable. Seems like a bug in graphql-java
+                // new NoCircularQueriesInstrumentation(this.digitrafficConfig)
+            ))
             .build();
     }
 
