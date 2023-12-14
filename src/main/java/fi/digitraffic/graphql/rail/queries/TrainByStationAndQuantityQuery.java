@@ -1,6 +1,7 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import java.math.BigInteger;
+import static com.google.common.base.MoreObjects.firstNonNull;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,11 +21,10 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
-
-import static com.google.common.base.MoreObjects.firstNonNull;
 
 @Component
 public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
@@ -84,11 +84,11 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
                 departedTrains,
                 departingTrains,
                 includeNonStopping, trainCategoryIds);
-        if (!trainIds.isEmpty()) {
-            return QTrain.train.id.in(trainIds);
-        } else {
-            return QTrain.train.id.in(new TrainId(-9999L, LocalDate.now()));
+        if (trainIds.isEmpty()) {
+            trainIds.add(new TrainId(-9999L, LocalDate.now()));
         }
+
+        return TrainIdOptimizer.optimize(QTrain.train.id, trainIds);
     }
 
     @Override
