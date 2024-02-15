@@ -1,0 +1,3 @@
+[submodule "lib/digitraffic-common-java"]
+	path = lib/digitraffic-common-java
+	url = https://github.com/tmfg/digitraffic-common-java.git
