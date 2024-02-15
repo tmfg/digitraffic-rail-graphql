@@ -26,7 +26,7 @@ jobs:
       - name: Get database IP
         run: echo "db_addr=$(docker inspect dbrail_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Run tests
-        run: mvn -f pom.xml test -Dspring.datasource.url=jdbc:mysql://${{ env.db_addr }}/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
+        run: mvn -f pom.xml org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -Dspring.datasource.url=jdbc:mysql://${{ env.db_addr }}/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
       - name: Publish test results
         uses: dorny/test-reporter@v1
         if: success() || failure()
