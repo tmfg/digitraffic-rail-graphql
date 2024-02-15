@@ -20,7 +20,10 @@ jobs:
         with:
           repository: tmfg/digitraffic-rail
           path: digitraffic-rail
-          sparse-checkout: dbrail
+          sparse-checkout: |
+            dbrail
+            AvoinDataUpdater
+
       - name: Setup database
         working-directory: digitraffic-rail/dbrail
         run: docker-compose up -d
