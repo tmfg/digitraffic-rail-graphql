@@ -20,11 +20,14 @@ jobs:
         with:
           repository: tmfg/digitraffic-rail
           path: digitraffic-rail
-      - name: Setup submodules
-        run: node digitraffic-rail/common/scripts/git-submodule-extra.mjs init
+          sparse-checkout: |
+            dbrail
+            AvoinDataUpdater
       - name: Setup database
         working-directory: digitraffic-rail/dbrail
-        run: docker-compose up -d
+        run: |
+          docker-compose up -d
+          rm -rf digitraffic-rail
       - name: Get database IP
         run: echo "db_addr=$(docker inspect dbrail_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Run tests
