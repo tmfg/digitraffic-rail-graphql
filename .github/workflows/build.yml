@@ -4,20 +4,6 @@ jobs:
   build:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
     runs-on: ubuntu-22.04
-    services:
-      dt-rail-mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_ROOT_PASSWORD:
-        # Set health checks to wait until mysql has started
-        options: >-
-          --health-cmd "mysqladmin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 3306:3306
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,17 +20,13 @@ jobs:
         with:
           repository: tmfg/digitraffic-rail
           path: digitraffic-rail
-      - name: Create database
-        run: mysql --protocol=TCP --host=localhost --port=3306 --user=root --execute="CREATE DATABASE avoindata_test;"
       - name: Setup database
-        run: |
-          docker run -v \
-            ./AvoinDataUpdater/src/main/resources/db/migration/:/flyway/sql \
-            flyway/flyway:10.6 \
-            -url=jdbc:mysql://localhost/avoindata_test?permitMysqlScheme=true -schemas=avoindata_test -user=root -connectRetries=60 \
-            migrate
+        working-directory: digitraffic-rail/dbrail
+        run: docker-compose up -d
+      - name: Get database IP
+        run: echo "db_addr=$(docker inspect dbrail_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Run tests
-        run: mvn -f pom.xml test
+        run: mvn -f pom.xml test -spring.datasource.url=jdbc:mysql://${{ env.db_addr }}/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
       - name: Publish test results
         uses: dorny/test-reporter@v1
         if: success() || failure()
