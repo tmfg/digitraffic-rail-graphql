@@ -20,10 +20,6 @@ jobs:
         with:
           repository: tmfg/digitraffic-rail
           path: digitraffic-rail
-          sparse-checkout: |
-            dbrail
-            AvoinDataUpdater
-            common
       - name: Setup submodules
         run: node digitraffic-rail/common/scripts/git-submodule-extra.mjs init
       - name: Setup database
