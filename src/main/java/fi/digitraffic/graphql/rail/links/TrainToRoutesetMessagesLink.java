@@ -16,6 +16,7 @@ import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 
 @Component
@@ -65,6 +66,6 @@ public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepa
 
     @Override
     public BooleanExpression createWhere(final List<StringVirtualDepartureDateTrainId> keys) {
-        return QRouteset.routeset.trainId.in(keys);
+        return TrainIdOptimizer.optimize(QRouteset.routeset.trainId, keys);
     }
 }
