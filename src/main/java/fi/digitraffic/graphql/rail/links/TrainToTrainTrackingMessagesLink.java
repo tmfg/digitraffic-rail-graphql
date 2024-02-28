@@ -16,6 +16,7 @@ import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
 
 @Component
@@ -65,6 +66,6 @@ public class TrainToTrainTrackingMessagesLink extends OneToManyLink<StringVirtua
 
     @Override
     public BooleanExpression createWhere(final List<StringVirtualDepartureDateTrainId> keys) {
-        return QTrainTrackingMessage.trainTrackingMessage.trainId.in(keys);
+        return TrainIdOptimizer.optimize(QTrainTrackingMessage.trainTrackingMessage.trainId, keys);
     }
 }

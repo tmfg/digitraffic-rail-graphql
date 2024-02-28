@@ -78,19 +78,20 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
         return new SimpleInstrumentationContext<>() {
             @Override
             public void onCompleted(final ExecutionResult result, final Throwable t) {
+                final Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
+                MDC.put("execution_time", String.valueOf(duration.toMillis()));
+
                 if (t != null) {
                     log.error(String.format("Exception in query %s %s", executionId, query), t);
                 }
 
                 final ExecutionTimesByFieldState state = parameters.getInstrumentationState();
-                final Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
 
                 if (!result.getErrors().isEmpty()) {
                     log.info("Ending query {} {} took {}. Details: {}, Errors: {}", executionId, query, duration, state, result.getErrors());
                 } else {
                     log.info("Ending query {} {} took {}. Details: {}", executionId, query, duration, state);
                 }
-                MDC.put("execution_time", String.valueOf(duration.toMillis()));
             }
         };
     }
