@@ -19,7 +19,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStation() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \\\"HKI\\\") {   trainNumber, version  }}");
+        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\") {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 
@@ -27,12 +27,13 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStationAndArrivedTrains() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("query trains($arrivedTrains: Int = 0) {\\n" +
-                "  trainsByStationAndQuantity(\\n" +
-                "    arrivedTrains: $arrivedTrains\\n" +
-                "    station: \\\"HKI\\\"\\n" +
-                "  ) { trainNumber, version }\\n" +
-                "}");
+        final ResultActions result = this.query("""
+                query trains($arrivedTrains: Int = 0) {
+                    trainsByStationAndQuantity(
+                    arrivedTrains: $arrivedTrains
+                    station: "HKI"
+                  ) { trainNumber, version }
+        }""");
 
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
@@ -41,7 +42,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStationAndArrivingTrains() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \\\"HKI\\\", arrivingTrains: 1) {   trainNumber, version  }}");
+        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", arrivingTrains: 1) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 
@@ -49,7 +50,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStationAndDepartedTrains() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \\\"HKI\\\", departedTrains: 1) {   trainNumber, version  }}");
+        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", departedTrains: 1) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 
@@ -57,7 +58,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStationAndDepartingTrains() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \\\"HKI\\\", departingTrains: 1) {   trainNumber, version  }}");
+        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", departingTrains: 1) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 
@@ -65,7 +66,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     public void byStationAndIncludeNonStopping() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
-        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \\\"HKI\\\", includeNonStopping: false) {   trainNumber, version  }}");
+        final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", includeNonStopping: false) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
     }
 

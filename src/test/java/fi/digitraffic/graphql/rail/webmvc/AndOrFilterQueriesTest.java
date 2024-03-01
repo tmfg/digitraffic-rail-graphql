@@ -24,28 +24,28 @@ public class AndOrFilterQueriesTest extends BaseWebMVCTest {
     public void AndOrShouldWork() throws Exception {
         createTestData();
 
-        ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {or: [{deleted: {equals: true}}, {cancelled: {equals: true}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
+        final ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \"2020-09-17\", where: {or: [{deleted: {equals: true}}, {cancelled: {equals: true}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(6));
 
-        ResultActions result2 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {and: [{deleted: {equals: true}}, {cancelled: {equals: false}}, {runningCurrently: {equals: false}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
+        final ResultActions result2 = this.query("{  trainsByDepartureDate(departureDate: \"2020-09-17\", where: {and: [{deleted: {equals: true}}, {cancelled: {equals: false}}, {runningCurrently: {equals: false}}]}) {    cancelled    deleted runningCurrently    trainNumber  }}");
         result2.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
 
-        ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      or: [    {deleted: {equals: false}},     {and: [{runningCurrently: {equals: false}}, {cancelled: {equals: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
+        final ResultActions result3 = this.query("{  trainsByDepartureDate(departureDate: \"2020-09-17\", where: {      or: [    {deleted: {equals: false}},     {and: [{runningCurrently: {equals: false}}, {cancelled: {equals: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
         result3.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(5));
 
-        ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \\\"2020-09-17\\\", where: {      and: [    {deleted: {equals: false}},     {or: [{runningCurrently: {equals: false}}, {cancelled: {equals: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
+        final ResultActions result4 = this.query("{  trainsByDepartureDate(departureDate: \"2020-09-17\", where: {      and: [    {deleted: {equals: false}},     {or: [{runningCurrently: {equals: false}}, {cancelled: {equals: false}}]}  ]   }) {    cancelled    deleted    runningCurrently    trainNumber  }}");
         result4.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(3));
     }
 
     private void createTestData() {
-        Pair<Train, List<TimeTableRow>> train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train70 = trainFactory.createBaseTrain(new TrainId(70L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train71 = trainFactory.createBaseTrain(new TrainId(71L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train72 = trainFactory.createBaseTrain(new TrainId(72L, LocalDate.of(2020, 9, 17)));
-        Pair<Train, List<TimeTableRow>> train73 = trainFactory.createBaseTrain(new TrainId(73L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train70 = trainFactory.createBaseTrain(new TrainId(70L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train71 = trainFactory.createBaseTrain(new TrainId(71L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train72 = trainFactory.createBaseTrain(new TrainId(72L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train73 = trainFactory.createBaseTrain(new TrainId(73L, LocalDate.of(2020, 9, 17)));
 
         train66.getFirst().deleted = true;
         train66.getFirst().cancelled = true;
