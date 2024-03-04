@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import graphql.execution.AbortExecutionException;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
@@ -77,9 +78,11 @@ public class WhereExpressionBuilder {
         } else {
             final Map<String, Object> map = (Map<String, Object>) value;
 
-            if(!map.isEmpty()) {
-                start = create(start, path.get(key), map);
+            if(map.isEmpty()) {
+                throw new AbortExecutionException("Empty expression " + key);
             }
+
+            start = create(start, path.get(key), map);
         }
 
         return start;

@@ -20,9 +20,9 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
 
         final ResultActions result = this.query("""
                 {
-                    trainsByDepartureDate(departureDate: "2024-01-01") { 
-                        trainNumber 
-                        version 
+                    trainsByDepartureDate(departureDate: "2024-01-01") {
+                        trainNumber
+                        version
                         trainTrackingMessages(where: {nextStation: {shortCode: {equals: "TPE"}, passengerTraffic: {}}}) {
                             nextStation {
                               name
@@ -36,6 +36,7 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
                     }
                 }""");
 
-        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1))
+                .andExpect(jsonPath("$.errors.length()").value(1));
     }
 }
