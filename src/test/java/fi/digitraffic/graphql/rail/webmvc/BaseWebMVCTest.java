@@ -43,9 +43,13 @@ public abstract class BaseWebMVCTest {
     }
 
     public ResultActions query(final String query) throws Exception {
+        final String safeQuery = query.strip()
+                .replace("\n", "")
+                .replace("\"", "\\\"");
+
         final MvcResult first = this.mockMvc.perform(
                         post("/graphql")
-                                .content("{\"query\":\"" + query + "\"}")
+                                .content("{\"query\":\"" + safeQuery + "\"}")
                                 .header("Content-Type", "application/json")
                                 .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
                 .andReturn();
