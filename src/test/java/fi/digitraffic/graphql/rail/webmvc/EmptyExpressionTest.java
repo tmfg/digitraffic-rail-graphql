@@ -16,7 +16,7 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
 
     @Test
     public void emptyExpression() throws Exception {
-        trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2024, 1, 1)));
+        trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
 
         final ResultActions result = this.query("""
                 {
