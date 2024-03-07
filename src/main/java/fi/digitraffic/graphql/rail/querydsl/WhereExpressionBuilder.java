@@ -1,6 +1,7 @@
 package fi.digitraffic.graphql.rail.querydsl;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,28 +119,32 @@ public class WhereExpressionBuilder {
 
     private BooleanExpression lt(final PathBuilder path, final Object value) {
         final BooleanExpression start;
-        if (value instanceof Number) {
-            start = Expressions.asNumber(path).lt((Number) value);
-        } else if (value instanceof ZonedDateTime) {
-            start = Expressions.asDateTime(path).lt((ZonedDateTime) value);
-        } else if (value instanceof LocalDate) {
-            start = Expressions.asDate(path).lt((LocalDate) value);
+        if (value instanceof final Number number) {
+            start = Expressions.asNumber(path).lt(number);
+        } else if (value instanceof final ZonedDateTime zdt) {
+            start = Expressions.asDateTime(path).lt(zdt);
+        } else if (value instanceof final OffsetDateTime odt) {
+            start = Expressions.asDateTime(path).lt(odt.toZonedDateTime());
+        } else if (value instanceof final LocalDate ld) {
+            start = Expressions.asDate(path).lt(ld);
         } else {
-            throw new IllegalArgumentException("Invalid gt type");
+            throw new IllegalArgumentException("Invalid lt type" + value.getClass().getSimpleName());
         }
         return start;
     }
 
     private BooleanExpression gt(final PathBuilder path, final Object value) {
         final BooleanExpression start;
-        if (value instanceof Number) {
-            start = Expressions.asNumber(path).gt((Number) value);
-        } else if (value instanceof ZonedDateTime) {
-            start = Expressions.asDateTime(path).gt((ZonedDateTime) value);
-        } else if (value instanceof LocalDate) {
-            start = Expressions.asDate(path).gt((LocalDate) value);
+        if (value instanceof final Number number) {
+            start = Expressions.asNumber(path).gt(number);
+        } else if (value instanceof final ZonedDateTime zdt) {
+            start = Expressions.asDateTime(path).gt(zdt);
+        } else if (value instanceof final OffsetDateTime odt) {
+            start = Expressions.asDateTime(path).gt(odt.toZonedDateTime());
+        } else if (value instanceof final LocalDate ld) {
+            start = Expressions.asDate(path).gt(ld);
         } else {
-            throw new IllegalArgumentException("Invalid gt type");
+            throw new IllegalArgumentException("Invalid gt type " + value.getClass().getSimpleName());
         }
         return start;
     }
