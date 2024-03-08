@@ -9,16 +9,16 @@ import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
 
 @Component
-public class TrainTrackingTOConverter {
+public class TrainTrackingTOConverter extends BaseConverter<TrainTrackingMessageTO> {
     public TrainTrackingMessageTO convert(final Tuple tuple) {
         return new TrainTrackingMessageTO(
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.id).intValue(),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.trainNumber),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.virtualDepartureDate),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId).trainNumber,
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId).virtualDepartureDate,
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.stationShortCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextStationShortCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.version).toString(),
+                Long.toString(zeroIfNull(tuple.get(QTrainTrackingMessage.trainTrackingMessage.version))),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.timestamp),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.trackSectionCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextTrackSectionCode),
@@ -28,6 +28,10 @@ public class TrainTrackingTOConverter {
     }
 
     private TrainTrackingMessageTypeTO getType(TrainTrackingMessageTypeEnum type) {
+        if (type == null) {
+            return null;
+        }
+
         if (type == TrainTrackingMessageTypeEnum.OCCUPY) {
             return TrainTrackingMessageTypeTO.OCCUPY;
         } else if (type == TrainTrackingMessageTypeEnum.RELEASE) {

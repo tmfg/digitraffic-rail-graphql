@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.digitraffic.graphql.rail.entities.Locomotive;
+import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 
 @Repository
 @Transactional
-public interface LocomotiveRepository extends JpaRepository<Locomotive, Long> {
+public interface RoutesetMessageRepository extends JpaRepository<RoutesetMessage, Long> {
 }

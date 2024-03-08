@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -13,11 +14,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Table;
 
 @Entity
-public class Routeset {
+@Table(name = "routeset")
+public class RoutesetMessage {
     @Id
     @JsonIgnore
     public Long id;
@@ -40,8 +41,8 @@ public class Routeset {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),
-            @JoinColumn(name = "trainNumber", referencedColumnName = "trainNumber", nullable = false, insertable = false, updatable = false)})
+        @JoinColumn(name = "departureDate", referencedColumnName = "departureDate", nullable = false, insertable = false, updatable = false),
+        @JoinColumn(name = "trainNumber", referencedColumnName = "trainNumber", nullable = false, insertable = false, updatable = false)})
     private Train train;
 
     @OneToMany(mappedBy = "routeset", fetch = FetchType.LAZY)

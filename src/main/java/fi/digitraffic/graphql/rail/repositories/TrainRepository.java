@@ -1,9 +1,7 @@
 package fi.digitraffic.graphql.rail.repositories;
 
-import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,15 +13,6 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 @Repository
 @Transactional
 public interface TrainRepository extends JpaRepository<Train, TrainId> {
-
-    @Query("select train from Train train where train.id.departureDate = ?1 order by train.id.trainNumber")
-    List<Train> findByDepartureDate(final LocalDate departureDate, final Pageable pageable);
-
-    @Query("select train from Train train where train.id.departureDate = ?1 and train.id.trainNumber > ?2 order by train.id.trainNumber")
-    List<Train> findByDepartureDateWithTrainNumberGreaterThan(final LocalDate departureDate, final Long trainNumber, final Pageable pageable);
-
-    List<Train> findByVersionGreaterThanOrderByVersionAsc(final Long version, final Pageable pageable);
-
     @Query(value = "select * from ((SELECT " +
             "    '1', t.departure_date, t.train_number, t.version" +
             " FROM" +

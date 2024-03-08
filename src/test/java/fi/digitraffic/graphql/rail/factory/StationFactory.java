@@ -1,7 +1,5 @@
 package fi.digitraffic.graphql.rail.factory;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +19,8 @@ public class StationFactory {
         station.shortCode = shortCode;
         station.id = Long.valueOf(station.name.hashCode());
         station.passengerTraffic = true;
-        station.longitude = new BigDecimal(1L);
-        station.latitude = new BigDecimal(2L);
+        station.longitude = 1D;
+        station.latitude = 2D;
         station.type = StationTypeEnum.STATION;
         station.uicCode = uicCode;
 

@@ -9,12 +9,12 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.QTrainType;
 import fi.digitraffic.graphql.rail.entities.TrainType;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrainTypeTOConverter;
 
 @Component
@@ -53,11 +53,6 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_TYPE;
-    }
-
-    @Override
     public EntityPath getEntityTable() {
         return QTrainType.trainType;
     }
@@ -65,5 +60,10 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
     @Override
     public BooleanExpression createWhere(final List<Long> keys) {
         return QTrainType.trainType.id.in(keys);
+    }
+
+    @Override
+    public List<Expression<?>> columnsNeededFromParentTable() {
+        return List.of(QTrain.train.trainTypeId);
     }
 }

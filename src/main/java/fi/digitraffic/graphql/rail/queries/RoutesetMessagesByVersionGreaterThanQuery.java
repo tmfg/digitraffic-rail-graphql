@@ -5,15 +5,13 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
-import fi.digitraffic.graphql.rail.entities.QRouteset;
-import fi.digitraffic.graphql.rail.entities.Routeset;
+import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
+import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -30,23 +28,18 @@ public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<Routese
 
     @Override
     public Class getEntityClass() {
-        return Routeset.class;
-    }
-
-    @Override
-    public Expression[] getFields() {
-        return AllFields.ROUTESET;
+        return RoutesetMessage.class;
     }
 
     @Override
     public EntityPath getEntityTable() {
-        return QRouteset.routeset;
+        return QRoutesetMessage.routesetMessage;
     }
 
     @Override
     public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
         Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
-        return QRouteset.routeset.version.gt(version);
+        return QRoutesetMessage.routesetMessage.version.gt(version);
     }
 
     @Override
@@ -61,6 +54,6 @@ public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<Routese
 
     @Override
     public OrderSpecifier createDefaultOrder() {
-        return new OrderSpecifier(Order.ASC, QRouteset.routeset.version);
+        return new OrderSpecifier(Order.ASC, QRoutesetMessage.routesetMessage.version);
     }
 }

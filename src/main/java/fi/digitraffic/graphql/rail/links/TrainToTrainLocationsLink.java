@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QTrainLocation;
 import fi.digitraffic.graphql.rail.entities.TrainId;
@@ -15,7 +14,6 @@ import fi.digitraffic.graphql.rail.entities.TrainLocation;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 
@@ -52,11 +50,6 @@ public class TrainToTrainLocationsLink extends OneToManyLink<TrainId, TrainTO, T
     @Override
     public Class getEntityClass() {
         return TrainLocation.class;
-    }
-
-    @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_LOCATION;
     }
 
     @Override

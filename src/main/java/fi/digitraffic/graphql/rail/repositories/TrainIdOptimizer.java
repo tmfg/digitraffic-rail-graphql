@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Multimaps;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QStringVirtualDepartureDateTrainId;
+import fi.digitraffic.graphql.rail.entities.QTimeTableRowId;
 import fi.digitraffic.graphql.rail.entities.QTrainId;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
+import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 
 public class TrainIdOptimizer {
@@ -42,5 +44,9 @@ public class TrainIdOptimizer {
         }
 
         return expression;
+    }
+
+    public static BooleanExpression optimize(final QTimeTableRowId timeTableRowId, final List<TimeTableRowId> timeTableRowIds) {
+        return optimize(timeTableRowIds, s -> s.departureDate, s -> s.trainNumber, (localDate, trainNumbers) -> timeTableRowId.departureDate.eq(localDate).and(timeTableRowId.trainNumber.in(trainNumbers).and(timeTableRowId.in(timeTableRowIds))));
     }
 }

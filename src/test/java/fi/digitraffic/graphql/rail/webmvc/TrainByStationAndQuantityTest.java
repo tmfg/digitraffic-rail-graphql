@@ -1,15 +1,15 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
-import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.factory.TrainFactory;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDate;
+import fi.digitraffic.graphql.rail.entities.TrainId;
+import fi.digitraffic.graphql.rail.factory.TrainFactory;
 
 public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
     @Autowired
@@ -20,7 +20,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
         final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\") {   trainNumber, version  }}");
-        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(1));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
                   ) { trainNumber, version }
         }""");
 
-        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(1));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
         final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", arrivingTrains: 1) {   trainNumber, version  }}");
-        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(1));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
         final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", departedTrains: 1) {   trainNumber, version  }}");
-        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(1));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
         final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", departingTrains: 1) {   trainNumber, version  }}");
-        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(1));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class TrainByStationAndQuantityTest extends BaseWebMVCTest {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.now()));
 
         final ResultActions result = this.query("{ trainsByStationAndQuantity(station: \"HKI\", includeNonStopping: false) {   trainNumber, version  }}");
-        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(0));
+        result.andExpect(jsonPath("$.data.trainsByStationAndQuantity.length()").value(1));
     }
 
 }

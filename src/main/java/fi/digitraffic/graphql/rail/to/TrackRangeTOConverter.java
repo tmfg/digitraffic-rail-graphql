@@ -7,15 +7,15 @@ import fi.digitraffic.graphql.rail.entities.QTrackRange;
 import fi.digitraffic.graphql.rail.model.TrackRangeTO;
 
 @Component
-public class TrackRangeTOConverter {
+public class TrackRangeTOConverter extends BaseConverter<TrackRangeTO> {
     public TrackRangeTO convert(final Tuple tuple) {
         return new TrackRangeTO(
                 tuple.get(QTrackRange.trackRange.trackSectionId).intValue(),
                 tuple.get(QTrackRange.trackRange.startTrack),
-                tuple.get(QTrackRange.trackRange.startKilometres),
-                tuple.get(QTrackRange.trackRange.startMetres),
+                zeroIfNull(tuple.get(QTrackRange.trackRange.startKilometres)),
+                zeroIfNull(tuple.get(QTrackRange.trackRange.startMetres)),
                 tuple.get(QTrackRange.trackRange.endTrack),
-                tuple.get(QTrackRange.trackRange.endKilometres),
-                tuple.get(QTrackRange.trackRange.endMetres));
+                zeroIfNull(tuple.get(QTrackRange.trackRange.endKilometres)),
+                zeroIfNull(tuple.get(QTrackRange.trackRange.endMetres)));
     }
 }
