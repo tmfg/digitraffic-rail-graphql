@@ -148,7 +148,7 @@ public class SelectionToQueryDslFieldsConfig {
             if (link != null) {
                 linkFields.addAll(link.columnsNeededFromParentTable());
             } else {
-                for (final Expression expression : dslFieldMap.get(selection.getName())) {
+                for (final Expression expression : dslFieldMap.getOrDefault(selection.getName(), Set.of())) {
                     selectionFields.add(expression);
                 }
             }

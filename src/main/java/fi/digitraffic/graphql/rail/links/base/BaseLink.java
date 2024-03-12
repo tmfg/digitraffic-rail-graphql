@@ -28,10 +28,9 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
+import fi.digitraffic.graphql.rail.services.GraphQLFieldSelectionUtil;
 import fi.digitraffic.graphql.rail.to.SelectionToQueryDslFieldsConfig;
 import graphql.execution.AbortExecutionException;
-import graphql.language.Field;
-import graphql.language.SelectionSet;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import jakarta.annotation.PostConstruct;
@@ -114,8 +113,9 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
                 final List<Future<List<ChildTOType>>> futures = new ArrayList<>();
-                final SelectionSet selectionSet = dataFetchingEnvironment.getField().getSelectionSet();
-                final Expression[] fields = this.selectionToQueryDslFieldsConfig.getDSLFields(getEntityTable(), selectionSet.getSelectionsOfType(Field.class)) ;
+
+                final Expression[] fields = this.selectionToQueryDslFieldsConfig.getDSLFields(getEntityTable(), GraphQLFieldSelectionUtil.getSelectionSet(dataFetchingEnvironment)) ;
+
                 for (final List<KeyType> partition : partitions) {
                     final BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
                     final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(fields).from(getEntityTable());
