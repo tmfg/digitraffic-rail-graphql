@@ -34,6 +34,7 @@ public class TrainFactory {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public Pair<Train, List<TimeTableRow>> createBaseTrain(final int trainNumber, final LocalDate departureDate) {
         final TrainId id = new TrainId(trainNumber, departureDate);
         final ZonedDateTime startTime = ZonedDateTime.now()
@@ -44,6 +45,7 @@ public class TrainFactory {
         return createBaseTrain(id, startTime);
     }
 
+    @Transactional
     public Pair<Train, List<TimeTableRow>> createBaseTrain(final TrainId id) {
         final ZonedDateTime startTime = ZonedDateTime.now()
             .withYear(id.departureDate.getYear())
