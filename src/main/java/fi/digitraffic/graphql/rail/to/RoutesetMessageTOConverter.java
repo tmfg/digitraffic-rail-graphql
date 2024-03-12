@@ -11,7 +11,7 @@ public class RoutesetMessageTOConverter extends BaseConverter<RoutesetMessageTO>
     public RoutesetMessageTO convert(final Tuple tuple) {
         return new RoutesetMessageTO(
                 tuple.get(QRoutesetMessage.routesetMessage.id).intValue(),
-                tuple.get(QRoutesetMessage.routesetMessage.version).toString(),
+                Long.toString(zeroIfNull(tuple.get(QRoutesetMessage.routesetMessage.version))),
                 tuple.get(QRoutesetMessage.routesetMessage.messageTime),
                 tuple.get(QRoutesetMessage.routesetMessage.trainId).trainNumber,
                 tuple.get(QRoutesetMessage.routesetMessage.trainId).virtualDepartureDate,
