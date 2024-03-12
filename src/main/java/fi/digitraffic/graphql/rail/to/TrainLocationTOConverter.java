@@ -2,6 +2,7 @@ package fi.digitraffic.graphql.rail.to;
 
 import java.util.List;
 
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
@@ -11,13 +12,14 @@ import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 @Component
 public class TrainLocationTOConverter extends BaseConverter<TrainLocationTO> {
     public TrainLocationTO convert(final Tuple tuple) {
+        final Point point = tuple.get(QTrainLocation.trainLocation.location);
         return new TrainLocationTO(
-                tuple.get(QTrainLocation.trainLocation.trainLocationId.departureDate),
+                tuple.get(QTrainLocation.trainLocation.trainLocationId).departureDate,
                 tuple.get(QTrainLocation.trainLocation.speed),
                 tuple.get(QTrainLocation.trainLocation.accuracy),
-                tuple.get(QTrainLocation.trainLocation.trainLocationId.timestamp),
-                nullableInt(tuple.get(QTrainLocation.trainLocation.trainLocationId.trainNumber)),
-                List.of((double) tuple.get(QTrainLocation.trainLocation.location).getX(), (double) tuple.get(QTrainLocation.trainLocation.location).getY()),
+                tuple.get(QTrainLocation.trainLocation.trainLocationId).timestamp,
+                nullableInt(tuple.get(QTrainLocation.trainLocation.trainLocationId).trainNumber),
+                point != null ? List.of(point.getX(), point.getY()) : null,
                 null
         );
     }

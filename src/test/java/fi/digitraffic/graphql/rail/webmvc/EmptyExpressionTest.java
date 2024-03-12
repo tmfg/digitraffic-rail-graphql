@@ -1,14 +1,15 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
-import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.factory.TrainFactory;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.time.LocalDate;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import fi.digitraffic.graphql.rail.entities.TrainId;
+import fi.digitraffic.graphql.rail.factory.TrainFactory;
 
 public class EmptyExpressionTest extends BaseWebMVCTest {
     @Autowired
@@ -18,7 +19,7 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
     public void emptyExpression() throws Exception {
         trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
 
-        final ResultActions result = this.query("""
+        final ResultActions result = this.queryAndExpectError("""
                 {
                     trainsByDepartureDate(departureDate: "2024-01-01") {
                         trainNumber

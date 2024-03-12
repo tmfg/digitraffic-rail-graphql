@@ -189,7 +189,7 @@ type DetailedCategoryCode {
 type ThirdCategoryCode {
     code : String!
     name : String!
-    description : String!
+    description : String
     oid : String!
     validFrom : Date!
     validTo : Date
@@ -239,7 +239,8 @@ type Routesection {
 type TrackSection {
     id : Int!
     trackSectionCode: String!
-    station: Station!
+    stationShortCode: String!
+    station: Station
     ranges: [TrackRange]!
 }
 

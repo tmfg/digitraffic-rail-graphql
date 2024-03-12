@@ -1,11 +1,8 @@
 package fi.digitraffic.graphql.rail.entities;
 
-import java.math.BigDecimal;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 public class Station {
@@ -16,8 +13,8 @@ public class Station {
     @JsonProperty("stationUICCode")
     public int uicCode;
     public String countryCode;
-    public BigDecimal longitude;
-    public BigDecimal latitude;
+    public Double longitude;
+    public Double latitude;
 
     @Id
     public Long id;

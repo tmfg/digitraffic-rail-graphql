@@ -12,6 +12,7 @@ public class TrackSectionTOConverter {
         return new TrackSectionTO(
                 tuple.get(QTrackSection.trackSection.id).intValue(),
                 tuple.get(QTrackSection.trackSection.trackSectionCode),
+                tuple.get(QTrackSection.trackSection.stationShortCode),
                 null, null);
     }
 }

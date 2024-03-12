@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -23,8 +19,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
+import fi.digitraffic.graphql.rail.services.GraphQLFieldSelectionUtil;
+import fi.digitraffic.graphql.rail.to.SelectionToQueryDslFieldsConfig;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 public abstract class BaseQuery<T> {
     @Autowired
@@ -32,6 +33,9 @@ public abstract class BaseQuery<T> {
 
     @Autowired
     private OrderByExpressionBuilder orderByExpressionBuilder;
+
+    @Autowired
+    private SelectionToQueryDslFieldsConfig selectionToQueryDslFieldsConfig;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -50,8 +54,6 @@ public abstract class BaseQuery<T> {
 
     public abstract Class getEntityClass();
 
-    public abstract Expression[] getFields();
-
     public abstract EntityPath getEntityTable();
 
     public abstract BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment);
@@ -63,8 +65,10 @@ public abstract class BaseQuery<T> {
             final Class entityClass = getEntityClass();
             final PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
+            final Expression[] fields = this.selectionToQueryDslFieldsConfig.getDSLFields(getEntityTable(), GraphQLFieldSelectionUtil.getSelectionSet(dataFetchingEnvironment)) ;
+
             final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
-                    getFields())
+                    fields)
                     .from(getEntityTable());
 
             final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);

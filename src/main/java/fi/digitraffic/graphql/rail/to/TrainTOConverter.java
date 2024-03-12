@@ -12,18 +12,18 @@ import fi.digitraffic.graphql.rail.model.TrainTO;
 public class TrainTOConverter extends BaseConverter<TrainTO> {
     public TrainTO convert(final Tuple row) {
         return new TrainTO(
-                row.get(QTrain.train.cancelled),
+                falseIfNull(row.get(QTrain.train.cancelled)),
                 row.get(QTrain.train.commuterLineid),
                 row.get(QTrain.train.deleted),
-                row.get(QTrain.train.id.departureDate),
+                row.get(QTrain.train.id).departureDate,
                 row.get(QTrain.train.operatorShortCode),
-                row.get(QTrain.train.runningCurrently),
+                falseIfNull(row.get(QTrain.train.runningCurrently)),
                 row.get(QTrain.train.timetableAcceptanceDate),
                 convert(row.get(QTrain.train.timetableType)),
-                row.get(QTrain.train.id.trainNumber).intValue(),
+                row.get(QTrain.train.id).trainNumber.intValue(),
                 nullableString(row.get(QTrain.train.version)),
-                nullableInt(row.get(QTrain.train.trainTypeId)),
-                nullableInt(row.get(QTrain.train.trainCategoryId)),
+                zeroIfNull(nullableInt(row.get(QTrain.train.trainTypeId))),
+                zeroIfNull(nullableInt(row.get(QTrain.train.trainCategoryId))),
 
                 null, null, null, null, null, null, null
         );

@@ -7,20 +7,18 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QRouteset;
-import fi.digitraffic.graphql.rail.entities.Routeset;
+import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
+import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 
 @Component
-public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, Routeset, RoutesetMessageTO> {
+public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, RoutesetMessage, RoutesetMessageTO> {
     @Autowired
     private RoutesetMessageTOConverter routesetMessageTOConverter;
 
@@ -51,21 +49,16 @@ public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepa
 
     @Override
     public Class getEntityClass() {
-        return Routeset.class;
-    }
-
-    @Override
-    public Expression[] getFields() {
-        return AllFields.ROUTESET;
+        return RoutesetMessage.class;
     }
 
     @Override
     public EntityPath getEntityTable() {
-        return QRouteset.routeset;
+        return QRoutesetMessage.routesetMessage;
     }
 
     @Override
     public BooleanExpression createWhere(final List<StringVirtualDepartureDateTrainId> keys) {
-        return TrainIdOptimizer.optimize(QRouteset.routeset.trainId, keys);
+        return TrainIdOptimizer.optimize(QRoutesetMessage.routesetMessage.trainId, keys);
     }
 }

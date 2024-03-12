@@ -10,13 +10,13 @@ import fi.digitraffic.graphql.rail.model.CompositionTO;
 public class CompositionTOConverter extends BaseConverter<CompositionTO>{
     public CompositionTO convert(Tuple tuple) {
         return new CompositionTO(
-                tuple.get(QComposition.composition.id.departureDate),
-                tuple.get(QComposition.composition.id.trainNumber).intValue(),
+                tuple.get(QComposition.composition.id).departureDate,
+                tuple.get(QComposition.composition.id).trainNumber.intValue(),
                 tuple.get(QComposition.composition.operatorShortCode),
-                tuple.get(QComposition.composition.trainCategoryId).intValue(),
-                tuple.get(QComposition.composition.trainTypeId).intValue(),
-                tuple.get(QComposition.composition.version).toString(),
-                tuple.get(QComposition.composition.operatorUicCode),
+                zeroIfNull(nullableInt( tuple.get(QComposition.composition.trainCategoryId))),
+                zeroIfNull(nullableInt(     tuple.get(QComposition.composition.trainTypeId))),
+                emptyIfNull( tuple.get(QComposition.composition.version)),
+                zeroIfNull(tuple.get(QComposition.composition.operatorUicCode)),
                 null,
                 null
         );

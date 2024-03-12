@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -16,7 +15,6 @@ import fi.digitraffic.graphql.rail.entities.TrackRange;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TrackRangeTO;
 import fi.digitraffic.graphql.rail.model.TrackSectionTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrackRangeTOConverter;
 
 @Component
@@ -52,11 +50,6 @@ public class TrackSectionToTrackRangesLink extends OneToManyLink<Long, TrackSect
     @Override
     public Class<TrackRange> getEntityClass() {
         return TrackRange.class;
-    }
-
-    @Override
-    public Expression[] getFields() {
-        return AllFields.TRACK_RANGE;
     }
 
     @Override

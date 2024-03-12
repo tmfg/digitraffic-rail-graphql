@@ -13,27 +13,26 @@ import fi.digitraffic.graphql.rail.model.TimeTableRowTypeTO;
 public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
     @Override
     public TimeTableRowTO convert(Tuple tuple) {
-        return new TimeTableRowTO(
-                tuple.get(QTimeTableRow.timeTableRow.stationShortCode),
-                tuple.get(QTimeTableRow.timeTableRow.stationUICCode),
-                tuple.get(QTimeTableRow.timeTableRow.countryCode),
-                convertTimeTableRowType(tuple.get(QTimeTableRow.timeTableRow.type)),
-                tuple.get(QTimeTableRow.timeTableRow.trainStopping),
-                tuple.get(QTimeTableRow.timeTableRow.commercialStop),
-                tuple.get(QTimeTableRow.timeTableRow.commercialTrack),
-                tuple.get(QTimeTableRow.timeTableRow.cancelled),
-                tuple.get(QTimeTableRow.timeTableRow.scheduledTime),
-                tuple.get(QTimeTableRow.timeTableRow.actualTime),
-                nullableInt(tuple.get(QTimeTableRow.timeTableRow.differenceInMinutes)),
-                tuple.get(QTimeTableRow.timeTableRow.liveEstimateTime),
-                convertEstimateSource(tuple.get(QTimeTableRow.timeTableRow.estimateSource)),
-                tuple.get(QTimeTableRow.timeTableRow.unknownDelay),
-                tuple.get(QTimeTableRow.timeTableRow.id.attapId).intValue(),
-                tuple.get(QTimeTableRow.timeTableRow.id.trainNumber).intValue(),
-                tuple.get(QTimeTableRow.timeTableRow.id.departureDate),
-                null,
-                null,
-                null);
+        return new TimeTableRowTO(tuple.get(QTimeTableRow.timeTableRow.stationShortCode),
+            zeroIfNull(tuple.get(QTimeTableRow.timeTableRow.stationUICCode)),
+            tuple.get(QTimeTableRow.timeTableRow.countryCode),
+            convertTimeTableRowType(tuple.get(QTimeTableRow.timeTableRow.type)),
+            falseIfNull(tuple.get(QTimeTableRow.timeTableRow.trainStopping)),
+            tuple.get(QTimeTableRow.timeTableRow.commercialStop),
+            tuple.get(QTimeTableRow.timeTableRow.commercialTrack),
+            falseIfNull(tuple.get(QTimeTableRow.timeTableRow.cancelled)),
+            tuple.get(QTimeTableRow.timeTableRow.scheduledTime),
+            tuple.get(QTimeTableRow.timeTableRow.actualTime),
+            nullableInt(tuple.get(QTimeTableRow.timeTableRow.differenceInMinutes)),
+            tuple.get(QTimeTableRow.timeTableRow.liveEstimateTime),
+            convertEstimateSource(tuple.get(QTimeTableRow.timeTableRow.estimateSource)),
+            tuple.get(QTimeTableRow.timeTableRow.unknownDelay),
+            tuple.get(QTimeTableRow.timeTableRow.id).attapId.intValue(),
+            tuple.get(QTimeTableRow.timeTableRow.id).trainNumber.intValue(),
+            tuple.get(QTimeTableRow.timeTableRow.id).departureDate,
+            null,
+            null,
+            null);
     }
 
     private EstimateSourceTypeTO convertEstimateSource(TimeTableRow.EstimateSourceEnum estimateSourceEnum) {

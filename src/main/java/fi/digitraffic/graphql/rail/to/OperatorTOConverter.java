@@ -13,7 +13,7 @@ public class OperatorTOConverter extends BaseConverter<OperatorTO> {
         return new OperatorTO(
                 tuple.get(QOperator.operator.name),
                 tuple.get(QOperator.operator.shortCode),
-                tuple.get(QOperator.operator.operatorUicCode).intValue()
+                zeroIfNull(tuple.get(QOperator.operator.operatorUicCode))
         );
     }
 }

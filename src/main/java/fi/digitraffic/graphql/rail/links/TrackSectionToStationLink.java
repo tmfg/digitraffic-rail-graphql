@@ -5,49 +5,52 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QStation;
+import fi.digitraffic.graphql.rail.entities.QTrackSection;
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.StationTO;
-import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
+import fi.digitraffic.graphql.rail.model.TrackSectionTO;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
 @Component
-public class TrainTrackingMessageToNextStationLink extends OneToOneLink<String, TrainTrackingMessageTO, Station, StationTO> {
+public class TrackSectionToStationLink extends OneToOneLink<String, TrackSectionTO, Station, StationTO> {
     @Autowired
     private StationTOConverter stationTOConverter;
 
     @Override
     public String getTypeName() {
-        return "TrainTrackingMessage";
+        return "TrackSection";
     }
 
     @Override
     public String getFieldName() {
-        return "nextStation";
+        return "station";
     }
 
     @Override
-    public String createKeyFromParent(TrainTrackingMessageTO trainTrackingMessageTO) {
-        return Strings.nullToEmpty(trainTrackingMessageTO.getNextStationShortCode());
+    public String createKeyFromParent(final TrackSectionTO trackSectionTO) {
+        return trackSectionTO.getStationShortCode();
     }
 
     @Override
-    public String createKeyFromChild(StationTO stationTO) {
+    public String createKeyFromChild(final StationTO stationTO) {
         return stationTO.getShortCode();
     }
 
     @Override
-    public StationTO createChildTOFromTuple(Tuple tuple) {
+    public StationTO createChildTOFromTuple(final Tuple tuple) {
         return stationTOConverter.convert(tuple);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Station> getEntityClass() {
         return Station.class;
     }
 
@@ -57,7 +60,17 @@ public class TrainTrackingMessageToNextStationLink extends OneToOneLink<String, 
     }
 
     @Override
-    public BooleanExpression createWhere(List<String> keys) {
+    public BooleanExpression createWhere(final List<String> keys) {
         return QStation.station.shortCode.in(keys);
+    }
+
+    @Override
+    public OrderSpecifier createDefaultOrder() {
+        return new OrderSpecifier(Order.ASC, QStation.station.id);
+    }
+
+    @Override
+    public List<Expression<?>> columnsNeededFromParentTable() {
+        return List.of(QTrackSection.trackSection.stationShortCode);
     }
 }

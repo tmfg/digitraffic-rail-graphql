@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QWagon;
 import fi.digitraffic.graphql.rail.entities.Wagon;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.WagonTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.WagonTOConverter;
 
 @Component
@@ -53,11 +53,6 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.WAGON;
-    }
-
-    @Override
     public EntityPath getEntityTable() {
         return QWagon.wagon;
     }
@@ -65,5 +60,10 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
     @Override
     public BooleanExpression createWhere(final List<Long> keys) {
         return QWagon.wagon.journeysectionId.in(keys);
+    }
+
+    @Override
+    public OrderSpecifier createDefaultOrder() {
+        return new OrderSpecifier(Order.ASC, QWagon.wagon.location);
     }
 }

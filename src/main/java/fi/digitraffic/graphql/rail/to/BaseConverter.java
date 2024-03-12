@@ -20,4 +20,24 @@ public abstract class BaseConverter<EntityTOTYpe> {
             return value.intValue();
         }
     }
+
+    protected int zeroIfNull(Integer number) {
+        return number != null ? number : 0;
+    }
+
+    protected double zeroIfNull(Double number) {
+        return number != null ? number : 0d;
+    }
+
+    protected long zeroIfNull(Long number) {
+        return number != null ? number : 0L;
+    }
+
+    protected String emptyIfNull(Long number) {
+        return number != null ? number.toString() : "";
+    }
+
+    protected boolean falseIfNull(Boolean bool) {
+        return bool != null ? bool : false;
+    }
 }
