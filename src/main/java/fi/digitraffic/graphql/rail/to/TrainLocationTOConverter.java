@@ -15,7 +15,7 @@ public class TrainLocationTOConverter extends BaseConverter<TrainLocationTO> {
         final Point point = tuple.get(QTrainLocation.trainLocation.location);
         return new TrainLocationTO(
                 tuple.get(QTrainLocation.trainLocation.trainLocationId).departureDate,
-                tuple.get(QTrainLocation.trainLocation.speed),
+                zeroIfNull(tuple.get(QTrainLocation.trainLocation.speed)),
                 tuple.get(QTrainLocation.trainLocation.accuracy),
                 tuple.get(QTrainLocation.trainLocation.trainLocationId).timestamp,
                 nullableInt(tuple.get(QTrainLocation.trainLocation.trainLocationId).trainNumber),
