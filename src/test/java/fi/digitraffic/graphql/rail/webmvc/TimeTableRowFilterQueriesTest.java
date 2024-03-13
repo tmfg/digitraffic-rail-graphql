@@ -11,20 +11,12 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.factory.TrainFactory;
-import fi.digitraffic.graphql.rail.factory.TrainLocationFactory;
-import fi.digitraffic.graphql.rail.repositories.TimeTableRowRepository;
+import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 
 
 public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
     @Autowired
-    private TrainFactory trainFactory;
-
-    @Autowired
-    private TimeTableRowRepository timeTableRowRepository;
-
-    @Autowired
-    private TrainLocationFactory trainLocationFactory;
+    private TrainRepository trainRepository;
 
 //    @Test
 //    public void nestedStringSearchShouldWork() throws Exception {
@@ -51,12 +43,12 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void childrenCollectionFilteringShouldWork() throws Exception {
-        final Train train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getFirst();
-        final Train train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getFirst();
-        final Train train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getFirst();
-        final Train train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getFirst();
-        final Train train70 = trainFactory.createBaseTrain(new TrainId(70L, LocalDate.of(2000, 1, 1))).getFirst();
-        final Train train71 = trainFactory.createBaseTrain(new TrainId(71L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train66 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train67 = factoryService.getTrainFactory().createBaseTrain(new TrainId(67L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train68 = factoryService.getTrainFactory().createBaseTrain(new TrainId(68L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train69 = factoryService.getTrainFactory().createBaseTrain(new TrainId(69L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train70 = factoryService.getTrainFactory().createBaseTrain(new TrainId(70L, LocalDate.of(2000, 1, 1))).getFirst();
+        final Train train71 = factoryService.getTrainFactory().createBaseTrain(new TrainId(71L, LocalDate.of(2000, 1, 1))).getFirst();
 
         train66.timetableType = Train.TimetableType.ADHOC;
         train67.timetableType = Train.TimetableType.ADHOC;
@@ -67,15 +59,15 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
 
         trainRepository.saveAll(List.of(train66, train67, train68, train69, train70, train71));
 
-        trainLocationFactory.create(1, 1, 11, train66);
-        trainLocationFactory.create(1, 1, 12, train66);
-        trainLocationFactory.create(1, 1, 13, train66);
-        trainLocationFactory.create(2, 3, 10, train67);
-        trainLocationFactory.create(2, 3, 10, train67);
-        trainLocationFactory.create(4, 4, 13, train68);
-        trainLocationFactory.create(3, 2, 14, train69);
-        trainLocationFactory.create(4, 3, 15, train70);
-        trainLocationFactory.create(5, 1, 16, train71);
+        factoryService.getTrainLocationFactory().create(1, 1, 11, train66);
+        factoryService.getTrainLocationFactory().create(1, 1, 12, train66);
+        factoryService.getTrainLocationFactory().create(1, 1, 13, train66);
+        factoryService.getTrainLocationFactory().create(2, 3, 10, train67);
+        factoryService.getTrainLocationFactory().create(2, 3, 10, train67);
+        factoryService.getTrainLocationFactory().create(4, 4, 13, train68);
+        factoryService.getTrainLocationFactory().create(3, 2, 14, train69);
+        factoryService.getTrainLocationFactory().create(4, 3, 15, train70);
+        factoryService.getTrainLocationFactory().create(5, 1, 16, train71);
 
         final ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \"2000-01-01\", where: {timetableType: {equals: \"ADHOC\"}}) {    timetableType    trainLocations(where: {speed: {greaterThan: 11}}) {      speed    }  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(2));

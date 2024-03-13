@@ -13,12 +13,16 @@ import org.springframework.test.web.servlet.ResultActions;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
-import fi.digitraffic.graphql.rail.factory.TrainFactory;
+import fi.digitraffic.graphql.rail.factory.FactoryService;
+import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 
 
 public class AndOrFilterQueriesTest extends BaseWebMVCTest {
     @Autowired
-    private TrainFactory trainFactory;
+    private FactoryService factoryService;
+
+    @Autowired
+    private TrainRepository trainRepository;
 
     @Test
     public void AndOrShouldWork() throws Exception {
@@ -38,14 +42,14 @@ public class AndOrFilterQueriesTest extends BaseWebMVCTest {
     }
 
     private void createTestData() {
-        final Pair<Train, List<TimeTableRow>> train66 = trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train67 = trainFactory.createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train68 = trainFactory.createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train69 = trainFactory.createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train70 = trainFactory.createBaseTrain(new TrainId(70L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train71 = trainFactory.createBaseTrain(new TrainId(71L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train72 = trainFactory.createBaseTrain(new TrainId(72L, LocalDate.of(2020, 9, 17)));
-        final Pair<Train, List<TimeTableRow>> train73 = trainFactory.createBaseTrain(new TrainId(73L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train66 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train67 = factoryService.getTrainFactory().createBaseTrain(new TrainId(67L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train68 = factoryService.getTrainFactory().createBaseTrain(new TrainId(68L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train69 = factoryService.getTrainFactory().createBaseTrain(new TrainId(69L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train70 = factoryService.getTrainFactory().createBaseTrain(new TrainId(70L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train71 = factoryService.getTrainFactory().createBaseTrain(new TrainId(71L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train72 = factoryService.getTrainFactory().createBaseTrain(new TrainId(72L, LocalDate.of(2020, 9, 17)));
+        final Pair<Train, List<TimeTableRow>> train73 = factoryService.getTrainFactory().createBaseTrain(new TrainId(73L, LocalDate.of(2020, 9, 17)));
 
         train66.getFirst().deleted = true;
         train66.getFirst().cancelled = true;

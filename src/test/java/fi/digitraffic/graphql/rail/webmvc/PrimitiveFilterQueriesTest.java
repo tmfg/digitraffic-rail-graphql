@@ -8,26 +8,30 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import fi.digitraffic.graphql.rail.entities.TrainId;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.entities.Train;
-import fi.digitraffic.graphql.rail.factory.TrainFactory;
+import fi.digitraffic.graphql.rail.entities.TrainId;
+import fi.digitraffic.graphql.rail.factory.FactoryService;
+import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 
 
 public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
     @Autowired
-    private TrainFactory trainFactory;
+    public TrainRepository trainRepository;
+    @Autowired
+    public FactoryService factoryService;
 
     private static final LocalDate DATE_2000_09_17 = LocalDate.of(2000, 9, 17);
+
     @Test
     public void dateTimeFilterShouldWork() throws Exception {
-        final Train train66 = trainFactory.createBaseTrain(66, DATE_2000_09_17).getFirst();
-        final Train train67 = trainFactory.createBaseTrain(67, DATE_2000_09_17).getFirst();
-        final Train train68 = trainFactory.createBaseTrain(68, DATE_2000_09_17).getFirst();
-        final Train train69 = trainFactory.createBaseTrain(69, DATE_2000_09_17).getFirst();
+        final Train train66 = factoryService.getTrainFactory().createBaseTrain(66, DATE_2000_09_17).getFirst();
+        final Train train67 = factoryService.getTrainFactory().createBaseTrain(67, DATE_2000_09_17).getFirst();
+        final Train train68 = factoryService.getTrainFactory().createBaseTrain(68, DATE_2000_09_17).getFirst();
+        final Train train69 = factoryService.getTrainFactory().createBaseTrain(69, DATE_2000_09_17).getFirst();
 
         final ZonedDateTime baseTime = ZonedDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Helsinki"));
         train66.timetableAcceptanceDate = baseTime;
@@ -49,10 +53,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void integerFilterShouldWork() throws Exception {
-        trainFactory.createBaseTrain(66, DATE_2000_09_17);
-        trainFactory.createBaseTrain(67, DATE_2000_09_17);
-        trainFactory.createBaseTrain(68, DATE_2000_09_17);
-        trainFactory.createBaseTrain(69, DATE_2000_09_17);
+        factoryService.getTrainFactory().createBaseTrain(66, DATE_2000_09_17);
+        factoryService.getTrainFactory().createBaseTrain(67, DATE_2000_09_17);
+        factoryService.getTrainFactory().createBaseTrain(68, DATE_2000_09_17);
+        factoryService.getTrainFactory().createBaseTrain(69, DATE_2000_09_17);
 
         final ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \"2000-09-17\", where:{trainNumber:{equals:68}}) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
@@ -66,10 +70,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void enumFilterShouldWork() throws Exception {
-        final Train train66 = trainFactory.createBaseTrain(66, DATE_2000_09_17).getFirst();
-        final Train train67 = trainFactory.createBaseTrain(67, DATE_2000_09_17).getFirst();
-        final Train train68 = trainFactory.createBaseTrain(68, DATE_2000_09_17).getFirst();
-        final Train train69 = trainFactory.createBaseTrain(69, DATE_2000_09_17).getFirst();
+        final Train train66 = factoryService.getTrainFactory().createBaseTrain(66, DATE_2000_09_17).getFirst();
+        final Train train67 = factoryService.getTrainFactory().createBaseTrain(67, DATE_2000_09_17).getFirst();
+        final Train train68 = factoryService.getTrainFactory().createBaseTrain(68, DATE_2000_09_17).getFirst();
+        final Train train69 = factoryService.getTrainFactory().createBaseTrain(69, DATE_2000_09_17).getFirst();
 
         train67.timetableType = Train.TimetableType.ADHOC;
         trainRepository.save(train67);
@@ -89,10 +93,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void stringFilterShouldWork() throws Exception {
-        final Train train66 = trainFactory.createBaseTrain(66, DATE_2000_09_17).getFirst();
-        final Train train67 = trainFactory.createBaseTrain(67, DATE_2000_09_17).getFirst();
-        final Train train68 = trainFactory.createBaseTrain(68, DATE_2000_09_17).getFirst();
-        final Train train69 = trainFactory.createBaseTrain(69, DATE_2000_09_17).getFirst();
+        final Train train66 = factoryService.getTrainFactory().createBaseTrain(66, DATE_2000_09_17).getFirst();
+        final Train train67 = factoryService.getTrainFactory().createBaseTrain(67, DATE_2000_09_17).getFirst();
+        final Train train68 = factoryService.getTrainFactory().createBaseTrain(68, DATE_2000_09_17).getFirst();
+        final Train train69 = factoryService.getTrainFactory().createBaseTrain(69, DATE_2000_09_17).getFirst();
 
         train66.commuterLineid = "A";
         trainRepository.save(train66);
@@ -118,10 +122,10 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void booleanFilterShouldWork() throws Exception {
-        final Train train66 = trainFactory.createBaseTrain(66, DATE_2000_09_17).getFirst();
-        final Train train67 = trainFactory.createBaseTrain(67, DATE_2000_09_17).getFirst();
-        final Train train68 = trainFactory.createBaseTrain(68, DATE_2000_09_17).getFirst();
-        final Train train69 = trainFactory.createBaseTrain(69, DATE_2000_09_17).getFirst();
+        final Train train66 = factoryService.getTrainFactory().createBaseTrain(66, DATE_2000_09_17).getFirst();
+        final Train train67 = factoryService.getTrainFactory().createBaseTrain(67, DATE_2000_09_17).getFirst();
+        final Train train68 = factoryService.getTrainFactory().createBaseTrain(68, DATE_2000_09_17).getFirst();
+        final Train train69 = factoryService.getTrainFactory().createBaseTrain(69, DATE_2000_09_17).getFirst();
 
         train66.deleted = true;
         trainRepository.save(train66);
@@ -144,8 +148,8 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void unequalQueryShouldWork() throws Exception {
-        trainFactory.createBaseTrain(66, DATE_2000_09_17);
-        trainFactory.createBaseTrain(67, DATE_2000_09_17);
+        factoryService.getTrainFactory().createBaseTrain(66, DATE_2000_09_17);
+        factoryService.getTrainFactory().createBaseTrain(67, DATE_2000_09_17);
 
         final ResultActions result = this.query("{ trainsByDepartureDate(departureDate: \"2000-09-17\", where: { trainNumber: {unequals: 66 } }) {   trainNumber, version  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
@@ -154,8 +158,8 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
 
     @Test
     public void timetableRowFiltering() throws Exception {
-        trainFactory.createBaseTrain(new TrainId(67, DATE_2000_09_17), ZonedDateTime.of(2000, 9, 17, 2, 0, 0, 0, ZoneId.of("UTC")));
-        trainFactory.createBaseTrain(new TrainId(67, DATE_2000_09_17), ZonedDateTime.of(2000, 9, 17, 12, 0, 0, 0, ZoneId.of("UTC")));
+        factoryService.getTrainFactory().createBaseTrain(new TrainId(67, DATE_2000_09_17), ZonedDateTime.of(2000, 9, 17, 2, 0, 0, 0, ZoneId.of("UTC")));
+        factoryService.getTrainFactory().createBaseTrain(new TrainId(67, DATE_2000_09_17), ZonedDateTime.of(2000, 9, 17, 12, 0, 0, 0, ZoneId.of("UTC")));
 
         final ResultActions result = this.query("""
                         { trainsByDepartureDate(departureDate: "2000-09-17", 

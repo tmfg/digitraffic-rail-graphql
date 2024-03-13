@@ -16,41 +16,21 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.GraphqlApplication;
-import fi.digitraffic.graphql.rail.repositories.StationRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainTypeRepository;
+import fi.digitraffic.graphql.rail.factory.FactoryService;
 
 @SpringBootTest(classes = GraphqlApplication.class)
 @AutoConfigureMockMvc
 //@Transactional // Unfortunately java-graphql runs multi-threaded no matter what, so we can't use this
 public abstract class BaseWebMVCTest {
     @Autowired
+    protected FactoryService factoryService;
+
+    @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    protected TrainRepository trainRepository;
-
-    @Autowired
-    protected StationRepository stationRepository;
-
-    @Autowired
-    private TrainLocationRepository trainLocationRepository;
-
-    @Autowired
-    private TrainTypeRepository trainTypeRepository;
-
-    @Autowired
-    private TrainCategoryRepository trainCategoryRepository;
-
     @BeforeEach()
-    private void setup() {
-        trainRepository.deleteAll();
-        stationRepository.deleteAll();
-        trainLocationRepository.deleteAll();
-        trainTypeRepository.deleteAll();
-        trainCategoryRepository.deleteAll();
+    protected void setup() {
+        factoryService.deleteAll();
     }
 
     public ResultActions queryAndExpectError(final String query) throws Exception {
