@@ -21,11 +21,13 @@ import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
 import fi.digitraffic.graphql.rail.services.GraphQLFieldSelectionUtil;
 import fi.digitraffic.graphql.rail.to.SelectionToQueryDslFieldsConfig;
+import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.QueryTimeoutException;
 
 public abstract class BaseQuery<T> {
     @Autowired
@@ -78,9 +80,12 @@ public abstract class BaseQuery<T> {
             final JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
             final JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
 
-            final List<Tuple> rows = queryAfterLimit.fetch();
-
-            return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+            try {
+                final List<Tuple> rows = queryAfterLimit.fetch();
+                return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+            } catch (QueryTimeoutException e) {
+                throw new AbortExecutionException(e);
+            }
         };
     }
 

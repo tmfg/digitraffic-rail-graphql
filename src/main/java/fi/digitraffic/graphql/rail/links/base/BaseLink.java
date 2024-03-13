@@ -36,6 +36,7 @@ import graphql.schema.DataFetchingEnvironment;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.QueryTimeoutException;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     private static ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
@@ -130,6 +131,9 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 for (final Future<List<ChildTOType>> future : futures) {
                     try {
                         children.addAll(future.get());
+                    } catch (QueryTimeoutException e) {
+                        log.info("Timeout fetching children", e);
+                        throw new AbortExecutionException(e);
                     } catch (Exception e) {
                         log.error("Exception fetching children", e);
                         throw new AbortExecutionException(e);
