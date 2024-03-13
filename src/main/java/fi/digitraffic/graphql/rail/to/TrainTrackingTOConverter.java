@@ -20,7 +20,7 @@ public class TrainTrackingTOConverter extends BaseConverter<TrainTrackingMessage
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode),
                 Long.toString(zeroIfNull(tuple.get(QTrainTrackingMessage.trainTrackingMessage.version))),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.timestamp),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trackSectionCode),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.track_section),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextTrackSectionCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousTrackSectionCode),
                 getType(tuple.get(QTrainTrackingMessage.trainTrackingMessage.type)),

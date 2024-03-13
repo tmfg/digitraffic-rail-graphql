@@ -65,6 +65,6 @@ public class TrainTrackingMessageToTrackSectionLink extends OneToOneLink<String,
 
     @Override
     public List<Expression<?>> columnsNeededFromParentTable() {
-        return List.of(QTrainTrackingMessage.trainTrackingMessage.trackSectionCode);
+        return List.of(QTrainTrackingMessage.trainTrackingMessage.track_section);
     }
 }

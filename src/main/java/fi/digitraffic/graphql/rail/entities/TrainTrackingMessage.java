@@ -29,7 +29,7 @@ public class TrainTrackingMessage {
     public ZonedDateTime timestamp;
 
     @Column(name = "track_section")
-    public String trackSectionCode;
+    public String track_section;
     @Column(name = "next_track_section")
     public String nextTrackSectionCode;
     @Column(name = "previous_track_section")
@@ -47,7 +47,7 @@ public class TrainTrackingMessage {
     public Long trainNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trackSectionCode", referencedColumnName = "trackSectionCode", updatable = false, insertable = false)
+    @JoinColumn(name = "track_section", referencedColumnName = "trackSectionCode", updatable = false, insertable = false)
     private TrackSection trackSection;
 
     @ManyToOne(fetch = FetchType.LAZY)
