@@ -11,11 +11,11 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QTrackSection;
-import fi.digitraffic.graphql.rail.entities.QTrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.TrackSection;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrackSectionTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrackSectionTOConverter;
 
 @Component
@@ -54,6 +54,11 @@ public class TrainTrackingMessageToTrackSectionLink extends OneToOneLink<String,
     }
 
     @Override
+    public Expression[] getFields() {
+        return AllFields.TRACK_SECTION;
+    }
+
+    @Override
     public EntityPath getEntityTable() {
         return QTrackSection.trackSection;
     }
@@ -61,10 +66,5 @@ public class TrainTrackingMessageToTrackSectionLink extends OneToOneLink<String,
     @Override
     public BooleanExpression createWhere(List<String> keys) {
         return QTrackSection.trackSection.trackSectionCode.in(keys);
-    }
-
-    @Override
-    public List<Expression<?>> columnsNeededFromParentTable() {
-        return List.of(QTrainTrackingMessage.trainTrackingMessage.track_section);
     }
 }

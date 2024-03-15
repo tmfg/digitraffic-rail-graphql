@@ -24,6 +24,11 @@ public class TrainIdOptimizer {
         return optimize(trainIds, s -> s.virtualDepartureDate, s -> s.trainNumber, (localDate, trainNumbers) -> qTrainId.virtualDepartureDate.eq(localDate).and(qTrainId.trainNumber.in(trainNumbers)));
     }
 
+
+    public static BooleanExpression optimize(final QTimeTableRowId timeTableRowId, final List<TimeTableRowId> timeTableRowIds) {
+        return optimize(timeTableRowIds, s -> s.departureDate, s -> s.trainNumber, (localDate, trainNumbers) -> timeTableRowId.departureDate.eq(localDate).and(timeTableRowId.trainNumber.in(trainNumbers).and(timeTableRowId.in(timeTableRowIds))));
+    }
+
     private static <TrainIdType,TrainNumberType> BooleanExpression optimize(
         List<TrainIdType> trainIds,
         Function<TrainIdType,LocalDate> departureDateProvider,
@@ -44,9 +49,5 @@ public class TrainIdOptimizer {
         }
 
         return expression;
-    }
-
-    public static BooleanExpression optimize(final QTimeTableRowId timeTableRowId, final List<TimeTableRowId> timeTableRowIds) {
-        return optimize(timeTableRowIds, s -> s.departureDate, s -> s.trainNumber, (localDate, trainNumbers) -> timeTableRowId.departureDate.eq(localDate).and(timeTableRowId.trainNumber.in(trainNumbers).and(timeTableRowId.in(timeTableRowIds))));
     }
 }

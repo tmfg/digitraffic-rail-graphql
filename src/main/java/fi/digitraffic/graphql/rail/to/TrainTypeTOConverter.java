@@ -13,7 +13,7 @@ public class TrainTypeTOConverter extends BaseConverter<TrainTypeTO> {
         return new TrainTypeTO(
                 tuple.get(QTrainType.trainType.id).intValue(),
                 tuple.get(QTrainType.trainType.name),
-                zeroIfNull(nullableInt(tuple.get(QTrainType.trainType.trainCategoryId)))
+                tuple.get(QTrainType.trainType.trainCategoryId).intValue()
                 , null
         );
     }

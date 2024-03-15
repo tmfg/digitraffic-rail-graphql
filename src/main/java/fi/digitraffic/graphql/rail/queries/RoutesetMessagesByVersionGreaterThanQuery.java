@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,6 +13,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -29,6 +31,11 @@ public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<Routese
     @Override
     public Class getEntityClass() {
         return RoutesetMessage.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.ROUTESET;
     }
 
     @Override

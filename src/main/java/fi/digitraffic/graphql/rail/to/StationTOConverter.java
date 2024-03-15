@@ -16,22 +16,18 @@ public class StationTOConverter extends BaseConverter<StationTO> {
     public StationTO convert(final Tuple tuple) {
         return new StationTO(
                 tuple.get(QStation.station.id).intValue(),
-                falseIfNull(tuple.get(QStation.station.passengerTraffic)),
+                tuple.get(QStation.station.passengerTraffic),
                 tuple.get(QStation.station.countryCode),
-                List.of(zeroIfNull(tuple.get(QStation.station.longitude)), zeroIfNull(tuple.get(QStation.station.latitude))),
+                List.of(tuple.get(QStation.station.longitude).doubleValue(), tuple.get(QStation.station.latitude).doubleValue()),
                 tuple.get(QStation.station.name),
                 tuple.get(QStation.station.shortCode),
-                zeroIfNull(tuple.get(QStation.station.uicCode)),
+                tuple.get(QStation.station.uicCode),
                 parseStationType(tuple.get(QStation.station.type)),
                 null
         );
     }
 
     private StationTypeTO parseStationType(final StationTypeEnum type) {
-        if (type == null) {
-            return null;
-        }
-
         if (type == StationTypeEnum.STATION) {
             return StationTypeTO.STATION;
         } else if (type == StationTypeEnum.STOPPING_POINT) {

@@ -11,10 +11,10 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.Operator;
 import fi.digitraffic.graphql.rail.entities.QOperator;
-import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.OperatorTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.OperatorTOConverter;
 
 @Component
@@ -53,6 +53,11 @@ public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator,
     }
 
     @Override
+    public Expression[] getFields() {
+        return AllFields.OPERATOR;
+    }
+
+    @Override
     public EntityPath getEntityTable() {
         return QOperator.operator;
     }
@@ -60,10 +65,5 @@ public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator,
     @Override
     public BooleanExpression createWhere(List<String> keys) {
         return QOperator.operator.shortCode.in(keys);
-    }
-
-    @Override
-    public List<Expression<?>> columnsNeededFromParentTable() {
-        return List.of(QTrain.train.operatorShortCode);
     }
 }

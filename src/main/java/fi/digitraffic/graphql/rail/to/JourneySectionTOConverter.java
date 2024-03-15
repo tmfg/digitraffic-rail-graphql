@@ -12,12 +12,12 @@ public class JourneySectionTOConverter extends BaseConverter<JourneySectionTO> {
     public JourneySectionTO convert(final Tuple tuple) {
         return new JourneySectionTO(
                 tuple.get(QJourneySection.journeySection.id).intValue(),
-                tuple.get(QJourneySection.journeySection.trainId).departureDate,
-                tuple.get(QJourneySection.journeySection.trainId).trainNumber.intValue(),
+                tuple.get(QJourneySection.journeySection.trainId.departureDate),
+                tuple.get(QJourneySection.journeySection.trainId.trainNumber).intValue(),
                 nullableInt(tuple.get(QJourneySection.journeySection.attapId)),
                 nullableInt(tuple.get(QJourneySection.journeySection.saapAttapId)),
-                zeroIfNull(tuple.get(QJourneySection.journeySection.maximumSpeed)),
-                zeroIfNull(tuple.get(QJourneySection.journeySection.totalLength)),
+                tuple.get(QJourneySection.journeySection.maximumSpeed),
+                tuple.get(QJourneySection.journeySection.totalLength),
                 null,
                 null,
                 null,

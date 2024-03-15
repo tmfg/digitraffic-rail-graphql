@@ -9,13 +9,13 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QJourneySection;
 import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
@@ -63,6 +63,11 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
     }
 
     @Override
+    public Expression[] getFields() {
+        return AllFields.TIME_TABLE_ROW;
+    }
+
+    @Override
     public EntityPath getEntityTable() {
         return QTimeTableRow.timeTableRow;
     }
@@ -72,8 +77,4 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
         return TrainIdOptimizer.optimize(QTimeTableRow.timeTableRow.id, keys);
     }
 
-    @Override
-    public List<Expression<?>> columnsNeededFromParentTable() {
-        return List.of(QJourneySection.journeySection.attapId, QJourneySection.journeySection.trainId);
-    }
 }

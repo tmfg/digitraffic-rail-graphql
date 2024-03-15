@@ -9,16 +9,16 @@ import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
 
 @Component
-public class TrainTrackingTOConverter extends BaseConverter<TrainTrackingMessageTO> {
+public class TrainTrackingTOConverter {
     public TrainTrackingMessageTO convert(final Tuple tuple) {
         return new TrainTrackingMessageTO(
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.id).intValue(),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId).trainNumber,
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId).virtualDepartureDate,
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.trainNumber),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.virtualDepartureDate),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.stationShortCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextStationShortCode),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode),
-                Long.toString(zeroIfNull(tuple.get(QTrainTrackingMessage.trainTrackingMessage.version))),
+                tuple.get(QTrainTrackingMessage.trainTrackingMessage.version).toString(),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.timestamp),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.track_section),
                 tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextTrackSectionCode),
@@ -28,10 +28,6 @@ public class TrainTrackingTOConverter extends BaseConverter<TrainTrackingMessage
     }
 
     private TrainTrackingMessageTypeTO getType(TrainTrackingMessageTypeEnum type) {
-        if (type == null) {
-            return null;
-        }
-
         if (type == TrainTrackingMessageTypeEnum.OCCUPY) {
             return TrainTrackingMessageTypeTO.OCCUPY;
         } else if (type == TrainTrackingMessageTypeEnum.RELEASE) {

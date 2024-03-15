@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -15,6 +16,7 @@ import fi.digitraffic.graphql.rail.entities.Routesection;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.RoutesectionTO;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.RoutesectionTOConverter;
 
 @Component
@@ -50,6 +52,11 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
     @Override
     public Class<Routesection> getEntityClass() {
         return Routesection.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.ROUTESECTION;
     }
 
     @Override

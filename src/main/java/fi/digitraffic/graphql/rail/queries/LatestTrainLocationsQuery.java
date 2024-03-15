@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QTrainLocation;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 import graphql.schema.DataFetchingEnvironment;
@@ -34,6 +36,11 @@ public class LatestTrainLocationsQuery extends BaseQuery<TrainLocationTO> {
     @Override
     public Class getEntityClass() {
         return TrainLocation.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN_LOCATION;
     }
 
     @Override

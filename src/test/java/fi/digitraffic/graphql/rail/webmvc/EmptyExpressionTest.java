@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
-import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.factory.TrainFactory;
 
 public class EmptyExpressionTest extends BaseWebMVCTest {

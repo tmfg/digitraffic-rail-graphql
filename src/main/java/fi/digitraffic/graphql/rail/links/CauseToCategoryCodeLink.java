@@ -11,10 +11,10 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.CategoryCode;
 import fi.digitraffic.graphql.rail.entities.QCategoryCode;
-import fi.digitraffic.graphql.rail.entities.QCause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CategoryCodeTO;
 import fi.digitraffic.graphql.rail.model.CauseTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.CategoryCodeTOConverter;
 
 @Component
@@ -53,6 +53,11 @@ public class CauseToCategoryCodeLink extends OneToOneLink<String, CauseTO, Categ
     }
 
     @Override
+    public Expression[] getFields() {
+        return AllFields.CATEGORY_CODE;
+    }
+
+    @Override
     public EntityPath getEntityTable() {
         return QCategoryCode.categoryCode;
     }
@@ -62,8 +67,4 @@ public class CauseToCategoryCodeLink extends OneToOneLink<String, CauseTO, Categ
         return QCategoryCode.categoryCode.oid.in(keys);
     }
 
-    @Override
-    public List<Expression<?>> columnsNeededFromParentTable() {
-        return List.of(QCause.cause.categoryCodeOid);
-    }
 }

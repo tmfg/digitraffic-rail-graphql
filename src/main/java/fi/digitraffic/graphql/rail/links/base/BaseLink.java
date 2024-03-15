@@ -28,8 +28,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
-import fi.digitraffic.graphql.rail.services.GraphQLFieldSelectionUtil;
-import fi.digitraffic.graphql.rail.to.SelectionToQueryDslFieldsConfig;
 import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -50,9 +48,6 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     @Autowired
     private OrderByExpressionBuilder orderByExpressionBuilder;
 
-    @Autowired
-    private SelectionToQueryDslFieldsConfig selectionToQueryDslFieldsConfig;
-
     public abstract String getTypeName();
 
     public abstract String getFieldName();
@@ -63,13 +58,11 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
     public abstract ChildTOType createChildTOFromTuple(final Tuple tuple);
 
-    public List<Expression<?>> columnsNeededFromParentTable() {
-      return new ArrayList<>();
-    }
-
     public abstract BatchLoaderWithContext<KeyType, ChildFieldType> createLoader();
 
     public abstract Class<ChildEntityType> getEntityClass();
+
+    public abstract Expression[] getFields();
 
     public abstract EntityPath getEntityTable();
 
@@ -114,18 +107,13 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
                 final List<Future<List<ChildTOType>>> futures = new ArrayList<>();
-
-                final Expression[] fields = this.selectionToQueryDslFieldsConfig.getDSLFields(getEntityTable(), GraphQLFieldSelectionUtil.getSelectionSet(dataFetchingEnvironment)) ;
-
                 for (final List<KeyType> partition : partitions) {
+                    final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
                     final BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
-                    final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(fields).from(getEntityTable());
                     final JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
                     final JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
-                    futures.add(sqlExecutor.submit(() -> queryAfterOrderBy.fetch().stream()
-                        .map(s -> BaseLink.this.createChildTOFromTuple(s))
-                        .collect(Collectors.toList())));
+                    futures.add(sqlExecutor.submit(() -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
                 }
 
                 for (final Future<List<ChildTOType>> future : futures) {

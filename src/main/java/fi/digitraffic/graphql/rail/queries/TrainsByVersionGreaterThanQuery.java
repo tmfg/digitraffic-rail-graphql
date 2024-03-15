@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,6 +13,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.TrainTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
@@ -28,6 +30,11 @@ public class TrainsByVersionGreaterThanQuery extends BaseQuery<TrainTO> {
     @Override
     public Class getEntityClass() {
         return Train.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TRAIN;
     }
 
     @Override

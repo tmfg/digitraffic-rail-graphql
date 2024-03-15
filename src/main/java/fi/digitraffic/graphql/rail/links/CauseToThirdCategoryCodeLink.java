@@ -9,12 +9,12 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QCause;
 import fi.digitraffic.graphql.rail.entities.QThirdCategoryCode;
 import fi.digitraffic.graphql.rail.entities.ThirdCategoryCode;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.ThirdCategoryCodeTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.ThirdCategoryCodeTOConverter;
 
 @Component
@@ -58,6 +58,11 @@ public class CauseToThirdCategoryCodeLink extends OneToOneLink<String, CauseTO, 
     }
 
     @Override
+    public Expression[] getFields() {
+        return AllFields.THIRD_CATEGORY_CODE;
+    }
+
+    @Override
     public EntityPath getEntityTable() {
         return QThirdCategoryCode.thirdCategoryCode;
     }
@@ -65,10 +70,5 @@ public class CauseToThirdCategoryCodeLink extends OneToOneLink<String, CauseTO, 
     @Override
     public BooleanExpression createWhere(List<String> keys) {
         return QThirdCategoryCode.thirdCategoryCode.oid.in(keys);
-    }
-
-    @Override
-    public List<Expression<?>> columnsNeededFromParentTable() {
-        return List.of(QCause.cause.thirdCategoryCodeOid);
     }
 }

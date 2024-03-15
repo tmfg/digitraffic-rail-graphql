@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
@@ -14,6 +15,7 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
@@ -50,6 +52,11 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     @Override
     public Class getEntityClass() {
         return TimeTableRow.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.TIME_TABLE_ROW;
     }
 
     @Override

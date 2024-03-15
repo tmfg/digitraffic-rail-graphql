@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.JourneySection;
 import fi.digitraffic.graphql.rail.entities.QJourneySection;
@@ -14,6 +15,7 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
+import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.JourneySectionTOConverter;
 
@@ -50,6 +52,11 @@ public class CompositionToJourneySectionsLink extends OneToManyLink<TrainId, Com
     @Override
     public Class getEntityClass() {
         return JourneySection.class;
+    }
+
+    @Override
+    public Expression[] getFields() {
+        return AllFields.JOURNEY_SECTION;
     }
 
     @Override

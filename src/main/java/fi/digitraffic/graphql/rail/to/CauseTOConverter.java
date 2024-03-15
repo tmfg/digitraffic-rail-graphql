@@ -11,9 +11,9 @@ public class CauseTOConverter extends BaseConverter<CauseTO> {
     @Override
     public CauseTO convert(Tuple tuple) {
         return new CauseTO(
-                tuple.get(QCause.cause.timeTableRowId).attapId.intValue(),
-                tuple.get(QCause.cause.timeTableRowId).trainNumber.intValue(),
-                tuple.get(QCause.cause.timeTableRowId).departureDate,
+                tuple.get(QCause.cause.timeTableRowId.attapId).intValue(),
+                tuple.get(QCause.cause.timeTableRowId.trainNumber).intValue(),
+                tuple.get(QCause.cause.timeTableRowId.departureDate),
                 tuple.get(QCause.cause.id).intValue(),
                 tuple.get(QCause.cause.categoryCodeOid),
                 tuple.get(QCause.cause.detailedCategoryCodeOid),
