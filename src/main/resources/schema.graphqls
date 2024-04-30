@@ -254,6 +254,33 @@ type TrackRange {
     endMetres: Int!
 }
 
+type PassengerInformationMessage {
+    id: Int!
+    version: Int!
+    creationDateTime: DateTime!
+    startValidity: DateTime!
+    endValidity: DateTime!
+    trainDepartureDate: Date
+    trainNumber: Int
+    stations: [Station]
+    audio: PassengerInformationAudio
+    video: PassengerInformationVideo
+}
+
+type PassengerInformationAudio {
+    text: PassengerInformationTextContent
+}
+
+type PassengerInformationVideo {
+    text: PassengerInformationTextContent
+}
+
+type PassengerInformationTextContent {
+    fi: String
+    sv: String
+    en: String
+}
+
 ## SCALARS
 
 scalar Date
