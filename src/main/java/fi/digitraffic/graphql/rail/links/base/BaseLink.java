@@ -26,6 +26,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
 import graphql.execution.AbortExecutionException;
@@ -113,16 +114,17 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     final JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
                     final JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
-                    futures.add(sqlExecutor.submit(() -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
+                    futures.add(sqlExecutor.submit(
+                            () -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
                 }
 
                 for (final Future<List<ChildTOType>> future : futures) {
                     try {
                         children.addAll(future.get());
-                    } catch (QueryTimeoutException e) {
+                    } catch (final QueryTimeoutException e) {
                         log.info("Timeout fetching children", e);
                         throw new AbortExecutionException(e);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         log.error("Exception fetching children", e);
                         throw new AbortExecutionException(e);
                     }

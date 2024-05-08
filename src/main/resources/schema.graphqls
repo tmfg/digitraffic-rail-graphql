@@ -14,6 +14,8 @@ type Query {
     routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage]
 
     stations: [Station]
+
+    passengerInformationMessages: [PassengerInformationMessage]
 }
 
 type Train {
@@ -255,16 +257,20 @@ type TrackRange {
 }
 
 type PassengerInformationMessage {
-    id: Int!
+    id: String!
     version: Int!
     creationDateTime: DateTime!
     startValidity: DateTime!
     endValidity: DateTime!
     trainDepartureDate: Date
     trainNumber: Int
-    stations: [Station]
+    stations: [PassengerInformationStation]
     audio: PassengerInformationAudio
     video: PassengerInformationVideo
+}
+
+type PassengerInformationStation {
+    stationShortCode: String!
 }
 
 type PassengerInformationAudio {
