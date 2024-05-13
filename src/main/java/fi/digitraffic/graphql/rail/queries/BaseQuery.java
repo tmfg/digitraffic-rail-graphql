@@ -16,6 +16,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
@@ -40,7 +42,7 @@ public abstract class BaseQuery<T> {
     @Value("${digitraffic.max-returned-rows}")
     public Integer MAX_RESULTS;
 
-    private JPAQueryFactory queryFactory;
+    protected JPAQueryFactory queryFactory;
 
     @PostConstruct
     public void setup() {
@@ -51,7 +53,7 @@ public abstract class BaseQuery<T> {
 
     public abstract Class getEntityClass();
 
-    public abstract Expression[] getFields();
+    public abstract Expression<?>[] getFields();
 
     public abstract EntityPath getEntityTable();
 
@@ -62,23 +64,29 @@ public abstract class BaseQuery<T> {
     public DataFetcher<List<T>> createFetcher() {
         return dataFetchingEnvironment -> {
             final Class entityClass = getEntityClass();
-            final PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+            final PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass,
+                    entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
             final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
-                    getFields())
-                    .from(getEntityTable());
+                            getFields())
+                    .from(getEntityTable())
+                    .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
+                    .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin();
+            ;
 
             final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
 
-            final JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-            final JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+            final JPAQuery<Tuple> queryAfterWhere =
+                    createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+            final JPAQuery<Tuple> queryAfterOrderBy =
+                    createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
             final JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
             final JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
 
             try {
                 final List<Tuple> rows = queryAfterLimit.fetch();
                 return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
-            } catch (QueryTimeoutException e) {
+            } catch (final QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
             }
         };
@@ -97,7 +105,7 @@ public abstract class BaseQuery<T> {
         }
     }
 
-    private JPAQuery<Tuple> createOffsetQuery(final JPAQuery<Tuple> query, final Object skipArgument) {
+    protected JPAQuery<Tuple> createOffsetQuery(final JPAQuery<Tuple> query, final Object skipArgument) {
         if (skipArgument != null) {
             return query.offset(((Integer) skipArgument).longValue());
         } else {
@@ -105,8 +113,8 @@ public abstract class BaseQuery<T> {
         }
     }
 
-
-    private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere, final Map<String, Object> whereAsMap) {
+    protected JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,
+                                               final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
             final Map<String, Object> properWhereMap = this.replaceOffsetsWithZonedDateTimes(whereAsMap);
 
@@ -130,7 +138,7 @@ public abstract class BaseQuery<T> {
         return whereAsMap;
     }
 
-    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, final PathBuilder root, final List<Map<String, Object>> orderByArgument) {
+    protected JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, final PathBuilder root, final List<Map<String, Object>> orderByArgument) {
         if (orderByArgument != null) {
             final List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
             for (final OrderSpecifier orderSpecifier : orderSpecifiers) {
@@ -146,6 +154,5 @@ public abstract class BaseQuery<T> {
             }
         }
     }
-
 
 }
