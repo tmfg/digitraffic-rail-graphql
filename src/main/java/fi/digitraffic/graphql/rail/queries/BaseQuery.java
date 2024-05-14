@@ -17,8 +17,6 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
-import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
 import graphql.execution.AbortExecutionException;
@@ -62,17 +60,21 @@ public abstract class BaseQuery<T> {
     public abstract T convertEntityToTO(Tuple tuple);
 
     public DataFetcher<List<T>> createFetcher() {
+        final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
+                        getFields())
+                .from(getEntityTable());
+        return doCreateFetcher(queryAfterFrom);
+    }
+
+    public DataFetcher<List<T>> createFetcher(final JPAQuery<Tuple> queryAfterFrom) {
+        return doCreateFetcher(queryAfterFrom);
+    }
+
+    public DataFetcher<List<T>> doCreateFetcher(final JPAQuery<Tuple> queryAfterFrom) {
         return dataFetchingEnvironment -> {
             final Class entityClass = getEntityClass();
-            final PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass,
+            final PathBuilder<T> pathBuilder = new PathBuilder<>(entityClass,
                     entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
-
-            final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
-                            getFields())
-                    .from(getEntityTable())
-                    .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
-                    .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin();
-            ;
 
             final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
 
