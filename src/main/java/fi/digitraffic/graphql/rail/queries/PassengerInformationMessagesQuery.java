@@ -74,7 +74,7 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
                 .from(getEntityTable())
                 .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
                 .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin();
-        
+
         return super.createFetcher(queryAfterFrom);
     }
 }

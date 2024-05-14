@@ -16,6 +16,8 @@ type Query {
     stations: [Station]
 
     passengerInformationMessages: [PassengerInformationMessage]
+    passengerInformationMessagesByStation(stationShortCode: String!): [PassengerInformationMessage]
+    passengerInformationMessagesByTrain(trainNumber: Int!, departureDate: Date!): [PassengerInformationMessage]
 }
 
 type Train {
