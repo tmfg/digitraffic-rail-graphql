@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -34,7 +35,9 @@ public class PassengerInformationVideo {
     @Transient
     public PassengerInformationTextContent text;
 
-    public void setTextContent() {
+    @PostLoad
+    public void setText() {
         this.text = new PassengerInformationTextContent(this.textFi, this.textSv, this.textEn);
     }
+
 }

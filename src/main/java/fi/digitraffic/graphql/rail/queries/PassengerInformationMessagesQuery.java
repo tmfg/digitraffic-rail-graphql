@@ -3,6 +3,7 @@ package fi.digitraffic.graphql.rail.queries;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
-import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
@@ -73,15 +73,14 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
     public DataFetcher<List<PassengerInformationMessageTO>> createFetcher() {
         return dataFetchingEnvironment -> {
             final Class entityClass = getEntityClass();
-            final PathBuilder<Train> pathBuilder = new PathBuilder<>(entityClass,
+            final PathBuilder<PassengerInformationMessage> pathBuilder = new PathBuilder<>(entityClass,
                     entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-            final Expression<?>[] fields = getFields();
-            final Expression<?>[] allFields = new Expression<?>[fields.length + 1];
-            allFields[0] = QPassengerInformationMessage.passengerInformationMessage;
-            System.arraycopy(fields, 0, allFields, 1, fields.length);
+            final Expression<?>[] allFields = Stream.of(
+                    QPassengerInformationMessage.passengerInformationMessage).toArray(Expression<?>[]::new);
 
-            final JPAQuery<Tuple> queryAfterFrom = super.queryFactory.select(allFields)
+            // createFetcher has been overridden for this class to enable querying using leftJoin below
+            final JPAQuery<Tuple> queryAfterFrom = super.queryFactory.selectDistinct(allFields)
                     .from(getEntityTable())
                     .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
                     .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin();
@@ -98,6 +97,7 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
             try {
                 final List<Tuple> rows = queryAfterLimit.fetch();
                 return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+                
             } catch (final QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
             }

@@ -15,8 +15,24 @@ public class PassengerInformationStation {
     public Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "rami_message_id", referencedColumnName = "id", nullable = false, insertable = false, updatable = false),
-            @JoinColumn(name = "rami_message_version", referencedColumnName = "version", nullable = false, insertable = false, updatable = false)})
+            @JoinColumn(name = "rami_message_id",
+                        referencedColumnName = "id",
+                        nullable = false,
+                        insertable = false,
+                        updatable = false),
+            @JoinColumn(name = "rami_message_version",
+                        referencedColumnName = "version",
+                        nullable = false,
+                        insertable = false,
+                        updatable = false) })
     public PassengerInformationMessage message;
     public String stationShortCode;
+
+    @Override
+    public String toString() {
+        return "PassengerInformationStation{" +
+                "id=" + id +
+                ", stationShortCode='" + stationShortCode + '\'' +
+                '}';
+    }
 }
