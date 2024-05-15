@@ -73,7 +73,8 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
         final JPAQuery<Tuple> queryAfterFrom = super.queryFactory.selectDistinct(allFields)
                 .from(getEntityTable())
                 .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
-                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin();
+                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin()
+                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.train).fetchJoin();
 
         return super.createFetcher(queryAfterFrom);
     }
