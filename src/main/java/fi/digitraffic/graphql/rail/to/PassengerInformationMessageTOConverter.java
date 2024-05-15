@@ -18,8 +18,11 @@ import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
 public class PassengerInformationMessageTOConverter {
 
     public PassengerInformationMessageTO convert(final Tuple tuple) {
-
         final PassengerInformationMessage message = tuple.get(QPassengerInformationMessage.passengerInformationMessage);
+
+        if (message == null) {
+            return null;
+        }
 
         final List<PassengerInformationStationTO> stationsTO = message.stations != null ?
                                                                message.stations.stream()
