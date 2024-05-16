@@ -26,7 +26,8 @@ public class PassengerInformationMessageTOConverter {
 
         final List<PassengerInformationStationTO> stationsTO = message.stations != null ?
                                                                message.stations.stream()
-                                                                       .map(station -> new PassengerInformationStationTO(station.stationShortCode))
+                                                                       .map(station -> new PassengerInformationStationTO(station.stationShortCode,
+                                                                               null))
                                                                        .toList() : null;
 
         final PassengerInformationAudioTO audioTO = message.audio != null ?

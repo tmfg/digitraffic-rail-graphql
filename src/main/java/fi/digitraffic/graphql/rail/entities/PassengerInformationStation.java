@@ -27,6 +27,12 @@ public class PassengerInformationStation {
                         updatable = false) })
     public PassengerInformationMessage message;
     public String stationShortCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "stationShortCode",
+                referencedColumnName = "shortCode",
+                updatable = false,
+                insertable = false)
+    public Station station;
 
     @Override
     public String toString() {
