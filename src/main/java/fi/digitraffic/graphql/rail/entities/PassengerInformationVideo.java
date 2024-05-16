@@ -1,5 +1,11 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
+import fi.digitraffic.graphql.rail.util.DaysOfWeekConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -32,12 +38,25 @@ public class PassengerInformationVideo {
     public String textSv;
     public String textEn;
 
+    public String deliveryType;
+    public ZonedDateTime startDateTime;
+    public ZonedDateTime endDateTime;
+    public String startTime;
+    public String endTime;
+    @Column(name = "days_of_week")
+    @Convert(converter = DaysOfWeekConverter.class)
+    public List<String> weekDays;
+
     @Transient
     public PassengerInformationTextContent text;
 
+    @Transient
+    public PassengerInformationVideoDeliveryRules deliveryRules;
+
     @PostLoad
-    public void setText() {
+    public void setTransients() {
         this.text = new PassengerInformationTextContent(this.textFi, this.textSv, this.textEn);
+        this.deliveryRules = new PassengerInformationVideoDeliveryRules(deliveryType, startDateTime, endDateTime, startTime, endTime, weekDays);
     }
 
 }

@@ -274,14 +274,39 @@ type PassengerInformationMessage {
 
 type PassengerInformationStation {
     stationShortCode: String!
+    station: Station
 }
 
 type PassengerInformationAudio {
-    text: PassengerInformationTextContent
+    text: PassengerInformationTextContent!
+    deliveryRules: PassengerInformationAudioDeliveryRules!
 }
 
 type PassengerInformationVideo {
-    text: PassengerInformationTextContent
+    text: PassengerInformationTextContent!
+    deliveryRules: PassengerInformationVideoDeliveryRules!
+}
+
+type PassengerInformationVideoDeliveryRules {
+    deliveryType: String
+    startDateTime: DateTime
+    endDateTime: DateTime
+    startTime: String
+    endtime: String
+    weekDays: [DayOfWeek]
+}
+
+type PassengerInformationAudioDeliveryRules {
+    deliveryType: String
+    eventType: String
+    startDateTime: DateTime
+    endDateTime: DateTime
+    startTime: String
+    endtime: String
+    weekDays: [DayOfWeek]
+    deliveryAt: DateTime
+    repetitions: Int
+    repeatEvery: Int
 }
 
 type PassengerInformationTextContent {
@@ -325,6 +350,16 @@ enum EstimateSourceType {
     COMBOCALC
 }
 
+enum DayOfWeek {
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+    SUNDAY
+}
+
 ## PRIMITIVE FILTERS
 
 input BooleanWhere {
@@ -335,6 +370,20 @@ input BooleanWhere {
 input StringWhere {
     equals : String
     unequals : String
+}
+
+input DayOfWeekWhere {
+    equals : String
+    unequals : String
+}
+
+input DayOfWeekOrderBy {
+    direction: OrderDirection!
+}
+
+input DayOfWeekCollectionWhere {
+    equals: [DayOfWeek]
+    notEquals: [DayOfWeek]
 }
 
 input IntWhere {
