@@ -1,7 +1,8 @@
 package fi.digitraffic.graphql.rail.links;
 
+import static fi.digitraffic.graphql.rail.queries.PassengerInformationMessagesQuery.getPassengerInformationBaseQuery;
+
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.dataloader.BatchLoaderWithContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,19 +75,14 @@ public class TrainToPassengerInformationMessageLink extends
 
     @Override
     public BatchLoaderWithContext<TrainId, List<PassengerInformationMessageTO>> createLoader() {
-        final Expression<?>[] allFields = Stream.of(
-                QPassengerInformationMessage.passengerInformationMessage).toArray(Expression<?>[]::new);
-        final JPAQuery<Tuple> query = super.queryFactory.selectDistinct(allFields)
-                .from(getEntityTable())
-                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
-                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin();
-        return doCreateLoader(query);
+        final JPAQuery<Tuple> queryAfterFrom = getPassengerInformationBaseQuery(super.queryFactory, getEntityTable());
+        return doCreateLoader(queryAfterFrom);
     }
 
     @Override
     public BooleanExpression createWhere(final List<TrainId> keys) {
         return TrainIdOptimizer.optimize(QPassengerInformationMessage.passengerInformationMessage.train.id, keys);
     }
-    
+
 }
 

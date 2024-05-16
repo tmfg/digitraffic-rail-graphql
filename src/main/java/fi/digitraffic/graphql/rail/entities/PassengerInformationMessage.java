@@ -57,6 +57,7 @@ public class PassengerInformationMessage {
               fetch = FetchType.LAZY,
               optional = true)
     public PassengerInformationVideo video;
+    public ZonedDateTime deleted;
 
     @Override
     public String toString() {
