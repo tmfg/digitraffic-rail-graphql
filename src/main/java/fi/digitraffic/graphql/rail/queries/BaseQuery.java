@@ -60,23 +60,16 @@ public abstract class BaseQuery<T> {
     public abstract T convertEntityToTO(Tuple tuple);
 
     public DataFetcher<List<T>> createFetcher() {
-        final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
-                        getFields())
-                .from(getEntityTable());
-        return doCreateFetcher(queryAfterFrom);
-    }
-
-    public DataFetcher<List<T>> createFetcher(final JPAQuery<Tuple> queryAfterFrom) {
-        return doCreateFetcher(queryAfterFrom);
-    }
-
-    public DataFetcher<List<T>> doCreateFetcher(final JPAQuery<Tuple> queryAfterFrom) {
         return dataFetchingEnvironment -> {
             final Class entityClass = getEntityClass();
             final PathBuilder<T> pathBuilder = new PathBuilder<>(entityClass,
                     entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
             final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
+
+            final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(
+                            getFields())
+                    .from(getEntityTable());
 
             final JPAQuery<Tuple> queryAfterWhere =
                     createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));

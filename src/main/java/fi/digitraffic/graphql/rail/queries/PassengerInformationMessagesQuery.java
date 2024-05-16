@@ -2,6 +2,7 @@ package fi.digitraffic.graphql.rail.queries;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -22,8 +24,10 @@ import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
+import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import jakarta.persistence.QueryTimeoutException;
 
 @Component
 public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInformationMessageTO> {
@@ -91,7 +95,30 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
 
     @Override
     public DataFetcher<List<PassengerInformationMessageTO>> createFetcher() {
-        final JPAQuery<Tuple> queryAfterFrom = getPassengerInformationBaseQuery(super.queryFactory, getEntityTable());
-        return super.createFetcher(queryAfterFrom);
+
+        return dataFetchingEnvironment -> {
+            final Class entityClass = getEntityClass();
+            final PathBuilder<PassengerInformationMessageTO> pathBuilder = new PathBuilder<>(entityClass,
+                    entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+
+            final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
+
+            final JPAQuery<Tuple> queryAfterFrom = getPassengerInformationBaseQuery(super.queryFactory, getEntityTable());
+
+            final JPAQuery<Tuple> queryAfterWhere =
+                    createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+            final JPAQuery<Tuple> queryAfterOrderBy =
+                    createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+            final JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
+            final JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
+
+            try {
+                final List<Tuple> rows = queryAfterLimit.fetch();
+                return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+            } catch (final QueryTimeoutException e) {
+                throw new AbortExecutionException(e);
+            }
+        };
+
     }
 }

@@ -8,7 +8,12 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -24,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+
 import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
 import fi.digitraffic.graphql.rail.queries.BaseQuery;
@@ -72,7 +78,7 @@ public class GraphQLProvider {
     }
 
     @Bean
-    public ExecutionGraphQlService executionGraphQlService(final GraphQlSource graphQlSource){
+    public ExecutionGraphQlService executionGraphQlService(final GraphQlSource graphQlSource) {
         return new DefaultExecutionGraphQlService(graphQlSource);
     }
 
@@ -94,14 +100,14 @@ public class GraphQLProvider {
         final GraphQLSchema schema = schemaGenerator.makeExecutableSchema(typeRegistry, runtimeWiring);
 
         return GraphQlSource
-            .builder(schema)
-            .exceptionResolvers(resolvers)
-            .instrumentation(List.of(
-                new ExecutionTimeInstrumentation()
-                // Fails if a query contains null-variable. Seems like a bug in graphql-java
-                // new NoCircularQueriesInstrumentation(this.digitrafficConfig)
-            ))
-            .build();
+                .builder(schema)
+                .exceptionResolvers(resolvers)
+                .instrumentation(List.of(
+                        new ExecutionTimeInstrumentation()
+                        // Fails if a query contains null-variable. Seems like a bug in graphql-java
+                        // new NoCircularQueriesInstrumentation(this.digitrafficConfig)
+                ))
+                .build();
     }
 
     private void addGenericArgumentsToCollections(final TypeDefinitionRegistry typeRegistry) {
@@ -119,10 +125,14 @@ public class GraphQLProvider {
                             newFieldDefinitions.add(fieldDefinition);
                         } else {
                             final List<InputValueDefinition> inputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
-                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(childType.getName() + "Where").build()).build());
-                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
-                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
-                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(ListType.newListType(TypeName.newTypeName(childType.getName() + "OrderBy").build()).build()).build());
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where")
+                                    .type(TypeName.newTypeName(childType.getName() + "Where").build()).build());
+                            inputValueDefinitions.add(
+                                    InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
+                            inputValueDefinitions.add(
+                                    InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
+                            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy")
+                                    .type(ListType.newListType(TypeName.newTypeName(childType.getName() + "OrderBy").build()).build()).build());
 
                             newFieldDefinitions.add(
                                     FieldDefinition.newFieldDefinition()
@@ -161,10 +171,14 @@ public class GraphQLProvider {
                         final TypeName namedType = (TypeName) listType.getType();
 
                         final List<InputValueDefinition> newInputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
-                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where").type(TypeName.newTypeName(namedType.getName() + "Where").build()).build());
-                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
-                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
-                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy").type(ListType.newListType(TypeName.newTypeName(namedType.getName() + "OrderBy").build()).build()).build());
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where")
+                                .type(TypeName.newTypeName(namedType.getName() + "Where").build()).build());
+                        newInputValueDefinitions.add(
+                                InputValueDefinition.newInputValueDefinition().name("skip").type(TypeName.newTypeName("Int").build()).build());
+                        newInputValueDefinitions.add(
+                                InputValueDefinition.newInputValueDefinition().name("take").type(TypeName.newTypeName("Int").build()).build());
+                        newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("orderBy")
+                                .type(ListType.newListType(TypeName.newTypeName(namedType.getName() + "OrderBy").build()).build()).build());
 
                         newFieldDefinitions.add(FieldDefinition.newFieldDefinition()
                                 .type(fieldDefinition.getType())
@@ -236,8 +250,10 @@ public class GraphQLProvider {
             }
 
             final TypeName typeName = TypeName.newTypeName(userType.getName() + "Where").build();
-            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("and").type(ListType.newListType().type(typeName).build()).build());
-            inputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("or").type(ListType.newListType().type(typeName).build()).build());
+            inputValueDefinitions.add(
+                    InputValueDefinition.newInputValueDefinition().name("and").type(ListType.newListType().type(typeName).build()).build());
+            inputValueDefinitions.add(
+                    InputValueDefinition.newInputValueDefinition().name("or").type(ListType.newListType().type(typeName).build()).build());
 
             final InputObjectTypeDefinition whereType = InputObjectTypeDefinition.newInputObjectDefinition()
                     .name(userType.getName() + "Where")
@@ -335,7 +351,8 @@ public class GraphQLProvider {
                     }
                 }
 
-                final List<FieldDefinition> filteredDefinitions = newDefinitions.stream().filter(d -> !toBeRemoved.contains(d)).collect(Collectors.toList());
+                final List<FieldDefinition> filteredDefinitions =
+                        newDefinitions.stream().filter(d -> !toBeRemoved.contains(d)).collect(Collectors.toList());
 
                 final ObjectTypeDefinition newObjectTypeDefiniton = objectTypeDefinition.withNewChildren(newNodeChildrenContainer()
                         .children(CHILD_IMPLEMENTZ, objectTypeDefinition.getImplements())
