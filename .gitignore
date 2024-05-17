@@ -4,6 +4,7 @@
 !/pom.xml
 !/LICENSE
 !/README.md
+!/dependabot.yml
 
 !src/
 !src/**/
