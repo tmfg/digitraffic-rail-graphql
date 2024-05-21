@@ -267,6 +267,7 @@ type PassengerInformationMessage {
     endValidity: DateTime!
     trainDepartureDate: Date
     trainNumber: Int
+    train: Train
     stations: [PassengerInformationStation]
     audio: PassengerInformationAudio
     video: PassengerInformationVideo

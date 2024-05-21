@@ -76,6 +76,7 @@ public class PassengerInformationMessageTOConverter {
                 message.endValidity,
                 message.trainDepartureDate,
                 message.trainNumber != null ? message.trainNumber.intValue() : null,
+                null,
                 stationsTO,
                 audioTO,
                 videoTO);
