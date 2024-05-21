@@ -35,13 +35,13 @@ public class FactoryService {
 
     @Transactional
     public void deleteAll() {
-        entityManager.createQuery("DELETE FROM Station ").executeUpdate();
-        entityManager.createQuery("DELETE FROM TimeTableRow ").executeUpdate();
+        entityManager.createQuery("DELETE FROM Station").executeUpdate();
+        entityManager.createQuery("DELETE FROM TimeTableRow").executeUpdate();
         entityManager.createQuery("DELETE FROM Train").executeUpdate();
-        entityManager.createQuery("DELETE FROM TrainTrackingMessage ").executeUpdate();
-        entityManager.createQuery("DELETE FROM TrainLocation ").executeUpdate();
-        entityManager.createQuery("DELETE FROM Cause ").executeUpdate();
-        entityManager.createQuery("DELETE FROM PassengerInformationMessage ").executeUpdate();
+        entityManager.createQuery("DELETE FROM TrainTrackingMessage").executeUpdate();
+        entityManager.createQuery("DELETE FROM TrainLocation").executeUpdate();
+        entityManager.createQuery("DELETE FROM Cause").executeUpdate();
+        entityManager.createQuery("DELETE FROM PassengerInformationMessage").executeUpdate();
     }
 
     public StationFactory getStationFactory() {
