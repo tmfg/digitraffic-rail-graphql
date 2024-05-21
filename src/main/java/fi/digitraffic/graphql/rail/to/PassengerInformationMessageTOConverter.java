@@ -61,8 +61,8 @@ public class PassengerInformationMessageTOConverter {
                                                                             .map(weekDay -> DayOfWeekTO.valueOf(weekDay)).collect(
                                                                                     Collectors.toList()))) : null;
 
-        return new PassengerInformationMessageTO(message.id,
-                message.version,
+        return new PassengerInformationMessageTO(message.id.id,
+                message.id.version,
                 message.creationDateTime,
                 message.startValidity,
                 message.endValidity,

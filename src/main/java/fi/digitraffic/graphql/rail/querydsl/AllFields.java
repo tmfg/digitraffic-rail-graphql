@@ -228,8 +228,8 @@ public class AllFields {
     };
 
     public static final Expression[] PASSENGER_INFORMATION_MESSAGE = new Expression[] {
-            QPassengerInformationMessage.passengerInformationMessage.id,
-            QPassengerInformationMessage.passengerInformationMessage.version,
+            QPassengerInformationMessage.passengerInformationMessage.id.id,
+            QPassengerInformationMessage.passengerInformationMessage.id.version,
             QPassengerInformationMessage.passengerInformationMessage.creationDateTime,
             QPassengerInformationMessage.passengerInformationMessage.startValidity,
             QPassengerInformationMessage.passengerInformationMessage.endValidity,

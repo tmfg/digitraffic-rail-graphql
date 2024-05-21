@@ -40,18 +40,18 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
                 QPassengerInformationMessage.passengerInformationMessage).toArray(Expression<?>[]::new);
 
         final JPAQuery<Tuple> maxVersions = jpaQueryFactory.select(
-                        QPassengerInformationMessage.passengerInformationMessage.id,
-                        QPassengerInformationMessage.passengerInformationMessage.version.max())
+                        QPassengerInformationMessage.passengerInformationMessage.id.id,
+                        QPassengerInformationMessage.passengerInformationMessage.id.version.max())
                 .from(QPassengerInformationMessage.passengerInformationMessage)
-                .groupBy(QPassengerInformationMessage.passengerInformationMessage.id);
+                .groupBy(QPassengerInformationMessage.passengerInformationMessage.id.id);
 
         return jpaQueryFactory.selectDistinct(allFields)
                 .from(entityTable)
                 .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
                 .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin()
                 .leftJoin(QPassengerInformationMessage.passengerInformationMessage.train).fetchJoin()
-                .where(Expressions.list(QPassengerInformationMessage.passengerInformationMessage.id,
-                                QPassengerInformationMessage.passengerInformationMessage.version).in(maxVersions)
+                .where(Expressions.list(QPassengerInformationMessage.passengerInformationMessage.id.id,
+                                QPassengerInformationMessage.passengerInformationMessage.id.version).in(maxVersions)
                         .and(QPassengerInformationMessage.passengerInformationMessage.deleted.isNull()
                                 .and(QPassengerInformationMessage.passengerInformationMessage.startValidity.before(ZonedDateTime.now())
                                         .and(QPassengerInformationMessage.passengerInformationMessage.endValidity.after(ZonedDateTime.now())))));

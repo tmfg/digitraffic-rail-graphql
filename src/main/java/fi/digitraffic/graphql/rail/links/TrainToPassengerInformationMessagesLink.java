@@ -25,7 +25,7 @@ import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
 
 @Component
-public class TrainToPassengerInformationMessageLink extends
+public class TrainToPassengerInformationMessagesLink extends
         OneToManyLink<TrainId, TrainTO, PassengerInformationMessage, PassengerInformationMessageTO> {
     @Autowired
     private PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;

@@ -8,9 +8,9 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
@@ -22,9 +22,8 @@ import jakarta.persistence.Table;
 @Table(name = "rami_message")
 public class PassengerInformationMessage {
 
-    @Id
-    public String id;
-    public int version;
+    @EmbeddedId
+    public PassengerInformationMessageId id;
     @Column(name = "created_source")
     public ZonedDateTime creationDateTime;
     public ZonedDateTime startValidity;
@@ -59,11 +58,31 @@ public class PassengerInformationMessage {
     public PassengerInformationVideo video;
     public ZonedDateTime deleted;
 
+    public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
+                                       final ZonedDateTime startValidity,
+                                       final ZonedDateTime endValidity, final LocalDate trainDepartureDate, final Long trainNumber,
+                                       final List<PassengerInformationStation> stations, final PassengerInformationAudio audio,
+                                       final PassengerInformationVideo video) {
+        this.id = id;
+        this.creationDateTime = creationDateTime;
+        this.startValidity = startValidity;
+        this.endValidity = endValidity;
+        this.trainDepartureDate = trainDepartureDate;
+        this.trainNumber = trainNumber;
+        this.stations = stations;
+        this.audio = audio;
+        this.video = video;
+    }
+
+    public PassengerInformationMessage() {
+
+    }
+
     @Override
     public String toString() {
         return "PassengerInformationMessage{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
+                "id='" + id.id + '\'' +
+                ", version=" + id.version +
                 ", creationDateTime=" + creationDateTime +
                 ", startValidity=" + startValidity +
                 ", endValidity=" + endValidity +
@@ -74,4 +93,5 @@ public class PassengerInformationMessage {
                 ", video=" + video +
                 '}';
     }
+
 }

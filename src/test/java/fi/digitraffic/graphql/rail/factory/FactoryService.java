@@ -30,6 +30,8 @@ public class FactoryService {
     @Autowired
     private CauseFactory causeFactory;
 
+    @Autowired
+    private PassengerInformationMessageFactory passengerInformationMessageFactory;
 
     @Transactional
     public void deleteAll() {
@@ -63,5 +65,9 @@ public class FactoryService {
 
     public CauseFactory getCauseFactory() {
         return causeFactory;
+    }
+
+    public PassengerInformationMessageFactory getPassengerInformationMessageFactory() {
+        return passengerInformationMessageFactory;
     }
 }
