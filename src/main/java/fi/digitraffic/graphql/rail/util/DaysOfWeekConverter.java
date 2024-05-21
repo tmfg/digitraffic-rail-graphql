@@ -27,7 +27,7 @@ public class DaysOfWeekConverter implements AttributeConverter<List<String>, Int
         final List<String> days = new ArrayList<>();
         for (int i = 0; i < DAYS.length; i++) {
             if ((daysBits & (1 << i)) != 0) {
-                days.add(DAYS[i]);
+                days.add(DAYS[DAYS.length - i - 1]);
             }
         }
         return days;

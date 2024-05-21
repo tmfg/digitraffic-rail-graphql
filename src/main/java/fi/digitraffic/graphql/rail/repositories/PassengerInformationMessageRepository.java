@@ -5,8 +5,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
+import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
 
 @Repository
 @Transactional
-public interface PassengerInformationMessageRepository extends JpaRepository<PassengerInformationMessage, String> {
+public interface PassengerInformationMessageRepository extends JpaRepository<PassengerInformationMessage, PassengerInformationMessageId> {
 }
