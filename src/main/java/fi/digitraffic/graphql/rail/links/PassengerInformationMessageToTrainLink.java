@@ -1,6 +1,8 @@
 package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -69,7 +71,10 @@ public class PassengerInformationMessageToTrainLink extends OneToOneLink<TrainId
 
     @Override
     public BooleanExpression createWhere(final List<TrainId> keys) {
-        return TrainIdOptimizer.optimize(QTrain.train.id, keys);
+        final List<TrainId> nonNullKeys = keys.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return TrainIdOptimizer.optimize(QTrain.train.id, nonNullKeys);
     }
 
 }
