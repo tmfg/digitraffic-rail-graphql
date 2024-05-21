@@ -38,7 +38,8 @@ public class PassengerInformationMessageToTrainLink extends OneToOneLink<TrainId
 
     @Override
     public TrainId createKeyFromParent(final PassengerInformationMessageTO passengerInformationMessageTO) {
-        return new TrainId(passengerInformationMessageTO.getTrainNumber(), passengerInformationMessageTO.getTrainDepartureDate());
+        return (passengerInformationMessageTO.getTrainNumber() != null && passengerInformationMessageTO.getTrainDepartureDate() != null) ?
+               new TrainId(passengerInformationMessageTO.getTrainNumber(), passengerInformationMessageTO.getTrainDepartureDate()) : null;
     }
 
     @Override
