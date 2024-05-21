@@ -41,6 +41,7 @@ public class FactoryService {
         entityManager.createQuery("DELETE FROM TrainTrackingMessage ").executeUpdate();
         entityManager.createQuery("DELETE FROM TrainLocation ").executeUpdate();
         entityManager.createQuery("DELETE FROM Cause ").executeUpdate();
+        entityManager.createQuery("DELETE FROM PassengerInformationMessage ").executeUpdate();
     }
 
     public StationFactory getStationFactory() {
