@@ -1,6 +1,7 @@
 package fi.digitraffic.graphql.rail.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jakarta.persistence.AttributeConverter;
@@ -30,6 +31,7 @@ public class DaysOfWeekConverter implements AttributeConverter<List<String>, Int
                 days.add(DAYS[DAYS.length - i - 1]);
             }
         }
+        Collections.reverse(days);
         return days;
     }
 }
