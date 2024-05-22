@@ -172,6 +172,7 @@ type Station {
     uicCode : Int!
     type : StationType!
     timeTableRows: [TimeTableRow]
+    passengerInformationMessages: [PassengerInformationMessage]
 }
 
 type CategoryCode {
