@@ -16,7 +16,7 @@ public class DaysOfWeekConverter implements AttributeConverter<List<String>, Int
     public Integer convertToDatabaseColumn(final List<String> dayList) {
         int days = 0;
         for (int i = 0; i < DAYS.length; i++) {
-            if (dayList.contains(DAYS[i])) {
+            if (dayList.contains(DAYS[DAYS.length - i - 1])) {
                 days |= 1 << i;
             }
         }
