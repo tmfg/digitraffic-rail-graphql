@@ -80,6 +80,8 @@ public abstract class BaseQuery<T> {
                 return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
             } catch (QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
+            } catch (final IllegalArgumentException e) {
+                throw new AbortExecutionException(e.getMessage());
             }
         };
     }

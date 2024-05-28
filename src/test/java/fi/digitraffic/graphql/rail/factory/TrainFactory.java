@@ -38,41 +38,51 @@ public class TrainFactory {
     public Pair<Train, List<TimeTableRow>> createBaseTrain(final int trainNumber, final LocalDate departureDate) {
         final TrainId id = new TrainId(trainNumber, departureDate);
         final ZonedDateTime startTime = ZonedDateTime.now()
-            .withYear(id.departureDate.getYear())
-            .withMonth(id.departureDate.getMonthValue())
-            .withDayOfMonth(id.departureDate.getDayOfMonth());
+                .withYear(id.departureDate.getYear())
+                .withMonth(id.departureDate.getMonthValue())
+                .withDayOfMonth(id.departureDate.getDayOfMonth());
 
-        return createBaseTrain(id, startTime);
+        return createBaseTrain(id, startTime, 1L);
+    }
+
+    @Transactional
+    public Pair<Train, List<TimeTableRow>> createBaseTrain(final int trainNumber, final LocalDate departureDate, final Long version) {
+        final TrainId id = new TrainId(trainNumber, departureDate);
+        final ZonedDateTime startTime = ZonedDateTime.now()
+                .withYear(id.departureDate.getYear())
+                .withMonth(id.departureDate.getMonthValue())
+                .withDayOfMonth(id.departureDate.getDayOfMonth());
+
+        return createBaseTrain(id, startTime, version);
     }
 
     @Transactional
     public Pair<Train, List<TimeTableRow>> createBaseTrain(final TrainId id) {
         final ZonedDateTime startTime = ZonedDateTime.now()
-            .withYear(id.departureDate.getYear())
-            .withMonth(id.departureDate.getMonthValue())
-            .withDayOfMonth(id.departureDate.getDayOfMonth());
+                .withYear(id.departureDate.getYear())
+                .withMonth(id.departureDate.getMonthValue())
+                .withDayOfMonth(id.departureDate.getDayOfMonth());
 
-        return createBaseTrain(id, startTime);
+        return createBaseTrain(id, startTime, 1L);
     }
 
     @Transactional
-    public Pair<Train, List<TimeTableRow>> createBaseTrain(final TrainId id, final ZonedDateTime startTime) {
-        TrainCategory trainCategory = new TrainCategory();
+    public Pair<Train, List<TimeTableRow>> createBaseTrain(final TrainId id, final ZonedDateTime startTime, final Long version) {
+        final TrainCategory trainCategory = new TrainCategory();
         trainCategory.name = "Test TrainCategory";
         trainCategory.id = 1L;
         entityManager.merge(trainCategory);
 
-        TrainType trainType = new TrainType();
+        final TrainType trainType = new TrainType();
         trainType.name = "Test TrainType";
         trainType.trainCategoryId = 1L;
         trainType.id = 1L;
         entityManager.merge(trainType);
-        
+
         final String operatorShortCode = "test";
         final String commuterLineID = "Z";
         final boolean runningCurrently = true;
         final boolean cancelled = false;
-        final Long version = 1L;
 
         Train train = new Train();
         train.id = id;
@@ -93,25 +103,25 @@ public class TrainFactory {
         final List<TimeTableRow> timeTableRowList = new ArrayList<>();
         final Station hkiStation = stationFactory.create("HKI", 1, "FI");
         timeTableRowList.add(ttrf.create(train, startTime.plusHours(1), startTime.plusHours(1).plusMinutes(1), hkiStation,
-            TimeTableRow.TimeTableRowType.DEPARTURE));
+                TimeTableRow.TimeTableRowType.DEPARTURE));
         final Station pslStation = stationFactory.create("PSL", 2, "FI");
         timeTableRowList.add(ttrf.create(train, startTime.plusHours(2), startTime.plusHours(2).plusMinutes(3), pslStation,
-            TimeTableRow.TimeTableRowType.ARRIVAL));
+                TimeTableRow.TimeTableRowType.ARRIVAL));
         timeTableRowList.add(ttrf.create(train, startTime.plusHours(3), startTime.plusHours(3).plusMinutes(4), pslStation,
-            TimeTableRow.TimeTableRowType.DEPARTURE));
+                TimeTableRow.TimeTableRowType.DEPARTURE));
         final Station tpeStation = stationFactory.create("TPE", 3, "FI");
         timeTableRowList.add(ttrf.create(train, startTime.plusHours(4), startTime.plusHours(4).plusMinutes(5), tpeStation,
-            TimeTableRow.TimeTableRowType.ARRIVAL));
+                TimeTableRow.TimeTableRowType.ARRIVAL));
         timeTableRowList.add(ttrf.create(train, startTime.plusHours(5), startTime.plusHours(5).plusMinutes(1), tpeStation,
-            TimeTableRow.TimeTableRowType.DEPARTURE));
+                TimeTableRow.TimeTableRowType.DEPARTURE));
         final Station jyStation = stationFactory.create("JY", 4, "FI");
         timeTableRowList.add(ttrf.create(train, startTime.plusHours(5), startTime.plusHours(5).plusMinutes(1), jyStation,
-            TimeTableRow.TimeTableRowType.ARRIVAL));
+                TimeTableRow.TimeTableRowType.ARRIVAL));
         timeTableRowList.add(
-            ttrf.create(train, startTime.plusHours(7), null, jyStation, TimeTableRow.TimeTableRowType.DEPARTURE));
+                ttrf.create(train, startTime.plusHours(7), null, jyStation, TimeTableRow.TimeTableRowType.DEPARTURE));
         final Station olStation = stationFactory.create("OL", 5, "FI");
         timeTableRowList.add(
-            ttrf.create(train, startTime.plusHours(8), null, olStation, TimeTableRow.TimeTableRowType.ARRIVAL));
+                ttrf.create(train, startTime.plusHours(8), null, olStation, TimeTableRow.TimeTableRowType.ARRIVAL));
 
         return Pair.of(train, timeTableRowList);
     }

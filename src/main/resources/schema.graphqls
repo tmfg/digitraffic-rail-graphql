@@ -26,6 +26,7 @@ type Train {
     timetableAcceptanceDate : DateTime!
     timetableType : TimetableType!
     trainNumber : Int!
+    # Represents the version number of a train. Will be parsed as a number in where clauses.
     version : String!
     trainTypeId : Int!
     trainCategoryId : Int!
@@ -299,6 +300,8 @@ input BooleanWhere {
 input StringWhere {
     equals : String
     unequals : String
+    greaterThan: String
+    lessThan: String
 }
 
 input IntWhere {

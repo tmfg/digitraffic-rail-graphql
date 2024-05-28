@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import graphql.execution.AbortExecutionException;
-import jakarta.annotation.PostConstruct;
-
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -22,10 +19,13 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.SetPath;
+
 import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessageTypeEnum;
+import graphql.execution.AbortExecutionException;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class WhereExpressionBuilder {
@@ -79,7 +79,7 @@ public class WhereExpressionBuilder {
         } else {
             final Map<String, Object> map = (Map<String, Object>) value;
 
-            if(map.isEmpty()) {
+            if (map.isEmpty()) {
                 throw new AbortExecutionException("Empty expression " + key);
             }
 
@@ -93,7 +93,7 @@ public class WhereExpressionBuilder {
         final SetPath setPath = Expressions.setPath(path.getType(), EntityPathBase.class, path.getMetadata());
         final PathBuilder basePath = new PathBuilder(path.getType(), PathMetadataFactory.forCollectionAny(setPath));
 
-        return create(null, basePath,(Map<String, Object>) value);
+        return create(null, basePath, (Map<String, Object>) value);
     }
 
     private Object convertToEnumOrDefault(final Object value) {
@@ -127,6 +127,8 @@ public class WhereExpressionBuilder {
             start = Expressions.asDateTime(path).lt(odt.toZonedDateTime());
         } else if (value instanceof final LocalDate ld) {
             start = Expressions.asDate(path).lt(ld);
+        } else if (value instanceof final String string) {
+            start = Expressions.asString(path).lt(string);
         } else {
             throw new IllegalArgumentException("Invalid lt type" + value.getClass().getSimpleName());
         }
@@ -143,6 +145,8 @@ public class WhereExpressionBuilder {
             start = Expressions.asDateTime(path).gt(odt.toZonedDateTime());
         } else if (value instanceof final LocalDate ld) {
             start = Expressions.asDate(path).gt(ld);
+        } else if (value instanceof final String string) {
+            start = Expressions.asString(path).gt(string);
         } else {
             throw new IllegalArgumentException("Invalid gt type " + value.getClass().getSimpleName());
         }
