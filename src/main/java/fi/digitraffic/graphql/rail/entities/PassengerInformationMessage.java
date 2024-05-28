@@ -10,6 +10,8 @@ import org.hibernate.annotations.NotFoundAction;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
@@ -21,6 +23,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "rami_message")
 public class PassengerInformationMessage {
+
+    public enum MessageType {
+        SCHEDULED_MESSAGE,
+        MONITORED_JOURNEY_SCHEDULED_MESSAGE
+    }
 
     @EmbeddedId
     public PassengerInformationMessageId id;
@@ -56,13 +63,16 @@ public class PassengerInformationMessage {
               fetch = FetchType.LAZY,
               optional = true)
     public PassengerInformationVideo video;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type")
+    public MessageType messageType;
     public ZonedDateTime deleted;
 
     public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
                                        final ZonedDateTime startValidity,
                                        final ZonedDateTime endValidity, final LocalDate trainDepartureDate, final Long trainNumber,
                                        final List<PassengerInformationStation> stations, final PassengerInformationAudio audio,
-                                       final PassengerInformationVideo video) {
+                                       final PassengerInformationVideo video, final MessageType messageType) {
         this.id = id;
         this.creationDateTime = creationDateTime;
         this.startValidity = startValidity;
@@ -72,6 +82,18 @@ public class PassengerInformationMessage {
         this.stations = stations;
         this.audio = audio;
         this.video = video;
+        this.messageType = messageType;
+    }
+
+    public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
+                                       final ZonedDateTime startValidity,
+                                       final ZonedDateTime endValidity,
+                                       final MessageType messageType) {
+        this.id = id;
+        this.creationDateTime = creationDateTime;
+        this.startValidity = startValidity;
+        this.endValidity = endValidity;
+        this.messageType = messageType;
     }
 
     public PassengerInformationMessage() {

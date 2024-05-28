@@ -16,7 +16,10 @@ type Query {
     stations: [Station]
 
     passengerInformationMessages: [PassengerInformationMessage]
-    passengerInformationMessagesByStation(stationShortCode: String!): [PassengerInformationMessage]
+    """
+    If onlyGeneral is true, returns only general notices (notices not related to a train number). False by default.
+    """
+    passengerInformationMessagesByStation(stationShortCode: String!, onlyGeneral: Boolean): [PassengerInformationMessage]
     passengerInformationMessagesByTrain(trainNumber: Int!, departureDate: Date!): [PassengerInformationMessage]
 }
 

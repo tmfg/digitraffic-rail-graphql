@@ -31,9 +31,30 @@ public class PassengerInformationMessageFactory {
 
         final PassengerInformationMessage passengerInformationMessage =
                 new PassengerInformationMessage(messageId, ZonedDateTime.now(), startValidity, endValidity,
-                        trainDepartureDate, trainNumber, null, null, null);
+                        trainDepartureDate, trainNumber, null, null, null,
+                        PassengerInformationMessage.MessageType.MONITORED_JOURNEY_SCHEDULED_MESSAGE);
 
         return passengerInformationMessageRepository.save(passengerInformationMessage);
+    }
+
+    @Transactional
+    public PassengerInformationMessage create(final String id, final int version, final ZonedDateTime startValidity, final ZonedDateTime endValidity,
+                                              final LocalDate trainDepartureDate,
+                                              final long trainNumber, final List<String> stations) {
+        final PassengerInformationMessageId messageId = new PassengerInformationMessageId(id, version);
+
+        final PassengerInformationMessage passengerInformationMessage =
+                new PassengerInformationMessage(messageId, ZonedDateTime.now(), startValidity, endValidity,
+                        trainDepartureDate, trainNumber, null, null, null,
+                        PassengerInformationMessage.MessageType.MONITORED_JOURNEY_SCHEDULED_MESSAGE);
+
+        final PassengerInformationMessage message = passengerInformationMessageRepository.save(passengerInformationMessage);
+
+        for (final String station : stations) {
+            passengerInformationStationRepository.save(new PassengerInformationStation(message, station));
+        }
+        
+        return message;
     }
 
     @Transactional
@@ -43,7 +64,7 @@ public class PassengerInformationMessageFactory {
 
         final PassengerInformationMessage passengerInformationMessage =
                 new PassengerInformationMessage(messageId, ZonedDateTime.now(), startValidity, endValidity,
-                        null, null, null, null, null);
+                        null, null, null, null, null, PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE);
 
         return passengerInformationMessageRepository.save(passengerInformationMessage);
     }
@@ -55,7 +76,22 @@ public class PassengerInformationMessageFactory {
 
         final PassengerInformationMessage passengerInformationMessage =
                 new PassengerInformationMessage(messageId, ZonedDateTime.now(), startValidity, endValidity,
-                        null, null, null, null, null);
+                        null, null, null, null, null, PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE);
+        final PassengerInformationMessage message = passengerInformationMessageRepository.save(passengerInformationMessage);
+        for (final String station : stations) {
+            passengerInformationStationRepository.save(new PassengerInformationStation(message, station));
+        }
+        return message;
+    }
+
+    @Transactional
+    public PassengerInformationMessage create(final String id, final int version, final ZonedDateTime startValidity,
+                                              final ZonedDateTime endValidity, final List<String> stations, final
+                                              PassengerInformationMessage.MessageType messageType) {
+        final PassengerInformationMessageId messageId = new PassengerInformationMessageId(id, version);
+
+        final PassengerInformationMessage passengerInformationMessage =
+                new PassengerInformationMessage(messageId, ZonedDateTime.now(), startValidity, endValidity, messageType);
         final PassengerInformationMessage message = passengerInformationMessageRepository.save(passengerInformationMessage);
         for (final String station : stations) {
             passengerInformationStationRepository.save(new PassengerInformationStation(message, station));
