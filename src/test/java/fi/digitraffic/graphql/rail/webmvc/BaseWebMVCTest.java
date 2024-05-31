@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,25 +28,25 @@ public abstract class BaseWebMVCTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach()
+    @AfterEach()
     protected void setup() {
         factoryService.deleteAll();
     }
 
     public ResultActions queryAndExpectError(final String query) throws Exception {
         final String safeQuery = query.strip()
-            .replace("\n", "")
-            .replace("\"", "\\\"");
+                .replace("\n", "")
+                .replace("\"", "\\\"");
 
         final MvcResult first = this.mockMvc.perform(
-                post("/graphql")
-                    .content("{\"query\":\"" + safeQuery + "\"}")
-                    .header("Content-Type", "application/json")
-                    .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
-            .andReturn();
+                        post("/graphql")
+                                .content("{\"query\":\"" + safeQuery + "\"}")
+                                .header("Content-Type", "application/json")
+                                .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
+                .andReturn();
         return this.mockMvc.perform(asyncDispatch(first))
-            .andExpect(content().contentType("application/json"))
-            .andExpect(status().isOk());
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isOk());
     }
 
     public ResultActions query(final String query) throws Exception {

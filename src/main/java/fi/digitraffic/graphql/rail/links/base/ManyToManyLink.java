@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.dataloader.BatchLoaderWithContext;
 
@@ -13,8 +12,14 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import graphql.schema.DataFetchingEnvironment;
 
-public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, ChildTOType>
+public abstract class ManyToManyLink<KeyType, ParentTOType, ChildEntityType, ChildTOType>
         extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, List<ChildTOType>> {
+
+    public abstract List<KeyType> createKeysFromChild(final ChildTOType child);
+
+    public KeyType createKeyFromChild(final ChildTOType child) {
+        return null;
+    }
 
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {
         final JPAQuery<Tuple> queryAfterFrom = super.queryFactory.select(getFields()).from(getEntityTable());
@@ -26,22 +31,16 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
     }
 
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> doCreateLoader(final JPAQuery<Tuple> queryAfterFrom) {
-
         return createDataLoader((children, dataFetchingEnvironment) -> {
-                    final Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
-                    for (final ChildTOType child1 : children) {
-                        final KeyType parentId = ((Function<ChildTOType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
-                        List<ChildTOType> childTOs = childrenGroupedBy.get(parentId);
-                        if (childTOs == null) {
-                            childTOs = new ArrayList<>();
-                            childrenGroupedBy.put(parentId, childTOs);
+                    final Map<KeyType, List<ChildTOType>> childrenGroupedByParent = new HashMap<>();
+                    for (final ChildTOType child : children) {
+                        final List<KeyType> parentIds = createKeysFromChild(child);
+                        for (final KeyType parentId : parentIds) {
+                            childrenGroupedByParent.computeIfAbsent(parentId, k -> new ArrayList<>()).add(child);
                         }
-                        childTOs.add(child1);
                     }
-
-                    filterWithSkipAndTake(childrenGroupedBy, dataFetchingEnvironment);
-
-                    return childrenGroupedBy;
+                    filterWithSkipAndTake(childrenGroupedByParent, dataFetchingEnvironment);
+                    return childrenGroupedByParent;
                 }
                 , queryAfterFrom);
     }
@@ -67,5 +66,4 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
             }
         }
     }
-
 }

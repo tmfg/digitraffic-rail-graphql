@@ -33,32 +33,49 @@ public class Train {
     public Long trainCategoryId;
     public Long trainTypeId;
 
-    @Column(updatable = false, insertable = false)
+    @Column(updatable = false,
+            insertable = false)
     public Long trainNumber;
 
-    @Column(updatable = false, insertable = false)
+    @Column(updatable = false,
+            insertable = false)
     public LocalDate departureDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "operatorShortCode", referencedColumnName = "operator_short_code", updatable = false, insertable = false)
+    @JoinColumn(name = "operatorShortCode",
+                referencedColumnName = "operator_short_code",
+                updatable = false,
+                insertable = false)
     private Operator operator;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trainTypeId", referencedColumnName = "id", updatable = false, insertable = false)
+    @JoinColumn(name = "trainTypeId",
+                referencedColumnName = "id",
+                updatable = false,
+                insertable = false)
     private TrainType trainType;
 
-    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
     private Set<TimeTableRow> timeTableRows;
 
-    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
     private Set<TrainLocation> trainLocations;
 
-    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
     private Set<Composition> compositions;
 
-    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
     private Set<TrainTrackingMessage> trainTrackingMessages;
 
-    @OneToMany(mappedBy = "train", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
     private Set<RoutesetMessage> routesetMessages;
+
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
+    private Set<PassengerInformationMessage> passengerInformationMessages;
 }

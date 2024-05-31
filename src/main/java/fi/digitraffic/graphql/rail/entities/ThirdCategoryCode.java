@@ -1,6 +1,5 @@
 package fi.digitraffic.graphql.rail.entities;
 
-
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
