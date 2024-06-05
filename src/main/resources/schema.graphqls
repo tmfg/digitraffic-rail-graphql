@@ -297,7 +297,7 @@ type PassengerInformationVideoDeliveryRules {
     startDateTime: DateTime
     endDateTime: DateTime
     startTime: String
-    endtime: String
+    endTime: String
     weekDays: [DayOfWeek]
 }
 
@@ -307,7 +307,7 @@ type PassengerInformationAudioDeliveryRules {
     startDateTime: DateTime
     endDateTime: DateTime
     startTime: String
-    endtime: String
+    endTime: String
     weekDays: [DayOfWeek]
     deliveryAt: DateTime
     repetitions: Int
