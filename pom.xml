@@ -197,7 +197,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <!-- if you update this, graphql-codegen-maven-plugin might not get executed! -->
+                <version>3.11.0</version>
                 <configuration>
                     <generatedSourcesDirectory>${project.basedir}/target/generated-sources</generatedSourcesDirectory>
                 </configuration>
@@ -205,28 +206,28 @@
             <plugin>
                 <groupId>io.github.kobylynskyi</groupId>
                 <artifactId>graphql-codegen-maven-plugin</artifactId>
-                <version>5.8.0</version>
+                <version>5.10.0</version>
                 <executions>
                     <execution>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <packageName>fi.digitraffic.graphql.rail</packageName>
+                            <outputDir>${project.basedir}/target/generated-sources</outputDir>
+                            <customTypesMapping>
+                                <DateTime>java.time.ZonedDateTime</DateTime>
+                                <Date>java.time.LocalDate</Date>
+                                <Point>org.locationtech.jts.geom.Point</Point>
+                            </customTypesMapping>
+                            <modelNameSuffix>TO</modelNameSuffix>
+                            <modelPackageName>fi.digitraffic.graphql.rail.model</modelPackageName>
+                            <generateApis>true</generateApis>
+                            <generatedAnnotation>jakarta.annotation.Generated</generatedAnnotation>
+                            <modelValidationAnnotation>@jakarta.validation.constraints.NotNull</modelValidationAnnotation>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <packageName>fi.digitraffic.graphql.rail</packageName>
-                    <outputDir>${project.basedir}/target/generated-sources</outputDir>
-                    <customTypesMapping>
-                        <DateTime>java.time.ZonedDateTime</DateTime>
-                        <Date>java.time.LocalDate</Date>
-                        <Point>org.locationtech.jts.geom.Point</Point>
-                    </customTypesMapping>
-                    <modelNameSuffix>TO</modelNameSuffix>
-                    <modelPackageName>fi.digitraffic.graphql.rail.model</modelPackageName>
-                    <generateApis>true</generateApis>
-                    <generatedAnnotation>jakarta.annotation.Generated</generatedAnnotation>
-                    <modelValidationAnnotation>@jakarta.validation.constraints.NotNull</modelValidationAnnotation>
-                </configuration>
             </plugin>
 
             <plugin>
