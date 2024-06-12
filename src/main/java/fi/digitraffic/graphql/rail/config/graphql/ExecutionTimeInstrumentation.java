@@ -88,7 +88,8 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
                 final ExecutionTimesByFieldState state = parameters.getInstrumentationState();
 
                 if (!result.getErrors().isEmpty()) {
-                    log.warn("Ending query {} {} took {}. Details: {}, Errors: {}", executionId, query, duration, state, result.getErrors());
+                    log.warn("Ending query {} {} took {}. Details: {}", executionId, query, duration, state);
+                    log.debug("errors: {}", result.getErrors());
                 } else {
                     log.info("Ending query {} {} took {}. Details: {}", executionId, query, duration, state);
                 }
