@@ -4,7 +4,6 @@
 !/pom.xml
 !/LICENSE
 !/README.md
-!/dependabot.yml
 
 !src/
 !src/**/
@@ -15,3 +14,4 @@
 !.github/**/
 !.github/workflows/**/*.yml
 !.github/CODEOWNERS
+!.github/dependabot.yml
