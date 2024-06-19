@@ -14,14 +14,15 @@ import graphql.execution.ExecutionId;
 import graphql.execution.ExecutionStepInfo;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
-import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
+import graphql.execution.instrumentation.SimplePerformantInstrumentation;
+import graphql.execution.instrumentation.parameters.InstrumentationCreateStateParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationFieldParameters;
 import graphql.schema.GraphQLNamedOutputType;
 
 class ExecutionTimesByFieldState implements InstrumentationState {
-    private Map<String, Long> executionTimesByField = new HashMap<>();
+    private final Map<String, Long> executionTimesByField = new HashMap<>();
 
     void recordTiming(final String key, final Long time) {
         executionTimesByField.put(key, time);
@@ -35,38 +36,37 @@ class ExecutionTimesByFieldState implements InstrumentationState {
     }
 }
 
-public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentation {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public InstrumentationState createState() {
+    public InstrumentationState createState(final InstrumentationCreateStateParameters parameters) {
         return new ExecutionTimesByFieldState();
     }
 
     @Override
-    public InstrumentationContext<ExecutionResult> beginField(final InstrumentationFieldParameters parameters) {
+    public InstrumentationContext<ExecutionResult> beginField(final InstrumentationFieldParameters parameters, final InstrumentationState state) {
         final long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
             @Override
             public void onCompleted(final ExecutionResult result, final Throwable t) {
-                final ExecutionTimesByFieldState state = parameters.getInstrumentationState();
                 final ExecutionStepInfo parent = parameters.getExecutionStepInfo().getParent();
-
                 final String fieldTypeAndName;
-                if (parent.getType() instanceof GraphQLNamedOutputType) {
-                    final GraphQLNamedOutputType parentType = (GraphQLNamedOutputType) parent.getType();
+                if (parent.getType() instanceof final GraphQLNamedOutputType parentType) {
                     fieldTypeAndName = parentType.getName() + "." + parameters.getField().getName();
                 } else {
                     fieldTypeAndName = "null." + parameters.getField().getName();
                 }
-
-                state.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
+                if (state instanceof final ExecutionTimesByFieldState executionTimesByFieldState) {
+                    executionTimesByFieldState.recordTiming(fieldTypeAndName, System.nanoTime() - startNanos);
+                }
             }
         };
     }
 
     @Override
-    public InstrumentationContext<ExecutionResult> beginExecution(final InstrumentationExecutionParameters parameters) {
+    public InstrumentationContext<ExecutionResult> beginExecution(final InstrumentationExecutionParameters parameters,
+                                                                  final InstrumentationState state) {
         final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
         final String query = parameters.getQuery();
         MDC.put("query_hashcode", String.valueOf(query.hashCode()));
@@ -84,8 +84,6 @@ public class ExecutionTimeInstrumentation extends SimpleInstrumentation {
                 if (t != null) {
                     log.error(String.format("Exception in query %s %s", executionId, query), t);
                 }
-
-                final ExecutionTimesByFieldState state = parameters.getInstrumentationState();
 
                 if (!result.getErrors().isEmpty()) {
                     log.warn("Ending query {} {} took {}. Details: {}", executionId, query, duration, state);

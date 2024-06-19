@@ -38,12 +38,18 @@ public abstract class BaseWebMVCTest {
                 .replace("\n", "")
                 .replace("\"", "\\\"");
 
-        final MvcResult first = this.mockMvc.perform(
+        final ResultActions firstResultActions = this.mockMvc.perform(
                         post("/graphql")
                                 .content("{\"query\":\"" + safeQuery + "\"}")
                                 .header("Content-Type", "application/json")
-                                .accept(MediaType.parseMediaType("application/json;charset=UTF-8")))
-                .andReturn();
+                                .accept(MediaType.parseMediaType("application/json;charset=UTF-8")));
+        final MvcResult first = firstResultActions.andReturn();
+        // Some are async request and some are not.
+        if (!first.getRequest().isAsyncStarted()) {
+            firstResultActions.andExpect(content().contentType("application/json"));
+            return firstResultActions;
+        }
+
         return this.mockMvc.perform(asyncDispatch(first))
                 .andExpect(content().contentType("application/json"))
                 .andExpect(status().isOk());
