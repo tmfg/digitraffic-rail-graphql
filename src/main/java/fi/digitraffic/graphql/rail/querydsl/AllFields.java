@@ -1,7 +1,6 @@
 package fi.digitraffic.graphql.rail.querydsl;
 
 import com.querydsl.core.types.Expression;
-
 import fi.digitraffic.graphql.rail.entities.QCategoryCode;
 import fi.digitraffic.graphql.rail.entities.QCause;
 import fi.digitraffic.graphql.rail.entities.QComposition;
@@ -9,7 +8,6 @@ import fi.digitraffic.graphql.rail.entities.QDetailedCategoryCode;
 import fi.digitraffic.graphql.rail.entities.QJourneySection;
 import fi.digitraffic.graphql.rail.entities.QLocomotive;
 import fi.digitraffic.graphql.rail.entities.QOperator;
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QRoutesection;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.QStation;
@@ -225,18 +223,5 @@ public class AllFields {
             QTrackRange.trackRange.endTrack,
             QTrackRange.trackRange.endKilometres,
             QTrackRange.trackRange.endMetres
-    };
-
-    public static final Expression[] PASSENGER_INFORMATION_MESSAGE = new Expression[] {
-            QPassengerInformationMessage.passengerInformationMessage.id.id,
-            QPassengerInformationMessage.passengerInformationMessage.id.version,
-            QPassengerInformationMessage.passengerInformationMessage.creationDateTime,
-            QPassengerInformationMessage.passengerInformationMessage.startValidity,
-            QPassengerInformationMessage.passengerInformationMessage.endValidity,
-            QPassengerInformationMessage.passengerInformationMessage.trainNumber,
-            QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
-            QPassengerInformationMessage.passengerInformationMessage.stations,
-            QPassengerInformationMessage.passengerInformationMessage.audio,
-            QPassengerInformationMessage.passengerInformationMessage.video
     };
 }

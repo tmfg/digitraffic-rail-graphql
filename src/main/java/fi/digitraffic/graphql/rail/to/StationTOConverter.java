@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
-
 import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
 import fi.digitraffic.graphql.rail.model.StationTO;
@@ -24,7 +23,6 @@ public class StationTOConverter extends BaseConverter<StationTO> {
                 tuple.get(QStation.station.shortCode),
                 tuple.get(QStation.station.uicCode),
                 parseStationType(tuple.get(QStation.station.type)),
-                null,
                 null
         );
     }

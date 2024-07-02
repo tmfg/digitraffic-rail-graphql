@@ -30,9 +30,6 @@ public class FactoryService {
     @Autowired
     private CauseFactory causeFactory;
 
-    @Autowired
-    private PassengerInformationMessageFactory passengerInformationMessageFactory;
-
     @Transactional
     public void deleteAll() {
         entityManager.createQuery("DELETE FROM Station").executeUpdate();
@@ -41,7 +38,6 @@ public class FactoryService {
         entityManager.createQuery("DELETE FROM TrainTrackingMessage").executeUpdate();
         entityManager.createQuery("DELETE FROM TrainLocation").executeUpdate();
         entityManager.createQuery("DELETE FROM Cause").executeUpdate();
-        entityManager.createQuery("DELETE FROM PassengerInformationMessage").executeUpdate();
     }
 
     public StationFactory getStationFactory() {
@@ -66,9 +62,5 @@ public class FactoryService {
 
     public CauseFactory getCauseFactory() {
         return causeFactory;
-    }
-
-    public PassengerInformationMessageFactory getPassengerInformationMessageFactory() {
-        return passengerInformationMessageFactory;
     }
 }

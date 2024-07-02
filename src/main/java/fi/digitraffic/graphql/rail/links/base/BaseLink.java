@@ -26,7 +26,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
 import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
 import graphql.execution.AbortExecutionException;
@@ -76,7 +75,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     @PersistenceContext
     private EntityManager entityManager;
 
-    protected JPAQueryFactory queryFactory;
+    private JPAQueryFactory queryFactory;
 
     @PostConstruct
     public void setup() {
@@ -94,9 +93,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         };
     }
 
-    protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(
-            final BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
-            final JPAQuery<Tuple> queryAfterFrom) {
+    protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(final BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction) {
         final BatchLoaderWithContext<KeyType, ResultType> batchLoaderWithCtx = (keys, loaderContext) -> {
             final DataFetchingEnvironment dataFetchingEnvironment = (DataFetchingEnvironment) loaderContext.getKeyContextsList().get(0);
 
@@ -107,19 +104,17 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 final List<ChildTOType> children = new ArrayList<>(keys.size());
 
                 final Class<ChildEntityType> entityClass = getEntityClass();
-                final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass,
-                        entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
+                final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass, entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
                 final List<Future<List<ChildTOType>>> futures = new ArrayList<>();
                 for (final List<KeyType> partition : partitions) {
+                    final JPAQuery<Tuple> queryAfterFrom = queryFactory.select(getFields()).from(getEntityTable());
                     final BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
-                    final JPAQuery<Tuple> queryAfterWhere =
-                            createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-                    final JPAQuery<Tuple> queryAfterOrderBy =
-                            createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+                    final JPAQuery<Tuple> queryAfterWhere = createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+                    final JPAQuery<Tuple> queryAfterOrderBy = createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
 
                     futures.add(sqlExecutor.submit(
-                            () -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
+                        () -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
                 }
 
                 for (final Future<List<ChildTOType>> future : futures) {
@@ -140,11 +135,11 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
             }, executor);
         };
 
+
         return batchLoaderWithCtx;
     }
 
-    private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,
-                                             final Map<String, Object> whereAsMap) {
+    private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere, final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
             final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
             return query.where(basicWhere.and(whereExpression));
