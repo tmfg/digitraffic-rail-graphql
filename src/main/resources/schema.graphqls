@@ -14,13 +14,6 @@ type Query {
     routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage]
 
     stations: [Station]
-
-    passengerInformationMessages: [PassengerInformationMessage]
-    """
-    If onlyGeneral is true, returns only general notices (notices not related to a train number). False by default.
-    """
-    passengerInformationMessagesByStation(stationShortCode: String!, onlyGeneral: Boolean): [PassengerInformationMessage]
-    passengerInformationMessagesByTrain(trainNumber: Int!, departureDate: Date!): [PassengerInformationMessage]
 }
 
 type Train {
@@ -44,7 +37,6 @@ type Train {
     compositions : [Composition]
     trainTrackingMessages : [TrainTrackingMessage]
     routesetMessages: [RoutesetMessage]
-    passengerInformationMessages: [PassengerInformationMessage]
 }
 
 type TrainType {
@@ -176,7 +168,6 @@ type Station {
     uicCode : Int!
     type : StationType!
     timeTableRows: [TimeTableRow]
-    passengerInformationMessages: [PassengerInformationMessage]
 }
 
 type CategoryCode {
@@ -262,63 +253,6 @@ type TrackRange {
     endTrack: String!
     endKilometres: Int!
     endMetres: Int!
-}
-
-type PassengerInformationMessage {
-    id: String!
-    version: Int!
-    creationDateTime: DateTime!
-    startValidity: DateTime!
-    endValidity: DateTime!
-    trainDepartureDate: Date
-    trainNumber: Int
-    train: Train
-    stations: [PassengerInformationStation]
-    audio: PassengerInformationAudio
-    video: PassengerInformationVideo
-}
-
-type PassengerInformationStation {
-    stationShortCode: String!
-    station: Station
-}
-
-type PassengerInformationAudio {
-    text: PassengerInformationTextContent!
-    deliveryRules: PassengerInformationAudioDeliveryRules!
-}
-
-type PassengerInformationVideo {
-    text: PassengerInformationTextContent!
-    deliveryRules: PassengerInformationVideoDeliveryRules!
-}
-
-type PassengerInformationVideoDeliveryRules {
-    deliveryType: String
-    startDateTime: DateTime
-    endDateTime: DateTime
-    startTime: String
-    endTime: String
-    weekDays: [DayOfWeek]
-}
-
-type PassengerInformationAudioDeliveryRules {
-    deliveryType: String
-    eventType: String
-    startDateTime: DateTime
-    endDateTime: DateTime
-    startTime: String
-    endTime: String
-    weekDays: [DayOfWeek]
-    deliveryAt: DateTime
-    repetitions: Int
-    repeatEvery: Int
-}
-
-type PassengerInformationTextContent {
-    fi: String
-    sv: String
-    en: String
 }
 
 ## SCALARS
