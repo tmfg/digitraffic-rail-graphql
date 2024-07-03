@@ -3,8 +3,10 @@ package fi.digitraffic.graphql.rail.links;
 import static fi.digitraffic.graphql.rail.queries.PassengerInformationMessagesQuery.getPassengerInformationBaseQuery;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.dataloader.BatchLoaderWithContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -80,8 +82,11 @@ public class StationToPassengerInformationMessagesLink extends
 
     @Override
     public BatchLoaderWithContext<String, List<PassengerInformationMessageTO>> createLoader() {
-        final JPAQuery<Tuple> queryAfterFrom = getPassengerInformationBaseQuery(super.queryFactory, getEntityTable());
-        return doCreateLoader(queryAfterFrom);
+        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
+            return getPassengerInformationBaseQuery(queryFactory, getEntityTable());
+        };
+
+        return doCreateLoader(queryAfterFromFunction);
     }
 
 }

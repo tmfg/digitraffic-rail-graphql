@@ -69,7 +69,7 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
         factoryService.getTrainLocationFactory().create(4, 3, 15, train70);
         factoryService.getTrainLocationFactory().create(5, 1, 16, train71);
 
-        final ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \"2000-01-01\", where: {timetableType: {equals: \"ADHOC\"}}) {    timetableType    trainLocations(where: {speed: {greaterThan: 11}}) {      speed    }  }}");
+        final ResultActions result = this.query("{  trainsByDepartureDate(departureDate: \"2000-01-01\", where: {timetableType: {equals: \"ADHOC\"}}) {    timetableType    timeTableRows {       type       scheduledTime       station {         shortCode       }       commercialTrack     }    trainLocations(where: {speed: {greaterThan: 11}}) {      speed    }  }}");
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(2));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[1].trainLocations").doesNotExist());
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[2].trainLocations.length()").value(1));

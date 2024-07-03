@@ -48,6 +48,7 @@ cache:
 
 digitraffic:
   max-returned-rows: 5000
+  batch-load-size: 500
   fields-that-can-be-queried-twice:
     - "station"
   hidden-fields:

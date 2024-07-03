@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.dataloader.BatchLoaderWithContext;
 
 import com.querydsl.core.Tuple;
@@ -17,15 +18,17 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
         extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, List<ChildTOType>> {
 
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {
-        final JPAQuery<Tuple> queryAfterFrom = super.queryFactory.select(getFields()).from(getEntityTable());
-        return doCreateLoader(queryAfterFrom);
+        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
+            return queryFactory.select(getFields()).from(getEntityTable());
+        };
+        return doCreateLoader(queryAfterFromFunction);
     }
 
-    public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader(final JPAQuery<Tuple> queryAfterFrom) {
-        return doCreateLoader(queryAfterFrom);
+    public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
+        return doCreateLoader(queryAfterFromFunction);
     }
 
-    public BatchLoaderWithContext<KeyType, List<ChildTOType>> doCreateLoader(final JPAQuery<Tuple> queryAfterFrom) {
+    public BatchLoaderWithContext<KeyType, List<ChildTOType>> doCreateLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
 
         return createDataLoader((children, dataFetchingEnvironment) -> {
                     final Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
@@ -43,7 +46,7 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
 
                     return childrenGroupedBy;
                 }
-                , queryAfterFrom);
+                , queryAfterFromFunction);
     }
 
     // This should be done in database, but Mysql 5.7 does not support partition...over
