@@ -74,4 +74,8 @@ public class Train {
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
     private Set<RoutesetMessage> routesetMessages;
+
+    @OneToMany(mappedBy = "train",
+               fetch = FetchType.LAZY)
+    private Set<PassengerInformationMessage> passengerInformationMessages;
 }
