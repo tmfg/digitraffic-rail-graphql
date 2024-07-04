@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.dataloader.BatchLoaderWithContext;
+
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
 
 import graphql.schema.DataFetchingEnvironment;
 
@@ -15,43 +20,49 @@ public abstract class ManyToManyLink<KeyType, ParentTOType, ChildEntityType, Chi
     public abstract List<KeyType> createKeysFromChild(final ChildTOType child);
 
     public KeyType createKeyFromChild(final ChildTOType child) {
-        throw new IllegalStateException("Should not be called");
+        return null;
     }
 
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {
+        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
+            return queryFactory.select(getFields()).from(getEntityTable());
+        };
+        return doCreateLoader(queryAfterFromFunction);
+    }
+
+    public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
+        return doCreateLoader(queryAfterFromFunction);
+    }
+
+    public BatchLoaderWithContext<KeyType, List<ChildTOType>> doCreateLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
         return createDataLoader((children, dataFetchingEnvironment) -> {
-                Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
-                for (ChildTOType child1 : children) {
-                    List<KeyType> parentIds = createKeysFromChild(child1);
-                    for (final KeyType parentId : parentIds) {
-                        if (!childrenGroupedBy.containsKey(parentId)) {
-                            childrenGroupedBy.put(parentId, new ArrayList<>());
+                    final Map<KeyType, List<ChildTOType>> childrenGroupedByParent = new HashMap<>();
+                    for (final ChildTOType child : children) {
+                        final List<KeyType> parentIds = createKeysFromChild(child);
+                        for (final KeyType parentId : parentIds) {
+                            childrenGroupedByParent.computeIfAbsent(parentId, k -> new ArrayList<>()).add(child);
                         }
-
-                        childrenGroupedBy.get(parentId).add(child1);
                     }
+                    filterWithSkipAndTake(childrenGroupedByParent, dataFetchingEnvironment);
+                    return childrenGroupedByParent;
                 }
-
-                filterWithSkipAndTake(childrenGroupedBy, dataFetchingEnvironment);
-
-                return childrenGroupedBy;
-            }
-        );
+                , queryAfterFromFunction);
     }
 
     // This should be done in database, but Mysql 5.7 does not support partition...over
-    private void filterWithSkipAndTake(Map<KeyType, List<ChildTOType>> childrenGroupedBy, DataFetchingEnvironment dataFetchingEnvironment) {
-        Integer skip = dataFetchingEnvironment.getArgument("skip");
-        Integer take = dataFetchingEnvironment.getArgument("take");
+    private void filterWithSkipAndTake(final Map<KeyType, List<ChildTOType>> childrenGroupedBy,
+                                       final DataFetchingEnvironment dataFetchingEnvironment) {
+        final Integer skip = dataFetchingEnvironment.getArgument("skip");
+        final Integer take = dataFetchingEnvironment.getArgument("take");
         if (skip != null || take != null) {
-            Integer start = skip != null ? skip : 0;
-            Integer elementsToPotentiallyTake = take != null ? take : Integer.MAX_VALUE;
+            final Integer start = skip != null ? skip : 0;
+            final Integer elementsToPotentiallyTake = take != null ? take : Integer.MAX_VALUE;
 
-            for (Map.Entry<KeyType, List<ChildTOType>> keyTypeListEntry : childrenGroupedBy.entrySet()) {
-                List<ChildTOType> values = keyTypeListEntry.getValue();
-                KeyType key = keyTypeListEntry.getKey();
+            for (final Map.Entry<KeyType, List<ChildTOType>> keyTypeListEntry : childrenGroupedBy.entrySet()) {
+                final List<ChildTOType> values = keyTypeListEntry.getValue();
+                final KeyType key = keyTypeListEntry.getKey();
                 if (start < values.size()) {
-                    Integer end = Math.min(start + elementsToPotentiallyTake, values.size());
+                    final Integer end = Math.min(start + elementsToPotentiallyTake, values.size());
                     childrenGroupedBy.put(key, values.subList(start, end));
                 } else {
                     childrenGroupedBy.put(key, new ArrayList<>());
