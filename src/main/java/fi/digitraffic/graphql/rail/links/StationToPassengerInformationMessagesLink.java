@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.dataloader.BatchLoaderWithContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,9 +15,11 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationStation;
 import fi.digitraffic.graphql.rail.links.base.ManyToManyLink;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
@@ -83,7 +84,13 @@ public class StationToPassengerInformationMessagesLink extends
     @Override
     public BatchLoaderWithContext<String, List<PassengerInformationMessageTO>> createLoader() {
         final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
-            return getPassengerInformationBaseQuery(queryFactory, getEntityTable());
+            return getPassengerInformationBaseQuery(queryFactory, getEntityTable())
+                    .leftJoin(QPassengerInformationMessage.passengerInformationMessage.stations,
+                            QPassengerInformationStation.passengerInformationStation).fetchJoin()
+                    .where(QPassengerInformationMessage.passengerInformationMessage.id.id.eq(
+                                    QPassengerInformationStation.passengerInformationStation.messageId)
+                            .and(QPassengerInformationMessage.passengerInformationMessage.id.version.eq(
+                                    QPassengerInformationStation.passengerInformationStation.messageVersion)));
         };
 
         return doCreateLoader(queryAfterFromFunction);
