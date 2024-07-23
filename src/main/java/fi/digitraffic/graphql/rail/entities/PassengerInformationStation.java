@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -21,12 +22,12 @@ public class PassengerInformationStation {
             @JoinColumn(name = "rami_message_id",
                         referencedColumnName = "id",
                         nullable = false,
-                        insertable = true,
+                        insertable = false,
                         updatable = false),
             @JoinColumn(name = "rami_message_version",
                         referencedColumnName = "version",
                         nullable = false,
-                        insertable = true,
+                        insertable = false,
                         updatable = false) })
     public PassengerInformationMessage message;
     public String stationShortCode;
@@ -36,6 +37,11 @@ public class PassengerInformationStation {
                 updatable = false,
                 insertable = false)
     public Station station;
+
+    @Column(name = "rami_message_id")
+    public String messageId;
+    @Column(name = "rami_message_version")
+    public Integer messageVersion;
 
     public PassengerInformationStation() {
     }

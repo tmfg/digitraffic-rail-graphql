@@ -10,6 +10,7 @@ import fi.digitraffic.graphql.rail.entities.QJourneySection;
 import fi.digitraffic.graphql.rail.entities.QLocomotive;
 import fi.digitraffic.graphql.rail.entities.QOperator;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationStation;
 import fi.digitraffic.graphql.rail.entities.QRoutesection;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.QStation;
@@ -239,4 +240,13 @@ public class AllFields {
             QPassengerInformationMessage.passengerInformationMessage.audio,
             QPassengerInformationMessage.passengerInformationMessage.video
     };
+
+    public static final Expression[] PASSENGER_INFORMATION_STATION = new Expression[] {
+            QPassengerInformationStation.passengerInformationStation.id,
+            QPassengerInformationStation.passengerInformationStation.station,
+            QPassengerInformationStation.passengerInformationStation.stationShortCode,
+            QPassengerInformationStation.passengerInformationStation.messageVersion,
+            QPassengerInformationStation.passengerInformationStation.messageId,
+            };
+
 }

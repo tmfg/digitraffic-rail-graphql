@@ -1,6 +1,5 @@
 package fi.digitraffic.graphql.rail.to;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -13,7 +12,6 @@ import fi.digitraffic.graphql.rail.model.DayOfWeekTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationAudioDeliveryRulesTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationAudioTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
-import fi.digitraffic.graphql.rail.model.PassengerInformationStationTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationTextContentTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationVideoDeliveryRulesTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
@@ -57,12 +55,6 @@ public class PassengerInformationMessageTOConverter {
             return null;
         }
 
-        final List<PassengerInformationStationTO> stationsTO = message.stations != null ?
-                                                               message.stations.stream()
-                                                                       .map(station -> new PassengerInformationStationTO(station.stationShortCode,
-                                                                               null))
-                                                                       .toList() : null;
-
         final PassengerInformationAudioTO audioTO = message.audio != null ? createPassengerInformationAudioTO(message)
                                                                           : null;
 
@@ -77,7 +69,7 @@ public class PassengerInformationMessageTOConverter {
                 message.trainDepartureDate,
                 message.trainNumber != null ? message.trainNumber.intValue() : null,
                 null,
-                stationsTO,
+                null,
                 audioTO,
                 videoTO);
     }

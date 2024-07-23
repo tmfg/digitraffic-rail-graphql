@@ -3,6 +3,7 @@ package fi.digitraffic.graphql.rail.entities;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 
@@ -21,7 +22,8 @@ public class Station {
     public Boolean passengerTraffic;
     public StationTypeEnum type;
 
-    @OneToMany(mappedBy = "station")
+    @OneToMany(mappedBy = "station",
+               fetch = FetchType.LAZY)
     private List<PassengerInformationStation> passengerInformationStations;
 
 }

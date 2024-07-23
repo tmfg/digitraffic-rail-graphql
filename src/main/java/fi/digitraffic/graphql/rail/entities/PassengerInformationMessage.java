@@ -53,7 +53,7 @@ public class PassengerInformationMessage {
     public LocalDate trainDepartureDate;
     public Long trainNumber;
     @OneToMany(mappedBy = "message",
-               fetch = FetchType.EAGER)
+               fetch = FetchType.LAZY)
     public List<PassengerInformationStation> stations;
     @OneToOne(mappedBy = "message",
               fetch = FetchType.LAZY,
@@ -98,22 +98,6 @@ public class PassengerInformationMessage {
 
     public PassengerInformationMessage() {
 
-    }
-
-    @Override
-    public String toString() {
-        return "PassengerInformationMessage{" +
-                "id='" + id.id + '\'' +
-                ", version=" + id.version +
-                ", creationDateTime=" + creationDateTime +
-                ", startValidity=" + startValidity +
-                ", endValidity=" + endValidity +
-                ", trainDepartureDate=" + trainDepartureDate +
-                ", trainNumber=" + trainNumber +
-                ", stations=" + stations +
-                ", audio=" + audio +
-                ", video=" + video +
-                '}';
     }
 
 }

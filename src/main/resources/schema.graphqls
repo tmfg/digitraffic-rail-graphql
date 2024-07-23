@@ -281,6 +281,8 @@ type PassengerInformationMessage {
 type PassengerInformationStation {
     stationShortCode: String!
     station: Station
+    messageId: String!
+    messageVersion: Int!
 }
 
 type PassengerInformationAudio {
