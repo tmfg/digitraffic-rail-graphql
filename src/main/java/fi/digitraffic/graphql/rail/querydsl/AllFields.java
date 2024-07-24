@@ -254,8 +254,6 @@ public class AllFields {
     };
 
     public static final Expression[] PASSENGER_INFORMATION_MESSAGE_STATION = new Expression[] {
-            QPassengerInformationMessageStation.passengerInformationMessageStation.id,
-            QPassengerInformationMessageStation.passengerInformationMessageStation.station,
             QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode,
             QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion,
             QPassengerInformationMessageStation.passengerInformationMessageStation.messageId,

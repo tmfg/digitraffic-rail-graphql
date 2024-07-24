@@ -1,6 +1,8 @@
 package fi.digitraffic.graphql.rail.to;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -24,18 +26,15 @@ public class PassengerInformationMessageWithStationsTOConverter extends Passenge
             return null;
         }
 
-        final PassengerInformationAudioTO audioTO = message.audio != null ? createPassengerInformationAudioTO(message)
-                                                                          : null;
+        final PassengerInformationAudioTO audioTO = message.audio != null ? createPassengerInformationAudioTO(message) : null;
+        final PassengerInformationVideoTO videoTO = message.video != null ? createPassengerInformationVideoTO(message) : null;
 
-        final PassengerInformationVideoTO videoTO = message.video != null ? createPassengerInformationVideoTO(message)
-                                                                          : null;
-
-        final List<PassengerInformationMessageStationTO> stationsTO = message.stations != null ?
-                                                                      message.stations.stream()
-                                                                              .map(station -> new PassengerInformationMessageStationTO(
-                                                                                      station.stationShortCode,
-                                                                                      null, null, message.id.id, message.id.version))
-                                                                              .toList() : null;
+        final String stationShortCodesStr = tuple.get(1, String.class);
+        final Set<String> stationShortCodes = Arrays.stream(stationShortCodesStr.split(","))
+                .collect(Collectors.toSet());
+        final Set<PassengerInformationMessageStationTO> stationsTO = stationShortCodes.stream()
+                .map(stationShortCode -> new PassengerInformationMessageStationTO(stationShortCode, null, null, message.id.id, message.id.version))
+                .collect(Collectors.toSet());
 
         return new PassengerInformationMessageTO(message.id.id,
                 message.id.version,
@@ -45,9 +44,8 @@ public class PassengerInformationMessageWithStationsTOConverter extends Passenge
                 message.trainDepartureDate,
                 message.trainNumber != null ? message.trainNumber.intValue() : null,
                 null,
-                stationsTO,
+                stationsTO.stream().toList(),
                 audioTO,
                 videoTO);
     }
-
 }

@@ -14,6 +14,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -90,7 +91,13 @@ public class StationToPassengerInformationMessagesLink extends
                     .where(QPassengerInformationMessage.passengerInformationMessage.id.id.eq(
                                     QPassengerInformationMessageStation.passengerInformationMessageStation.messageId)
                             .and(QPassengerInformationMessage.passengerInformationMessage.id.version.eq(
-                                    QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion)));
+                                    QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion)))
+                    .groupBy(QPassengerInformationMessage.passengerInformationMessage.id.id,
+                            QPassengerInformationMessage.passengerInformationMessage.id.version)
+                    .select(QPassengerInformationMessage.passengerInformationMessage,
+                            Expressions.stringTemplate("group_concat({0})",
+                                    QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode).as("stationShortCodes"))
+                    .distinct();
         };
 
         return doCreateLoader(queryAfterFromFunction);
