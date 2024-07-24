@@ -1,6 +1,5 @@
 package fi.digitraffic.graphql.rail.to;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.model.DayOfWeekTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationAudioDeliveryRulesTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationAudioTO;
-import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationTextContentTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationVideoDeliveryRulesTO;
@@ -21,7 +19,7 @@ import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
 @Component
 public class PassengerInformationMessageTOConverter {
 
-    private PassengerInformationAudioTO createPassengerInformationAudioTO(final PassengerInformationMessage message) {
+    protected PassengerInformationAudioTO createPassengerInformationAudioTO(final PassengerInformationMessage message) {
         return new PassengerInformationAudioTO(
                 new PassengerInformationTextContentTO(message.audio.textFi, message.audio.textSv,
                         message.audio.textEn),
@@ -38,7 +36,7 @@ public class PassengerInformationMessageTOConverter {
         );
     }
 
-    private PassengerInformationVideoTO createPassengerInformationVideoTO(final PassengerInformationMessage message) {
+    protected PassengerInformationVideoTO createPassengerInformationVideoTO(final PassengerInformationMessage message) {
         return new PassengerInformationVideoTO(
                 new PassengerInformationTextContentTO(message.video.textFi, message.video.textSv,
                         message.video.textEn),
@@ -63,13 +61,6 @@ public class PassengerInformationMessageTOConverter {
         final PassengerInformationVideoTO videoTO = message.video != null ? createPassengerInformationVideoTO(message)
                                                                           : null;
 
-        final List<PassengerInformationMessageStationTO> stationsTO = message.stations != null ?
-                                                                      message.stations.stream()
-                                                                              .map(station -> new PassengerInformationMessageStationTO(
-                                                                                      station.stationShortCode,
-                                                                                      null, null, message.id.id, message.id.version))
-                                                                              .toList() : null;
-
         return new PassengerInformationMessageTO(message.id.id,
                 message.id.version,
                 message.creationDateTime,
@@ -78,7 +69,7 @@ public class PassengerInformationMessageTOConverter {
                 message.trainDepartureDate,
                 message.trainNumber != null ? message.trainNumber.intValue() : null,
                 null,
-                stationsTO,
+                null,
                 audioTO,
                 videoTO);
     }

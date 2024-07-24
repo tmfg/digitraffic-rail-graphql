@@ -24,14 +24,14 @@ import fi.digitraffic.graphql.rail.links.base.ManyToManyLink;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
+import fi.digitraffic.graphql.rail.to.PassengerInformationMessageWithStationsTOConverter;
 
 @Component
 public class StationToPassengerInformationMessagesLink extends
         ManyToManyLink<String, StationTO, PassengerInformationMessage, PassengerInformationMessageTO> {
 
     @Autowired
-    private PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;
+    private PassengerInformationMessageWithStationsTOConverter passengerInformationMessageWithStationsTOConverter;
 
     @Override
     public String getTypeName() {
@@ -58,7 +58,7 @@ public class StationToPassengerInformationMessagesLink extends
 
     @Override
     public PassengerInformationMessageTO createChildTOFromTuple(final Tuple tuple) {
-        return passengerInformationMessageTOConverter.convert(tuple);
+        return passengerInformationMessageWithStationsTOConverter.convert(tuple);
     }
 
     @Override
