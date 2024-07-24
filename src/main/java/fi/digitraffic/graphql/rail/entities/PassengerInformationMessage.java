@@ -54,7 +54,7 @@ public class PassengerInformationMessage {
     public Long trainNumber;
     @OneToMany(mappedBy = "message",
                fetch = FetchType.LAZY)
-    public List<PassengerInformationStation> stations;
+    public List<PassengerInformationMessageStation> stations;
     @OneToOne(mappedBy = "message",
               fetch = FetchType.LAZY,
               optional = true)
@@ -71,7 +71,7 @@ public class PassengerInformationMessage {
     public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
                                        final ZonedDateTime startValidity,
                                        final ZonedDateTime endValidity, final LocalDate trainDepartureDate, final Long trainNumber,
-                                       final List<PassengerInformationStation> stations, final PassengerInformationAudio audio,
+                                       final List<PassengerInformationMessageStation> stations, final PassengerInformationAudio audio,
                                        final PassengerInformationVideo video, final MessageType messageType) {
         this.id = id;
         this.creationDateTime = creationDateTime;

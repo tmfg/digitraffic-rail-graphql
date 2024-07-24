@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
-import fi.digitraffic.graphql.rail.entities.PassengerInformationStation;
+import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.repositories.PassengerInformationMessageRepository;
-import fi.digitraffic.graphql.rail.repositories.PassengerInformationStationRepository;
+import fi.digitraffic.graphql.rail.repositories.PassengerInformationMessageStationRepository;
 
 @Component
 public class PassengerInformationMessageFactory {
@@ -21,7 +21,7 @@ public class PassengerInformationMessageFactory {
     private PassengerInformationMessageRepository passengerInformationMessageRepository;
 
     @Autowired
-    private PassengerInformationStationRepository passengerInformationStationRepository;
+    private PassengerInformationMessageStationRepository passengerInformationMessageStationRepository;
 
     @Transactional
     public PassengerInformationMessage create(final String id, final int version, final ZonedDateTime startValidity, final ZonedDateTime endValidity,
@@ -51,9 +51,9 @@ public class PassengerInformationMessageFactory {
         final PassengerInformationMessage message = passengerInformationMessageRepository.save(passengerInformationMessage);
 
         for (final String station : stations) {
-            passengerInformationStationRepository.save(new PassengerInformationStation(message, station));
+            passengerInformationMessageStationRepository.save(new PassengerInformationMessageStation(message, station));
         }
-        
+
         return message;
     }
 
@@ -79,7 +79,7 @@ public class PassengerInformationMessageFactory {
                         null, null, null, null, null, PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE);
         final PassengerInformationMessage message = passengerInformationMessageRepository.save(passengerInformationMessage);
         for (final String station : stations) {
-            passengerInformationStationRepository.save(new PassengerInformationStation(message, station));
+            passengerInformationMessageStationRepository.save(new PassengerInformationMessageStation(message, station));
         }
         return message;
     }
@@ -94,7 +94,7 @@ public class PassengerInformationMessageFactory {
                 new PassengerInformationMessage(messageId, ZonedDateTime.now(), startValidity, endValidity, messageType);
         final PassengerInformationMessage message = passengerInformationMessageRepository.save(passengerInformationMessage);
         for (final String station : stations) {
-            passengerInformationStationRepository.save(new PassengerInformationStation(message, station));
+            passengerInformationMessageStationRepository.save(new PassengerInformationMessageStation(message, station));
         }
         return message;
     }

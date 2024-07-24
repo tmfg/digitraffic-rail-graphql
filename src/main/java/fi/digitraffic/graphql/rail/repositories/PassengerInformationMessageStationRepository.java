@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.digitraffic.graphql.rail.entities.PassengerInformationStation;
+import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageStation;
 
 @Repository
 @Transactional
-public interface PassengerInformationStationRepository extends JpaRepository<PassengerInformationStation, Long> {
+public interface PassengerInformationMessageStationRepository extends JpaRepository<PassengerInformationMessageStation, Long> {
 }

@@ -10,7 +10,7 @@ import fi.digitraffic.graphql.rail.entities.QJourneySection;
 import fi.digitraffic.graphql.rail.entities.QLocomotive;
 import fi.digitraffic.graphql.rail.entities.QOperator;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationStation;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.entities.QRoutesection;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.QStation;
@@ -236,17 +236,29 @@ public class AllFields {
             QPassengerInformationMessage.passengerInformationMessage.endValidity,
             QPassengerInformationMessage.passengerInformationMessage.trainNumber,
             QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
+            QPassengerInformationMessage.passengerInformationMessage.audio,
+            QPassengerInformationMessage.passengerInformationMessage.video
+    };
+
+    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_WITH_STATIONS = new Expression[] {
+            QPassengerInformationMessage.passengerInformationMessage.id.id,
+            QPassengerInformationMessage.passengerInformationMessage.id.version,
+            QPassengerInformationMessage.passengerInformationMessage.creationDateTime,
+            QPassengerInformationMessage.passengerInformationMessage.startValidity,
+            QPassengerInformationMessage.passengerInformationMessage.endValidity,
+            QPassengerInformationMessage.passengerInformationMessage.trainNumber,
+            QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
             QPassengerInformationMessage.passengerInformationMessage.stations,
             QPassengerInformationMessage.passengerInformationMessage.audio,
             QPassengerInformationMessage.passengerInformationMessage.video
     };
 
-    public static final Expression[] PASSENGER_INFORMATION_STATION = new Expression[] {
-            QPassengerInformationStation.passengerInformationStation.id,
-            QPassengerInformationStation.passengerInformationStation.station,
-            QPassengerInformationStation.passengerInformationStation.stationShortCode,
-            QPassengerInformationStation.passengerInformationStation.messageVersion,
-            QPassengerInformationStation.passengerInformationStation.messageId,
+    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_STATION = new Expression[] {
+            QPassengerInformationMessageStation.passengerInformationMessageStation.id,
+            QPassengerInformationMessageStation.passengerInformationMessageStation.station,
+            QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode,
+            QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion,
+            QPassengerInformationMessageStation.passengerInformationMessageStation.messageId,
             };
 
 }

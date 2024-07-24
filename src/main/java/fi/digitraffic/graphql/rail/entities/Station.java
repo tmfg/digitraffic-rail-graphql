@@ -24,6 +24,6 @@ public class Station {
 
     @OneToMany(mappedBy = "station",
                fetch = FetchType.LAZY)
-    private List<PassengerInformationStation> passengerInformationStations;
+    private List<PassengerInformationMessageStation> passengerInformationMessageStations;
 
 }

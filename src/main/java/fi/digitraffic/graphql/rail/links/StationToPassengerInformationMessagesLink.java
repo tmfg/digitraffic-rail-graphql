@@ -19,7 +19,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationStation;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.links.base.ManyToManyLink;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
@@ -53,7 +53,7 @@ public class StationToPassengerInformationMessagesLink extends
         if (child == null) {
             return null;
         }
-        return child.getStations().stream().map(station -> station.getStationShortCode()).collect(Collectors.toList());
+        return child.getPassengerInformationMessageStations().stream().map(station -> station.getStationShortCode()).collect(Collectors.toList());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class StationToPassengerInformationMessagesLink extends
 
     @Override
     public Expression[] getFields() {
-        return AllFields.PASSENGER_INFORMATION_MESSAGE;
+        return AllFields.PASSENGER_INFORMATION_MESSAGE_WITH_STATIONS;
     }
 
     @Override
@@ -86,11 +86,11 @@ public class StationToPassengerInformationMessagesLink extends
         final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
             return getPassengerInformationBaseQuery(queryFactory, getEntityTable())
                     .leftJoin(QPassengerInformationMessage.passengerInformationMessage.stations,
-                            QPassengerInformationStation.passengerInformationStation).fetchJoin()
+                            QPassengerInformationMessageStation.passengerInformationMessageStation).fetchJoin()
                     .where(QPassengerInformationMessage.passengerInformationMessage.id.id.eq(
-                                    QPassengerInformationStation.passengerInformationStation.messageId)
+                                    QPassengerInformationMessageStation.passengerInformationMessageStation.messageId)
                             .and(QPassengerInformationMessage.passengerInformationMessage.id.version.eq(
-                                    QPassengerInformationStation.passengerInformationStation.messageVersion)));
+                                    QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion)));
         };
 
         return doCreateLoader(queryAfterFromFunction);

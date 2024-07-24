@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "rami_message_station")
-public class PassengerInformationStation {
+public class PassengerInformationMessageStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -43,17 +43,17 @@ public class PassengerInformationStation {
     @Column(name = "rami_message_version")
     public Integer messageVersion;
 
-    public PassengerInformationStation() {
+    public PassengerInformationMessageStation() {
     }
 
-    public PassengerInformationStation(final PassengerInformationMessage message, final String stationShortCode) {
+    public PassengerInformationMessageStation(final PassengerInformationMessage message, final String stationShortCode) {
         this.message = message;
         this.stationShortCode = stationShortCode;
     }
 
     @Override
     public String toString() {
-        return "PassengerInformationStation{" +
+        return "PassengerInformationMessageStation{" +
                 "id=" + id +
                 ", stationShortCode='" + stationShortCode + '\'' +
                 '}';

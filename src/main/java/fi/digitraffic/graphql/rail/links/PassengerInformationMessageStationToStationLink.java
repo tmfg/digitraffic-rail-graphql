@@ -13,19 +13,19 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
-import fi.digitraffic.graphql.rail.model.PassengerInformationStationTO;
+import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
 @Component
-public class PassengerInformationStationToStationLink extends OneToOneLink<String, PassengerInformationStationTO, Station, StationTO> {
+public class PassengerInformationMessageStationToStationLink extends OneToOneLink<String, PassengerInformationMessageStationTO, Station, StationTO> {
     @Autowired
     private StationTOConverter stationTOConverter;
 
     @Override
     public String getTypeName() {
-        return "PassengerInformationStation";
+        return "PassengerInformationMessageStation";
     }
 
     @Override
@@ -34,8 +34,8 @@ public class PassengerInformationStationToStationLink extends OneToOneLink<Strin
     }
 
     @Override
-    public String createKeyFromParent(final PassengerInformationStationTO passengerInformationStationTO) {
-        return passengerInformationStationTO.getStationShortCode();
+    public String createKeyFromParent(final PassengerInformationMessageStationTO passengerInformationMessageStationTO) {
+        return passengerInformationMessageStationTO.getStationShortCode();
     }
 
     @Override

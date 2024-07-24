@@ -273,14 +273,15 @@ type PassengerInformationMessage {
     trainDepartureDate: Date
     trainNumber: Int
     train: Train
-    stations: [PassengerInformationStation]
+    passengerInformationMessageStations: [PassengerInformationMessageStation]
     audio: PassengerInformationAudio
     video: PassengerInformationVideo
 }
 
-type PassengerInformationStation {
+type PassengerInformationMessageStation {
     stationShortCode: String!
-    station: Station
+    station: Station!
+    message: PassengerInformationMessage!
     messageId: String!
     messageVersion: Int!
 }

@@ -10,20 +10,20 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
-import fi.digitraffic.graphql.rail.entities.PassengerInformationStation;
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationStation;
+import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageStation;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
+import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
-import fi.digitraffic.graphql.rail.model.PassengerInformationStationTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.to.PassengerInformationStationTOConverter;
+import fi.digitraffic.graphql.rail.to.PassengerInformationMessageStationTOConverter;
 
 @Component
-public class PassengerInformationMessageToPassengerInformationStationLink
+public class PassengerInformationMessageToPassengerInformationMessageStationLink
         extends
-        OneToManyLink<String, PassengerInformationMessageTO, PassengerInformationStation, PassengerInformationStationTO> {
+        OneToManyLink<String, PassengerInformationMessageTO, PassengerInformationMessageStation, PassengerInformationMessageStationTO> {
     @Autowired
-    private PassengerInformationStationTOConverter passengerInformationStationTOConverter;
+    private PassengerInformationMessageStationTOConverter passengerInformationMessageStationTOConverter;
 
     @Override
     public String getTypeName() {
@@ -32,7 +32,7 @@ public class PassengerInformationMessageToPassengerInformationStationLink
 
     @Override
     public String getFieldName() {
-        return "stations";
+        return "passengerInformationMessageStations";
     }
 
     @Override
@@ -41,28 +41,28 @@ public class PassengerInformationMessageToPassengerInformationStationLink
     }
 
     @Override
-    public String createKeyFromChild(final PassengerInformationStationTO stationTO) {
+    public String createKeyFromChild(final PassengerInformationMessageStationTO stationTO) {
         return stationTO.getMessageId() + "-" + String.valueOf(stationTO.getMessageVersion());
     }
 
     @Override
-    public PassengerInformationStationTO createChildTOFromTuple(final Tuple tuple) {
-        return passengerInformationStationTOConverter.convert(tuple);
+    public PassengerInformationMessageStationTO createChildTOFromTuple(final Tuple tuple) {
+        return passengerInformationMessageStationTOConverter.convert(tuple);
     }
 
     @Override
     public Class getEntityClass() {
-        return PassengerInformationStation.class;
+        return PassengerInformationMessageStation.class;
     }
 
     @Override
     public Expression[] getFields() {
-        return AllFields.PASSENGER_INFORMATION_STATION;
+        return AllFields.PASSENGER_INFORMATION_MESSAGE_STATION;
     }
 
     @Override
     public EntityPath getEntityTable() {
-        return QPassengerInformationStation.passengerInformationStation;
+        return QPassengerInformationMessageStation.passengerInformationMessageStation;
     }
 
     @Override
@@ -73,8 +73,8 @@ public class PassengerInformationMessageToPassengerInformationStationLink
                     final String messageId = parts[0];
                     final int messageVersion = Integer.parseInt(parts[1]);
 
-                    return QPassengerInformationStation.passengerInformationStation.message.id.id.eq(messageId)
-                            .and(QPassengerInformationStation.passengerInformationStation.message.id.version.eq(messageVersion));
+                    return QPassengerInformationMessageStation.passengerInformationMessageStation.message.id.id.eq(messageId)
+                            .and(QPassengerInformationMessageStation.passengerInformationMessageStation.message.id.version.eq(messageVersion));
                 })
                 .reduce(BooleanExpression::or)
                 .orElse(null);
