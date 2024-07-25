@@ -34,6 +34,12 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
     @Autowired
     private PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;
 
+    public static BooleanExpression getMessageValidityConditions() {
+        return QPassengerInformationMessage.passengerInformationMessage.deleted.isNull()
+                .and(QPassengerInformationMessage.passengerInformationMessage.startValidity.before(ZonedDateTime.now())
+                        .and(QPassengerInformationMessage.passengerInformationMessage.endValidity.after(ZonedDateTime.now())));
+    }
+
     public static JPAQuery<Tuple> getPassengerInformationBaseQuery(final JPAQueryFactory jpaQueryFactory, final EntityPath entityTable) {
         final JPAQuery<Tuple> maxVersions = jpaQueryFactory.select(
                         QPassengerInformationMessage.passengerInformationMessage.id.id,
@@ -45,9 +51,7 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
                 .from(entityTable)
                 .where(Expressions.list(QPassengerInformationMessage.passengerInformationMessage.id.id,
                                 QPassengerInformationMessage.passengerInformationMessage.id.version).in(maxVersions)
-                        .and(QPassengerInformationMessage.passengerInformationMessage.deleted.isNull()
-                                .and(QPassengerInformationMessage.passengerInformationMessage.startValidity.before(ZonedDateTime.now())
-                                        .and(QPassengerInformationMessage.passengerInformationMessage.endValidity.after(ZonedDateTime.now())))));
+                        .and(getMessageValidityConditions()));
     }
 
     @Override

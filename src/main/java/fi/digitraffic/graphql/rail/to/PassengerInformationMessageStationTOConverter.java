@@ -11,7 +11,6 @@ import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 public class PassengerInformationMessageStationTOConverter {
 
     public PassengerInformationMessageStationTO convert(final Tuple tuple) {
-
         return new PassengerInformationMessageStationTO(
                 tuple.get(QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode),
                 null,
