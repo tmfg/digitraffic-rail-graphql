@@ -10,6 +10,7 @@ import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
+import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
@@ -21,7 +22,7 @@ import fi.digitraffic.graphql.rail.to.PassengerInformationMessageStationTOConver
 @Component
 public class PassengerInformationMessageToPassengerInformationMessageStationLink
         extends
-        OneToManyLink<String, PassengerInformationMessageTO, PassengerInformationMessageStation, PassengerInformationMessageStationTO> {
+        OneToManyLink<PassengerInformationMessageId, PassengerInformationMessageTO, PassengerInformationMessageStation, PassengerInformationMessageStationTO> {
     @Autowired
     private PassengerInformationMessageStationTOConverter passengerInformationMessageStationTOConverter;
 
@@ -32,17 +33,18 @@ public class PassengerInformationMessageToPassengerInformationMessageStationLink
 
     @Override
     public String getFieldName() {
-        return "passengerInformationMessageStations";
+        return "messageStations";
     }
 
     @Override
-    public String createKeyFromParent(final PassengerInformationMessageTO passengerInformationMessageTO) {
-        return passengerInformationMessageTO.getId() + "-" + String.valueOf(passengerInformationMessageTO.getVersion());
+    public PassengerInformationMessageId createKeyFromParent(final PassengerInformationMessageTO passengerInformationMessageTO) {
+        return new PassengerInformationMessageId(passengerInformationMessageTO.getId(), passengerInformationMessageTO.getVersion());
     }
 
     @Override
-    public String createKeyFromChild(final PassengerInformationMessageStationTO stationTO) {
-        return stationTO.getMessageId() + "-" + String.valueOf(stationTO.getMessageVersion());
+    public PassengerInformationMessageId createKeyFromChild(final PassengerInformationMessageStationTO passengerInformationMessageStationTO) {
+        return new PassengerInformationMessageId(passengerInformationMessageStationTO.getMessageId(),
+                passengerInformationMessageStationTO.getMessageVersion());
     }
 
     @Override
@@ -66,18 +68,8 @@ public class PassengerInformationMessageToPassengerInformationMessageStationLink
     }
 
     @Override
-    public BooleanExpression createWhere(final List<String> keys) {
-        return keys.stream()
-                .map(key -> {
-                    final String[] parts = key.split("-");
-                    final String messageId = parts[0];
-                    final int messageVersion = Integer.parseInt(parts[1]);
-
-                    return QPassengerInformationMessageStation.passengerInformationMessageStation.message.id.id.eq(messageId)
-                            .and(QPassengerInformationMessageStation.passengerInformationMessageStation.message.id.version.eq(messageVersion));
-                })
-                .reduce(BooleanExpression::or)
-                .orElse(null);
+    public BooleanExpression createWhere(final List<PassengerInformationMessageId> keys) {
+        return QPassengerInformationMessageStation.passengerInformationMessageStation.message.id.in(keys);
     }
 
 }

@@ -61,7 +61,7 @@ public class StationToPassengerInformationStationLink extends
 
     @Override
     public String getFieldName() {
-        return "passengerInformationMessageStations";
+        return "stationMessages";
     }
 
     @Override

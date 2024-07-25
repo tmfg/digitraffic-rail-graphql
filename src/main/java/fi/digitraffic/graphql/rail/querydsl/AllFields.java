@@ -240,17 +240,6 @@ public class AllFields {
             QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
             };
 
-    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_WITH_STATIONS = new Expression[] {
-            QPassengerInformationMessage.passengerInformationMessage.id.id,
-            QPassengerInformationMessage.passengerInformationMessage.id.version,
-            QPassengerInformationMessage.passengerInformationMessage.creationDateTime,
-            QPassengerInformationMessage.passengerInformationMessage.startValidity,
-            QPassengerInformationMessage.passengerInformationMessage.endValidity,
-            QPassengerInformationMessage.passengerInformationMessage.trainNumber,
-            QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
-            QPassengerInformationMessage.passengerInformationMessage.stations,
-            };
-
     public static final Expression[] PASSENGER_INFORMATION_MESSAGE_STATION = new Expression[] {
             QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode,
             QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion,
