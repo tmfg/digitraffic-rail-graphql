@@ -12,7 +12,6 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
-import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
 
 @Component
 public class PassengerInformationMessageWithStationsTOConverter extends PassengerInformationMessageTOConverter {
@@ -25,8 +24,6 @@ public class PassengerInformationMessageWithStationsTOConverter extends Passenge
             return null;
         }
 
-        final PassengerInformationVideoTO videoTO = message.video != null ? createPassengerInformationVideoTO(message) : null;
-        
         final String stationShortCodesStr = tuple.get(1, String.class);
         final Set<String> stationShortCodes = Arrays.stream(stationShortCodesStr.split(","))
                 .collect(Collectors.toSet());
@@ -44,6 +41,6 @@ public class PassengerInformationMessageWithStationsTOConverter extends Passenge
                 null,
                 stationsTO.stream().toList(),
                 null,
-                videoTO);
+                null);
     }
 }

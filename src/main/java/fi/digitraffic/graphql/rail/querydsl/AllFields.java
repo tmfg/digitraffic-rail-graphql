@@ -12,6 +12,7 @@ import fi.digitraffic.graphql.rail.entities.QOperator;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationAudio;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationVideo;
 import fi.digitraffic.graphql.rail.entities.QRoutesection;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.QStation;
@@ -273,6 +274,21 @@ public class AllFields {
             QPassengerInformationAudio.passengerInformationAudio.repeatEvery,
             QPassengerInformationAudio.passengerInformationAudio.repetitions,
             QPassengerInformationAudio.passengerInformationAudio.weekDays
+    };
+
+    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_VIDEO = new Expression[] {
+            QPassengerInformationVideo.passengerInformationVideo.id,
+            QPassengerInformationVideo.passengerInformationVideo.textEn,
+            QPassengerInformationVideo.passengerInformationVideo.textFi,
+            QPassengerInformationVideo.passengerInformationVideo.textSv,
+            QPassengerInformationVideo.passengerInformationVideo.startDateTime,
+            QPassengerInformationVideo.passengerInformationVideo.endDateTime,
+            QPassengerInformationVideo.passengerInformationVideo.startDateTime,
+            QPassengerInformationVideo.passengerInformationVideo.endTime,
+            QPassengerInformationVideo.passengerInformationVideo.deliveryType,
+            QPassengerInformationVideo.passengerInformationVideo.messageId,
+            QPassengerInformationVideo.passengerInformationVideo.messageVersion,
+            QPassengerInformationVideo.passengerInformationVideo.weekDays
     };
 
 }

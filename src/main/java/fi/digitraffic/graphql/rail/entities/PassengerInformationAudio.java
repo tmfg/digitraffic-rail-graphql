@@ -61,9 +61,6 @@ public class PassengerInformationAudio {
     @Transient
     public PassengerInformationAudioDeliveryRules deliveryRules;
 
-    @Transient
-    public String compositeMessageKey;
-
     @PostLoad
     public void setTransients() {
         this.text = new PassengerInformationTextContent(this.textFi, this.textSv, this.textEn);
@@ -71,7 +68,6 @@ public class PassengerInformationAudio {
                 new PassengerInformationAudioDeliveryRules(this.deliveryType, this.eventType, this.startDateTime, this.endDateTime, this.startTime,
                         this.endTime, this.weekDays, this.deliveryAt, this.repetitions != null ? this.repetitions : null,
                         this.repeatEvery != null ? this.repeatEvery : null);
-        this.compositeMessageKey = this.messageId + "-" + this.messageVersion; // Set composite key
     }
 
 }
