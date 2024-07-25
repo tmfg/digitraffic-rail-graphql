@@ -20,6 +20,7 @@ import jakarta.persistence.Transient;
 public class PassengerInformationAudio {
     @Id
     public Long id;
+
     @OneToOne
     @JoinColumns({
             @JoinColumn(name = "rami_message_id",
@@ -33,6 +34,10 @@ public class PassengerInformationAudio {
                         insertable = false,
                         updatable = false) })
     public PassengerInformationMessage message;
+    @Column(name = "rami_message_id")
+    public String messageId;
+    @Column(name = "rami_message_version")
+    public Integer messageVersion;
     public String textFi;
     public String textSv;
     public String textEn;
@@ -56,6 +61,9 @@ public class PassengerInformationAudio {
     @Transient
     public PassengerInformationAudioDeliveryRules deliveryRules;
 
+    @Transient
+    public String compositeMessageKey;
+
     @PostLoad
     public void setTransients() {
         this.text = new PassengerInformationTextContent(this.textFi, this.textSv, this.textEn);
@@ -63,6 +71,7 @@ public class PassengerInformationAudio {
                 new PassengerInformationAudioDeliveryRules(this.deliveryType, this.eventType, this.startDateTime, this.endDateTime, this.startTime,
                         this.endTime, this.weekDays, this.deliveryAt, this.repetitions != null ? this.repetitions : null,
                         this.repeatEvery != null ? this.repeatEvery : null);
+        this.compositeMessageKey = this.messageId + "-" + this.messageVersion; // Set composite key
     }
 
 }

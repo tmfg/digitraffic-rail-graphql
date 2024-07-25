@@ -289,6 +289,9 @@ type PassengerInformationMessageStation {
 type PassengerInformationAudio {
     text: PassengerInformationTextContent!
     deliveryRules: PassengerInformationAudioDeliveryRules!
+    messageId: String!
+    messageVersion: Int!
+    message: PassengerInformationMessage!
 }
 
 type PassengerInformationVideo {

@@ -9,8 +9,6 @@ import com.querydsl.core.Tuple;
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.model.DayOfWeekTO;
-import fi.digitraffic.graphql.rail.model.PassengerInformationAudioDeliveryRulesTO;
-import fi.digitraffic.graphql.rail.model.PassengerInformationAudioTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationTextContentTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationVideoDeliveryRulesTO;
@@ -18,23 +16,6 @@ import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
 
 @Component
 public class PassengerInformationMessageTOConverter {
-
-    protected PassengerInformationAudioTO createPassengerInformationAudioTO(final PassengerInformationMessage message) {
-        return new PassengerInformationAudioTO(
-                new PassengerInformationTextContentTO(message.audio.textFi, message.audio.textSv,
-                        message.audio.textEn),
-                new PassengerInformationAudioDeliveryRulesTO(message.audio.deliveryType,
-                        message.audio.eventType, message.audio.startDateTime,
-                        message.audio.endDateTime, message.audio.startTime,
-                        message.audio.endTime, message.audio.weekDays.stream()
-                        .map(weekDay -> DayOfWeekTO.valueOf(weekDay)).collect(
-                                Collectors.toList()), message.audio.deliveryAt,
-                        message.audio.repetitions != null ? message.audio.repetitions :
-                        null,
-                        message.audio.repeatEvery != null ? message.audio.repeatEvery :
-                        null)
-        );
-    }
 
     protected PassengerInformationVideoTO createPassengerInformationVideoTO(final PassengerInformationMessage message) {
         return new PassengerInformationVideoTO(
@@ -49,29 +30,18 @@ public class PassengerInformationMessageTOConverter {
     }
 
     public PassengerInformationMessageTO convert(final Tuple tuple) {
-        final PassengerInformationMessage message = tuple.get(QPassengerInformationMessage.passengerInformationMessage);
-
-        if (message == null) {
-            return null;
-        }
-
-        final PassengerInformationAudioTO audioTO = message.audio != null ? createPassengerInformationAudioTO(message)
-                                                                          : null;
-
-        final PassengerInformationVideoTO videoTO = message.video != null ? createPassengerInformationVideoTO(message)
-                                                                          : null;
-
-        return new PassengerInformationMessageTO(message.id.id,
-                message.id.version,
-                message.creationDateTime,
-                message.startValidity,
-                message.endValidity,
-                message.trainDepartureDate,
-                message.trainNumber != null ? message.trainNumber.intValue() : null,
+        return new PassengerInformationMessageTO(tuple.get(QPassengerInformationMessage.passengerInformationMessage.id.id),
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.id.version),
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.creationDateTime),
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.startValidity),
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.endValidity),
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate),
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.trainNumber) != null ?
+                tuple.get(QPassengerInformationMessage.passengerInformationMessage.trainNumber).intValue() : null,
                 null,
                 null,
-                audioTO,
-                videoTO);
+                null,
+                null);
     }
 
 }

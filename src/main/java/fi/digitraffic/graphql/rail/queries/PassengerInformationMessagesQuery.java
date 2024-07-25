@@ -3,7 +3,6 @@ package fi.digitraffic.graphql.rail.queries;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,20 +35,14 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
     private PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;
 
     public static JPAQuery<Tuple> getPassengerInformationBaseQuery(final JPAQueryFactory jpaQueryFactory, final EntityPath entityTable) {
-        final Expression<?>[] allFields = Stream.of(
-                QPassengerInformationMessage.passengerInformationMessage).toArray(Expression<?>[]::new);
-
         final JPAQuery<Tuple> maxVersions = jpaQueryFactory.select(
                         QPassengerInformationMessage.passengerInformationMessage.id.id,
                         QPassengerInformationMessage.passengerInformationMessage.id.version.max())
                 .from(QPassengerInformationMessage.passengerInformationMessage)
                 .groupBy(QPassengerInformationMessage.passengerInformationMessage.id.id);
 
-        return jpaQueryFactory.selectDistinct(allFields)
+        return jpaQueryFactory.selectDistinct(AllFields.PASSENGER_INFORMATION_MESSAGE)
                 .from(entityTable)
-                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.audio).fetchJoin()
-                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.video).fetchJoin()
-                .leftJoin(QPassengerInformationMessage.passengerInformationMessage.train).fetchJoin()
                 .where(Expressions.list(QPassengerInformationMessage.passengerInformationMessage.id.id,
                                 QPassengerInformationMessage.passengerInformationMessage.id.version).in(maxVersions)
                         .and(QPassengerInformationMessage.passengerInformationMessage.deleted.isNull()
