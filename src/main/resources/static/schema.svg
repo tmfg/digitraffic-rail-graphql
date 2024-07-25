@@ -493,43 +493,39 @@
 </g>
 <!-- PassengerInformationAudio -->
 <g id="node16" class="node"><title>PassengerInformationAudio</title>
-<polygon fill="none" stroke="black" points="7736.5,-500.744 7736.5,-525.744 8117.5,-525.744 8117.5,-500.744 7736.5,-500.744"/>
-<text text-anchor="start" x="7836.8" y="-509.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationAudio</text>
-<polygon fill="none" stroke="black" points="7736.5,-475.744 7736.5,-500.744 8117.5,-500.744 8117.5,-475.744 7736.5,-475.744"/>
-<text text-anchor="start" x="7797.92" y="-483.344" font-family="Times,serif" font-size="16.00">text: PassengerInformationTextContent!</text>
-<polygon fill="none" stroke="black" points="7736.5,-450.744 7736.5,-475.744 8117.5,-475.744 8117.5,-450.744 7736.5,-450.744"/>
-<text text-anchor="start" x="7739.28" y="-458.344" font-family="Times,serif" font-size="16.00">deliveryRules: PassengerInformationAudioDeliveryRules!</text>
-<polygon fill="none" stroke="black" points="7736.5,-425.744 7736.5,-450.744 8117.5,-450.744 8117.5,-425.744 7736.5,-425.744"/>
-<text text-anchor="start" x="7866.79" y="-433.344" font-family="Times,serif" font-size="16.00">messageId: String!</text>
-<polygon fill="none" stroke="black" points="7736.5,-400.744 7736.5,-425.744 8117.5,-425.744 8117.5,-400.744 7736.5,-400.744"/>
-<text text-anchor="start" x="7858.8" y="-408.344" font-family="Times,serif" font-size="16.00">messageVersion: Int!</text>
-<polygon fill="none" stroke="black" points="7736.5,-375.744 7736.5,-400.744 8117.5,-400.744 8117.5,-375.744 7736.5,-375.744"/>
-<text text-anchor="start" x="7794.83" y="-383.344" font-family="Times,serif" font-size="16.00">message: PassengerInformationMessage!</text>
+<polygon fill="none" stroke="black" points="7736.5,-381.744 7736.5,-406.744 8117.5,-406.744 8117.5,-381.744 7736.5,-381.744"/>
+<text text-anchor="start" x="7836.8" y="-390.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationAudio</text>
+<polygon fill="none" stroke="black" points="7736.5,-356.744 7736.5,-381.744 8117.5,-381.744 8117.5,-356.744 7736.5,-356.744"/>
+<text text-anchor="start" x="7797.92" y="-364.344" font-family="Times,serif" font-size="16.00">text: PassengerInformationTextContent!</text>
+<polygon fill="none" stroke="black" points="7736.5,-331.744 7736.5,-356.744 8117.5,-356.744 8117.5,-331.744 7736.5,-331.744"/>
+<text text-anchor="start" x="7739.28" y="-339.344" font-family="Times,serif" font-size="16.00">deliveryRules: PassengerInformationAudioDeliveryRules!</text>
+<polygon fill="none" stroke="black" points="7736.5,-306.744 7736.5,-331.744 8117.5,-331.744 8117.5,-306.744 7736.5,-306.744"/>
+<text text-anchor="start" x="7866.79" y="-314.344" font-family="Times,serif" font-size="16.00">messageId: String!</text>
+<polygon fill="none" stroke="black" points="7736.5,-281.744 7736.5,-306.744 8117.5,-306.744 8117.5,-281.744 7736.5,-281.744"/>
+<text text-anchor="start" x="7858.8" y="-289.344" font-family="Times,serif" font-size="16.00">messageVersion: Int!</text>
 </g>
 <!-- PassengerInformationMessage&#45;&gt;PassengerInformationAudio -->
 <g id="edge36" class="edge"><title>PassengerInformationMessage:audioport&#45;&gt;PassengerInformationAudio</title>
-<path fill="none" stroke="black" d="M7685.5,-281.744C7723.81,-281.744 7699.96,-330.635 7728,-356.744 7731.13,-359.655 7734.36,-362.492 7737.68,-365.255"/>
-<polygon fill="black" stroke="black" points="7735.6,-368.069 7745.6,-371.57 7739.97,-362.598 7735.6,-368.069"/>
+<path fill="none" stroke="black" d="M7685.5,-281.744C7696.14,-281.744 7706.95,-282.33 7717.82,-283.389"/>
+<polygon fill="black" stroke="black" points="7717.48,-286.873 7727.81,-284.491 7718.25,-279.915 7717.48,-286.873"/>
 </g>
 <!-- PassengerInformationVideo -->
 <g id="node17" class="node"><title>PassengerInformationVideo</title>
-<polygon fill="none" stroke="black" points="7736.5,-318.744 7736.5,-343.744 8116.5,-343.744 8116.5,-318.744 7736.5,-318.744"/>
-<text text-anchor="start" x="7836.75" y="-327.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationVideo</text>
-<polygon fill="none" stroke="black" points="7736.5,-293.744 7736.5,-318.744 8116.5,-318.744 8116.5,-293.744 7736.5,-293.744"/>
-<text text-anchor="start" x="7797.42" y="-301.344" font-family="Times,serif" font-size="16.00">text: PassengerInformationTextContent!</text>
-<polygon fill="none" stroke="black" points="7736.5,-268.744 7736.5,-293.744 8116.5,-293.744 8116.5,-268.744 7736.5,-268.744"/>
-<text text-anchor="start" x="7739.23" y="-276.344" font-family="Times,serif" font-size="16.00">deliveryRules: PassengerInformationVideoDeliveryRules!</text>
-<polygon fill="none" stroke="black" points="7736.5,-243.744 7736.5,-268.744 8116.5,-268.744 8116.5,-243.744 7736.5,-243.744"/>
-<text text-anchor="start" x="7866.29" y="-251.344" font-family="Times,serif" font-size="16.00">messageId: String!</text>
-<polygon fill="none" stroke="black" points="7736.5,-218.744 7736.5,-243.744 8116.5,-243.744 8116.5,-218.744 7736.5,-218.744"/>
-<text text-anchor="start" x="7858.3" y="-226.344" font-family="Times,serif" font-size="16.00">messageVersion: Int!</text>
-<polygon fill="none" stroke="black" points="7736.5,-193.744 7736.5,-218.744 8116.5,-218.744 8116.5,-193.744 7736.5,-193.744"/>
-<text text-anchor="start" x="7794.33" y="-201.344" font-family="Times,serif" font-size="16.00">message: PassengerInformationMessage!</text>
+<polygon fill="none" stroke="black" points="7736.5,-230.744 7736.5,-255.744 8116.5,-255.744 8116.5,-230.744 7736.5,-230.744"/>
+<text text-anchor="start" x="7836.75" y="-239.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationVideo</text>
+<polygon fill="none" stroke="black" points="7736.5,-205.744 7736.5,-230.744 8116.5,-230.744 8116.5,-205.744 7736.5,-205.744"/>
+<text text-anchor="start" x="7797.42" y="-213.344" font-family="Times,serif" font-size="16.00">text: PassengerInformationTextContent!</text>
+<polygon fill="none" stroke="black" points="7736.5,-180.744 7736.5,-205.744 8116.5,-205.744 8116.5,-180.744 7736.5,-180.744"/>
+<text text-anchor="start" x="7739.23" y="-188.344" font-family="Times,serif" font-size="16.00">deliveryRules: PassengerInformationVideoDeliveryRules!</text>
+<polygon fill="none" stroke="black" points="7736.5,-155.744 7736.5,-180.744 8116.5,-180.744 8116.5,-155.744 7736.5,-155.744"/>
+<text text-anchor="start" x="7866.29" y="-163.344" font-family="Times,serif" font-size="16.00">messageId: String!</text>
+<polygon fill="none" stroke="black" points="7736.5,-130.744 7736.5,-155.744 8116.5,-155.744 8116.5,-130.744 7736.5,-130.744"/>
+<text text-anchor="start" x="7858.3" y="-138.344" font-family="Times,serif" font-size="16.00">messageVersion: Int!</text>
 </g>
 <!-- PassengerInformationMessage&#45;&gt;PassengerInformationVideo -->
 <g id="edge37" class="edge"><title>PassengerInformationMessage:videoport&#45;&gt;PassengerInformationVideo</title>
-<path fill="none" stroke="black" d="M7685.5,-256.744C7696.2,-256.744 7707.17,-256.864 7718.24,-257.081"/>
-<polygon fill="black" stroke="black" points="7718.35,-260.584 7728.43,-257.306 7718.51,-253.586 7718.35,-260.584"/>
+<path fill="none" stroke="black" d="M7685.5,-256.744C7696.3,-256.744 7707.29,-256.139 7718.32,-255.049"/>
+<polygon fill="black" stroke="black" points="7718.92,-258.505 7728.47,-253.914 7718.14,-251.548 7718.92,-258.505"/>
 </g>
 <!-- TrainCategory -->
 <g id="node18" class="node"><title>TrainCategory</title>
@@ -673,88 +669,78 @@
 <path fill="none" stroke="black" d="M6446,-394.744C6456.8,-394.744 6467.7,-394.744 6478.68,-394.744"/>
 <polygon fill="black" stroke="black" points="6478.78,-398.244 6488.78,-394.744 6478.78,-391.244 6478.78,-398.244"/>
 </g>
-<!-- PassengerInformationAudio&#45;&gt;PassengerInformationMessage -->
-<g id="edge53" class="edge"><title>PassengerInformationAudio:messageport&#45;&gt;PassengerInformationMessage</title>
-<path fill="none" stroke="black" d="M7735.5,-387.744C7724.59,-387.744 7713.57,-387.754 7702.47,-387.774"/>
-<polygon fill="black" stroke="black" points="7702.25,-384.274 7692.25,-387.794 7702.26,-391.274 7702.25,-384.274"/>
-</g>
 <!-- PassengerInformationTextContent -->
 <g id="node23" class="node"><title>PassengerInformationTextContent</title>
-<polygon fill="none" stroke="black" points="8388.5,-401.744 8388.5,-426.744 8614.5,-426.744 8614.5,-401.744 8388.5,-401.744"/>
-<text text-anchor="start" x="8391.31" y="-410.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationTextContent</text>
-<polygon fill="none" stroke="black" points="8388.5,-376.744 8388.5,-401.744 8614.5,-401.744 8614.5,-376.744 8388.5,-376.744"/>
-<text text-anchor="start" x="8472.83" y="-384.344" font-family="Times,serif" font-size="16.00">fi: String</text>
-<polygon fill="none" stroke="black" points="8388.5,-351.744 8388.5,-376.744 8614.5,-376.744 8614.5,-351.744 8388.5,-351.744"/>
-<text text-anchor="start" x="8470.61" y="-359.344" font-family="Times,serif" font-size="16.00">sv: String</text>
-<polygon fill="none" stroke="black" points="8388.5,-326.744 8388.5,-351.744 8614.5,-351.744 8614.5,-326.744 8388.5,-326.744"/>
-<text text-anchor="start" x="8470.17" y="-334.344" font-family="Times,serif" font-size="16.00">en: String</text>
+<polygon fill="none" stroke="black" points="8388.5,-312.744 8388.5,-337.744 8614.5,-337.744 8614.5,-312.744 8388.5,-312.744"/>
+<text text-anchor="start" x="8391.31" y="-321.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationTextContent</text>
+<polygon fill="none" stroke="black" points="8388.5,-287.744 8388.5,-312.744 8614.5,-312.744 8614.5,-287.744 8388.5,-287.744"/>
+<text text-anchor="start" x="8472.83" y="-295.344" font-family="Times,serif" font-size="16.00">fi: String</text>
+<polygon fill="none" stroke="black" points="8388.5,-262.744 8388.5,-287.744 8614.5,-287.744 8614.5,-262.744 8388.5,-262.744"/>
+<text text-anchor="start" x="8470.61" y="-270.344" font-family="Times,serif" font-size="16.00">sv: String</text>
+<polygon fill="none" stroke="black" points="8388.5,-237.744 8388.5,-262.744 8614.5,-262.744 8614.5,-237.744 8388.5,-237.744"/>
+<text text-anchor="start" x="8470.17" y="-245.344" font-family="Times,serif" font-size="16.00">en: String</text>
 </g>
 <!-- PassengerInformationAudio&#45;&gt;PassengerInformationTextContent -->
 <g id="edge51" class="edge"><title>PassengerInformationAudio:textport&#45;&gt;PassengerInformationTextContent</title>
-<path fill="none" stroke="black" d="M8118.5,-488.744C8147.33,-488.744 8135.98,-454.065 8161,-439.744 8224.22,-403.556 8303.91,-387.528 8370.2,-380.675"/>
-<polygon fill="black" stroke="black" points="8370.68,-384.144 8380.3,-379.69 8370,-377.177 8370.68,-384.144"/>
+<path fill="none" stroke="black" d="M8118.5,-369.744C8139.19,-369.744 8141.25,-356.897 8161,-350.744 8228.64,-329.676 8306.18,-314.634 8370.06,-304.544"/>
+<polygon fill="black" stroke="black" points="8370.85,-307.963 8380.2,-302.967 8369.78,-301.047 8370.85,-307.963"/>
 </g>
 <!-- PassengerInformationAudioDeliveryRules -->
 <g id="node24" class="node"><title>PassengerInformationAudioDeliveryRules</title>
-<polygon fill="none" stroke="black" points="8169.5,-702.744 8169.5,-727.744 8834.5,-727.744 8834.5,-702.744 8169.5,-702.744"/>
-<text text-anchor="start" x="8365.6" y="-711.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationAudioDeliveryRules</text>
-<polygon fill="none" stroke="black" points="8169.5,-677.744 8169.5,-702.744 8834.5,-702.744 8834.5,-677.744 8169.5,-677.744"/>
-<text text-anchor="start" x="8435.57" y="-685.344" font-family="Times,serif" font-size="16.00">deliveryType: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-652.744 8169.5,-677.744 8834.5,-677.744 8834.5,-652.744 8169.5,-652.744"/>
-<text text-anchor="start" x="8444.46" y="-660.344" font-family="Times,serif" font-size="16.00">eventType: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-627.744 8169.5,-652.744 8834.5,-652.744 8834.5,-627.744 8169.5,-627.744"/>
-<text text-anchor="start" x="8420.03" y="-635.344" font-family="Times,serif" font-size="16.00">startDateTime: DateTime</text>
-<polygon fill="none" stroke="black" points="8169.5,-602.744 8169.5,-627.744 8834.5,-627.744 8834.5,-602.744 8169.5,-602.744"/>
-<text text-anchor="start" x="8422.25" y="-610.344" font-family="Times,serif" font-size="16.00">endDateTime: DateTime</text>
-<polygon fill="none" stroke="black" points="8169.5,-577.744 8169.5,-602.744 8834.5,-602.744 8834.5,-577.744 8169.5,-577.744"/>
-<text text-anchor="start" x="8447.56" y="-585.344" font-family="Times,serif" font-size="16.00">startTime: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-552.744 8169.5,-577.744 8834.5,-577.744 8834.5,-552.744 8169.5,-552.744"/>
-<text text-anchor="start" x="8449.78" y="-560.344" font-family="Times,serif" font-size="16.00">endTime: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-527.744 8169.5,-552.744 8834.5,-552.744 8834.5,-527.744 8169.5,-527.744"/>
-<text text-anchor="start" x="8172.17" y="-535.344" font-family="Times,serif" font-size="16.00">weekDays(where:DayOfWeekWhere, skip:Int, take:Int, orderBy:DayOfWeekOrderBy): [DayOfWeek]</text>
-<polygon fill="none" stroke="black" points="8169.5,-502.744 8169.5,-527.744 8834.5,-527.744 8834.5,-502.744 8169.5,-502.744"/>
-<text text-anchor="start" x="8431.58" y="-510.344" font-family="Times,serif" font-size="16.00">deliveryAt: DateTime</text>
-<polygon fill="none" stroke="black" points="8169.5,-477.744 8169.5,-502.744 8834.5,-502.744 8834.5,-477.744 8169.5,-477.744"/>
-<text text-anchor="start" x="8455.12" y="-485.344" font-family="Times,serif" font-size="16.00">repetitions: Int</text>
-<polygon fill="none" stroke="black" points="8169.5,-452.744 8169.5,-477.744 8834.5,-477.744 8834.5,-452.744 8169.5,-452.744"/>
-<text text-anchor="start" x="8450.25" y="-460.344" font-family="Times,serif" font-size="16.00">repeatEvery: Int</text>
+<polygon fill="none" stroke="black" points="8169.5,-613.744 8169.5,-638.744 8834.5,-638.744 8834.5,-613.744 8169.5,-613.744"/>
+<text text-anchor="start" x="8365.6" y="-622.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationAudioDeliveryRules</text>
+<polygon fill="none" stroke="black" points="8169.5,-588.744 8169.5,-613.744 8834.5,-613.744 8834.5,-588.744 8169.5,-588.744"/>
+<text text-anchor="start" x="8435.57" y="-596.344" font-family="Times,serif" font-size="16.00">deliveryType: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-563.744 8169.5,-588.744 8834.5,-588.744 8834.5,-563.744 8169.5,-563.744"/>
+<text text-anchor="start" x="8444.46" y="-571.344" font-family="Times,serif" font-size="16.00">eventType: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-538.744 8169.5,-563.744 8834.5,-563.744 8834.5,-538.744 8169.5,-538.744"/>
+<text text-anchor="start" x="8420.03" y="-546.344" font-family="Times,serif" font-size="16.00">startDateTime: DateTime</text>
+<polygon fill="none" stroke="black" points="8169.5,-513.744 8169.5,-538.744 8834.5,-538.744 8834.5,-513.744 8169.5,-513.744"/>
+<text text-anchor="start" x="8422.25" y="-521.344" font-family="Times,serif" font-size="16.00">endDateTime: DateTime</text>
+<polygon fill="none" stroke="black" points="8169.5,-488.744 8169.5,-513.744 8834.5,-513.744 8834.5,-488.744 8169.5,-488.744"/>
+<text text-anchor="start" x="8447.56" y="-496.344" font-family="Times,serif" font-size="16.00">startTime: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-463.744 8169.5,-488.744 8834.5,-488.744 8834.5,-463.744 8169.5,-463.744"/>
+<text text-anchor="start" x="8449.78" y="-471.344" font-family="Times,serif" font-size="16.00">endTime: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-438.744 8169.5,-463.744 8834.5,-463.744 8834.5,-438.744 8169.5,-438.744"/>
+<text text-anchor="start" x="8172.17" y="-446.344" font-family="Times,serif" font-size="16.00">weekDays(where:DayOfWeekWhere, skip:Int, take:Int, orderBy:DayOfWeekOrderBy): [DayOfWeek]</text>
+<polygon fill="none" stroke="black" points="8169.5,-413.744 8169.5,-438.744 8834.5,-438.744 8834.5,-413.744 8169.5,-413.744"/>
+<text text-anchor="start" x="8431.58" y="-421.344" font-family="Times,serif" font-size="16.00">deliveryAt: DateTime</text>
+<polygon fill="none" stroke="black" points="8169.5,-388.744 8169.5,-413.744 8834.5,-413.744 8834.5,-388.744 8169.5,-388.744"/>
+<text text-anchor="start" x="8455.12" y="-396.344" font-family="Times,serif" font-size="16.00">repetitions: Int</text>
+<polygon fill="none" stroke="black" points="8169.5,-363.744 8169.5,-388.744 8834.5,-388.744 8834.5,-363.744 8169.5,-363.744"/>
+<text text-anchor="start" x="8450.25" y="-371.344" font-family="Times,serif" font-size="16.00">repeatEvery: Int</text>
 </g>
 <!-- PassengerInformationAudio&#45;&gt;PassengerInformationAudioDeliveryRules -->
 <g id="edge52" class="edge"><title>PassengerInformationAudio:deliveryRulesport&#45;&gt;PassengerInformationAudioDeliveryRules</title>
-<path fill="none" stroke="black" d="M8118.5,-463.744C8129.09,-463.744 8139.77,-464.189 8150.48,-465.027"/>
-<polygon fill="black" stroke="black" points="8150.49,-468.541 8160.77,-465.948 8151.12,-461.569 8150.49,-468.541"/>
-</g>
-<!-- PassengerInformationVideo&#45;&gt;PassengerInformationMessage -->
-<g id="edge56" class="edge"><title>PassengerInformationVideo:messageport&#45;&gt;PassengerInformationMessage</title>
-<path fill="none" stroke="black" d="M7735.5,-205.744C7656.86,-205.744 7574.93,-218.879 7496.9,-238.224"/>
-<polygon fill="black" stroke="black" points="7495.76,-234.904 7486.91,-240.74 7497.46,-241.692 7495.76,-234.904"/>
+<path fill="none" stroke="black" d="M8118.5,-343.744C8126.58,-343.744 8143.65,-348.635 8166.28,-356.697"/>
+<polygon fill="black" stroke="black" points="8165.35,-360.083 8175.95,-360.205 8167.74,-353.503 8165.35,-360.083"/>
 </g>
 <!-- PassengerInformationVideo&#45;&gt;PassengerInformationTextContent -->
-<g id="edge54" class="edge"><title>PassengerInformationVideo:textport&#45;&gt;PassengerInformationTextContent</title>
-<path fill="none" stroke="black" d="M8117.5,-306.744C8130.43,-306.744 8264.66,-331.739 8370.61,-351.857"/>
-<polygon fill="black" stroke="black" points="8369.97,-355.298 8380.45,-353.726 8371.28,-348.421 8369.97,-355.298"/>
+<g id="edge53" class="edge"><title>PassengerInformationVideo:textport&#45;&gt;PassengerInformationTextContent</title>
+<path fill="none" stroke="black" d="M8117.5,-218.744C8142.8,-218.744 8269.57,-242.358 8370.44,-261.958"/>
+<polygon fill="black" stroke="black" points="8369.94,-265.426 8380.42,-263.901 8371.28,-258.555 8369.94,-265.426"/>
 </g>
 <!-- PassengerInformationVideoDeliveryRules -->
 <g id="node25" class="node"><title>PassengerInformationVideoDeliveryRules</title>
-<polygon fill="none" stroke="black" points="8169.5,-274.744 8169.5,-299.744 8834.5,-299.744 8834.5,-274.744 8169.5,-274.744"/>
-<text text-anchor="start" x="8366.05" y="-283.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationVideoDeliveryRules</text>
-<polygon fill="none" stroke="black" points="8169.5,-249.744 8169.5,-274.744 8834.5,-274.744 8834.5,-249.744 8169.5,-249.744"/>
-<text text-anchor="start" x="8435.57" y="-257.344" font-family="Times,serif" font-size="16.00">deliveryType: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-224.744 8169.5,-249.744 8834.5,-249.744 8834.5,-224.744 8169.5,-224.744"/>
-<text text-anchor="start" x="8420.03" y="-232.344" font-family="Times,serif" font-size="16.00">startDateTime: DateTime</text>
-<polygon fill="none" stroke="black" points="8169.5,-199.744 8169.5,-224.744 8834.5,-224.744 8834.5,-199.744 8169.5,-199.744"/>
-<text text-anchor="start" x="8422.25" y="-207.344" font-family="Times,serif" font-size="16.00">endDateTime: DateTime</text>
-<polygon fill="none" stroke="black" points="8169.5,-174.744 8169.5,-199.744 8834.5,-199.744 8834.5,-174.744 8169.5,-174.744"/>
-<text text-anchor="start" x="8447.56" y="-182.344" font-family="Times,serif" font-size="16.00">startTime: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-149.744 8169.5,-174.744 8834.5,-174.744 8834.5,-149.744 8169.5,-149.744"/>
-<text text-anchor="start" x="8449.78" y="-157.344" font-family="Times,serif" font-size="16.00">endTime: String</text>
-<polygon fill="none" stroke="black" points="8169.5,-124.744 8169.5,-149.744 8834.5,-149.744 8834.5,-124.744 8169.5,-124.744"/>
-<text text-anchor="start" x="8172.17" y="-132.344" font-family="Times,serif" font-size="16.00">weekDays(where:DayOfWeekWhere, skip:Int, take:Int, orderBy:DayOfWeekOrderBy): [DayOfWeek]</text>
+<polygon fill="none" stroke="black" points="8169.5,-185.744 8169.5,-210.744 8834.5,-210.744 8834.5,-185.744 8169.5,-185.744"/>
+<text text-anchor="start" x="8366.05" y="-194.344" font-family="Times,serif" font-weight="bold" font-size="16.00">PassengerInformationVideoDeliveryRules</text>
+<polygon fill="none" stroke="black" points="8169.5,-160.744 8169.5,-185.744 8834.5,-185.744 8834.5,-160.744 8169.5,-160.744"/>
+<text text-anchor="start" x="8435.57" y="-168.344" font-family="Times,serif" font-size="16.00">deliveryType: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-135.744 8169.5,-160.744 8834.5,-160.744 8834.5,-135.744 8169.5,-135.744"/>
+<text text-anchor="start" x="8420.03" y="-143.344" font-family="Times,serif" font-size="16.00">startDateTime: DateTime</text>
+<polygon fill="none" stroke="black" points="8169.5,-110.744 8169.5,-135.744 8834.5,-135.744 8834.5,-110.744 8169.5,-110.744"/>
+<text text-anchor="start" x="8422.25" y="-118.344" font-family="Times,serif" font-size="16.00">endDateTime: DateTime</text>
+<polygon fill="none" stroke="black" points="8169.5,-85.7438 8169.5,-110.744 8834.5,-110.744 8834.5,-85.7438 8169.5,-85.7438"/>
+<text text-anchor="start" x="8447.56" y="-93.3438" font-family="Times,serif" font-size="16.00">startTime: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-60.7438 8169.5,-85.7438 8834.5,-85.7438 8834.5,-60.7438 8169.5,-60.7438"/>
+<text text-anchor="start" x="8449.78" y="-68.3438" font-family="Times,serif" font-size="16.00">endTime: String</text>
+<polygon fill="none" stroke="black" points="8169.5,-35.7438 8169.5,-60.7438 8834.5,-60.7438 8834.5,-35.7438 8169.5,-35.7438"/>
+<text text-anchor="start" x="8172.17" y="-43.3438" font-family="Times,serif" font-size="16.00">weekDays(where:DayOfWeekWhere, skip:Int, take:Int, orderBy:DayOfWeekOrderBy): [DayOfWeek]</text>
 </g>
 <!-- PassengerInformationVideo&#45;&gt;PassengerInformationVideoDeliveryRules -->
-<g id="edge55" class="edge"><title>PassengerInformationVideo:deliveryRulesport&#45;&gt;PassengerInformationVideoDeliveryRules</title>
-<path fill="none" stroke="black" d="M8117.5,-281.744C8128.43,-281.744 8139.5,-281.468 8150.66,-280.952"/>
-<polygon fill="black" stroke="black" points="8151.13,-284.433 8160.94,-280.412 8150.77,-277.442 8151.13,-284.433"/>
+<g id="edge54" class="edge"><title>PassengerInformationVideo:deliveryRulesport&#45;&gt;PassengerInformationVideoDeliveryRules</title>
+<path fill="none" stroke="black" d="M8117.5,-192.744C8128.43,-192.744 8139.5,-192.468 8150.66,-191.952"/>
+<polygon fill="black" stroke="black" points="8151.13,-195.433 8160.94,-191.412 8150.77,-188.442 8151.13,-195.433"/>
 </g>
 <!-- CategoryCode -->
 <g id="node26" class="node"><title>CategoryCode</title>
@@ -770,7 +756,7 @@
 <text text-anchor="start" x="6265.79" y="-1156.34" font-family="Times,serif" font-size="16.00">validTo: Date</text>
 </g>
 <!-- Cause&#45;&gt;CategoryCode -->
-<g id="edge57" class="edge"><title>Cause:categoryCodeport&#45;&gt;CategoryCode</title>
+<g id="edge55" class="edge"><title>Cause:categoryCodeport&#45;&gt;CategoryCode</title>
 <path fill="none" stroke="black" d="M5683,-1086.74C5885.39,-1086.74 6117.58,-1150.35 6234.06,-1186.82"/>
 <polygon fill="black" stroke="black" points="6233.02,-1190.16 6243.61,-1189.83 6235.13,-1183.48 6233.02,-1190.16"/>
 </g>
@@ -788,7 +774,7 @@
 <text text-anchor="start" x="6265.79" y="-1005.34" font-family="Times,serif" font-size="16.00">validTo: Date</text>
 </g>
 <!-- Cause&#45;&gt;DetailedCategoryCode -->
-<g id="edge58" class="edge"><title>Cause:detailedCategoryCodeport&#45;&gt;DetailedCategoryCode</title>
+<g id="edge56" class="edge"><title>Cause:detailedCategoryCodeport&#45;&gt;DetailedCategoryCode</title>
 <path fill="none" stroke="black" d="M5683,-1060.74C5872.22,-1060.74 6093.61,-1060.74 6215.89,-1060.74"/>
 <polygon fill="black" stroke="black" points="6215.97,-1064.24 6225.97,-1060.74 6215.97,-1057.24 6215.97,-1064.24"/>
 </g>
@@ -808,7 +794,7 @@
 <text text-anchor="start" x="6266.29" y="-829.344" font-family="Times,serif" font-size="16.00">validTo: Date</text>
 </g>
 <!-- Cause&#45;&gt;ThirdCategoryCode -->
-<g id="edge59" class="edge"><title>Cause:thirdCategoryCodeport&#45;&gt;ThirdCategoryCode</title>
+<g id="edge57" class="edge"><title>Cause:thirdCategoryCodeport&#45;&gt;ThirdCategoryCode</title>
 <path fill="none" stroke="black" d="M5683,-1035.74C5881.43,-1035.74 6107.01,-968.362 6225.74,-927.427"/>
 <polygon fill="black" stroke="black" points="6227.2,-930.626 6235.5,-924.04 6224.9,-924.013 6227.2,-930.626"/>
 </g>

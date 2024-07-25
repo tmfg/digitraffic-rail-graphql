@@ -291,7 +291,6 @@ type PassengerInformationAudio {
     deliveryRules: PassengerInformationAudioDeliveryRules!
     messageId: String!
     messageVersion: Int!
-    message: PassengerInformationMessage!
 }
 
 type PassengerInformationVideo {
@@ -299,7 +298,6 @@ type PassengerInformationVideo {
     deliveryRules: PassengerInformationVideoDeliveryRules!
     messageId: String!
     messageVersion: Int!
-    message: PassengerInformationMessage!
 }
 
 type PassengerInformationVideoDeliveryRules {

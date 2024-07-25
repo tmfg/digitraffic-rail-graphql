@@ -28,7 +28,7 @@ public class PassengerInformationVideoTOConverter {
                                 .map(weekDay -> DayOfWeekTO.valueOf(weekDay)).collect(
                                         Collectors.toList())),
                 tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageId),
-                tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageVersion), null
+                tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageVersion)
         );
     }
 }

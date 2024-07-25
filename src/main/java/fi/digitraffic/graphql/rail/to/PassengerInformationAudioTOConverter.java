@@ -32,7 +32,7 @@ public class PassengerInformationAudioTOConverter {
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.repetitions),
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.repeatEvery)),
                 tuple.get(QPassengerInformationAudio.passengerInformationAudio.messageId),
-                tuple.get(QPassengerInformationAudio.passengerInformationAudio.messageVersion), null
+                tuple.get(QPassengerInformationAudio.passengerInformationAudio.messageVersion)
         );
     }
 }
