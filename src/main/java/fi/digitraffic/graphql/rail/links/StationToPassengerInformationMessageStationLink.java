@@ -27,10 +27,11 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageStationTOConverter;
 
 @Component
-public class StationToPassengerInformationStationLink extends
+public class StationToPassengerInformationMessageStationLink extends
         OneToManyLink<String, StationTO, PassengerInformationMessageStation, PassengerInformationMessageStationTO> {
 
-    public static JPAQuery<Tuple> getPassengerInformationStationBaseQuery(final JPAQueryFactory jpaQueryFactory, final EntityPath entityTable) {
+    public static JPAQuery<Tuple> getPassengerInformationMessageStationBaseQuery(final JPAQueryFactory jpaQueryFactory,
+                                                                                 final EntityPath entityTable) {
 
         final JPAQuery<Tuple> maxVersions = jpaQueryFactory.select(
                         QPassengerInformationMessageStation.passengerInformationMessageStation.messageId,
@@ -106,7 +107,7 @@ public class StationToPassengerInformationStationLink extends
     @Override
     public BatchLoaderWithContext<String, List<PassengerInformationMessageStationTO>> createLoader() {
         final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
-            return getPassengerInformationStationBaseQuery(queryFactory, getEntityTable());
+            return getPassengerInformationMessageStationBaseQuery(queryFactory, getEntityTable());
         };
 
         return doCreateLoader(queryAfterFromFunction);
