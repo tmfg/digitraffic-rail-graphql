@@ -1,10 +1,10 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.HKI;
-import static fi.digitraffic.graphql.rail.util.TestDataUtils.INSERT_INTO_RAMI_MESSAGE_SQL;
-import static fi.digitraffic.graphql.rail.util.TestDataUtils.INSERT_INTO_RAMI_MESSAGE_STATION_SQL;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.TPE;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.dateFormat;
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessage;
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessageStation;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
@@ -28,16 +28,16 @@ public class PassengerInformationMessagesByStationQueryTest extends BaseWebMVCTe
     @Transactional
     public void setUp() {
         // cannot use the factory classes to insert rami message station data via JPA repository, because
-        // PassengerInformationMessage must be defined as not insertable in the JPA entity PassengerInformationMessageStation
-        jdbcTemplate.update(INSERT_INTO_RAMI_MESSAGE_SQL, 1, 1, "2023-01-01 00:00:00", ZonedDateTime.now().minusDays(1).format(dateFormat),
+        // fields from columns rami_message_id and rami_message_version must have "insertable = false" in the JPA entity PassengerInformationMessageStation
+        insertRamiMessage(jdbcTemplate, "1", 1, "2023-01-01 00:00:00", ZonedDateTime.now().minusDays(1).format(dateFormat),
                 ZonedDateTime.now().plusDays(1).format(dateFormat), null, null, PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE.name());
-        jdbcTemplate.update(INSERT_INTO_RAMI_MESSAGE_SQL, 2, 1, "2024-01-01 00:00:00", ZonedDateTime.now().minusDays(1).format(dateFormat),
-                ZonedDateTime.now().plusDays(1).format(dateFormat), 1, LocalDate.of(2024, 1, 1),
+        insertRamiMessage(jdbcTemplate, "2", 1, "2024-01-01 00:00:00", ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), 1, LocalDate.of(2024, 1, 1).toString(),
                 PassengerInformationMessage.MessageType.MONITORED_JOURNEY_SCHEDULED_MESSAGE.name());
-        jdbcTemplate.update(INSERT_INTO_RAMI_MESSAGE_STATION_SQL, 1, 1, 1, HKI);
-        jdbcTemplate.update(INSERT_INTO_RAMI_MESSAGE_STATION_SQL, 2, 1, 1, TPE);
-        jdbcTemplate.update(INSERT_INTO_RAMI_MESSAGE_STATION_SQL, 3, 2, 1, HKI);
-        jdbcTemplate.update(INSERT_INTO_RAMI_MESSAGE_STATION_SQL, 4, 2, 1, TPE);
+        insertRamiMessageStation(jdbcTemplate, "1", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "1", 1, TPE);
+        insertRamiMessageStation(jdbcTemplate, "2", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "2", 1, TPE);
     }
 
     @Test

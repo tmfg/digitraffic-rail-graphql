@@ -30,7 +30,7 @@ cache:
 
 digitraffic:
   max-returned-rows: 250
-  batch-load-size: 500
+  batch-load-size: 600
   hidden-fields:
     - "Train.trainTypeId"
     - "Train.operatorShortCode"
