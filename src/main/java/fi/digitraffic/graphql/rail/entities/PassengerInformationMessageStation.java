@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +13,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "rami_message_station")
-public class PassengerInformationStation {
+public class PassengerInformationMessageStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
@@ -21,12 +22,12 @@ public class PassengerInformationStation {
             @JoinColumn(name = "rami_message_id",
                         referencedColumnName = "id",
                         nullable = false,
-                        insertable = true,
+                        insertable = false,
                         updatable = false),
             @JoinColumn(name = "rami_message_version",
                         referencedColumnName = "version",
                         nullable = false,
-                        insertable = true,
+                        insertable = false,
                         updatable = false) })
     public PassengerInformationMessage message;
     public String stationShortCode;
@@ -37,17 +38,22 @@ public class PassengerInformationStation {
                 insertable = false)
     public Station station;
 
-    public PassengerInformationStation() {
+    @Column(name = "rami_message_id")
+    public String messageId;
+    @Column(name = "rami_message_version")
+    public Integer messageVersion;
+
+    public PassengerInformationMessageStation() {
     }
 
-    public PassengerInformationStation(final PassengerInformationMessage message, final String stationShortCode) {
+    public PassengerInformationMessageStation(final PassengerInformationMessage message, final String stationShortCode) {
         this.message = message;
         this.stationShortCode = stationShortCode;
     }
 
     @Override
     public String toString() {
-        return "PassengerInformationStation{" +
+        return "PassengerInformationMessageStation{" +
                 "id=" + id +
                 ", stationShortCode='" + stationShortCode + '\'' +
                 '}';

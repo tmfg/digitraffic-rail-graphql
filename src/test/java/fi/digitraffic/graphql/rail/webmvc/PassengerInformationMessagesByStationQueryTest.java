@@ -1,33 +1,47 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.HKI;
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.TPE;
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.dateFormat;
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessage;
+import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessageStation;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
-import fi.digitraffic.graphql.rail.factory.PassengerInformationMessageFactory;
+import jakarta.transaction.Transactional;
 
 public class PassengerInformationMessagesByStationQueryTest extends BaseWebMVCTest {
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    @Transactional
+    public void setUp() {
+        // cannot use the factory classes to insert rami message station data via JPA repository, because
+        // fields from columns rami_message_id and rami_message_version must have "insertable = false" in the JPA entity PassengerInformationMessageStation
+        insertRamiMessage(jdbcTemplate, "1", 1, "2023-01-01 00:00:00", ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), null, null, PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE.name());
+        insertRamiMessage(jdbcTemplate, "2", 1, "2024-01-01 00:00:00", ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), 1, LocalDate.of(2024, 1, 1).toString(),
+                PassengerInformationMessage.MessageType.MONITORED_JOURNEY_SCHEDULED_MESSAGE.name());
+        insertRamiMessageStation(jdbcTemplate, "1", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "1", 1, TPE);
+        insertRamiMessageStation(jdbcTemplate, "2", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "2", 1, TPE);
+    }
+
     @Test
     public void testPassengerInformationMessagesByStationQuery() throws Exception {
-        final PassengerInformationMessageFactory factory = factoryService.getPassengerInformationMessageFactory();
-
-        final String helsinki = "HKI";
-        final String tampere = "TPE";
-        final List<String> stations = List.of(helsinki, tampere);
-
-        factory.create("1", 1, ZonedDateTime.now().minusDays(1),
-                ZonedDateTime.now().plusDays(1), stations, PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE);
-        factory.create("2", 1, ZonedDateTime.now().minusDays(1),
-                ZonedDateTime.now().plusDays(1),
-                LocalDate.of(2024, 1, 1), 1, stations);
-
         final ResultActions result =
                 this.query("{ passengerInformationMessagesByStation(stationShortCode: \"HKI\", onlyGeneral: true) { id }}");
 

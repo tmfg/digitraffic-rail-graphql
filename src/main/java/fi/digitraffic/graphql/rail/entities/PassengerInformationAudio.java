@@ -20,6 +20,7 @@ import jakarta.persistence.Transient;
 public class PassengerInformationAudio {
     @Id
     public Long id;
+
     @OneToOne
     @JoinColumns({
             @JoinColumn(name = "rami_message_id",
@@ -33,6 +34,10 @@ public class PassengerInformationAudio {
                         insertable = false,
                         updatable = false) })
     public PassengerInformationMessage message;
+    @Column(name = "rami_message_id")
+    public String messageId;
+    @Column(name = "rami_message_version")
+    public Integer messageVersion;
     public String textFi;
     public String textSv;
     public String textEn;

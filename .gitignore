@@ -8,7 +8,10 @@
 !src/
 !src/**/
 !src/**/java/**/*.java
-!src/**/resources/*
+!src/**/resources/**/*.yml
+!src/**/resources/**/*.svg
+!src/**/resources/**/*.graphqls
+!src/**/resources/**/*.properties
 
 !.github/
 !.github/**/

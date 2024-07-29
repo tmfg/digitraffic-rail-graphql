@@ -176,7 +176,7 @@ type Station {
     uicCode : Int!
     type : StationType!
     timeTableRows: [TimeTableRow]
-    passengerInformationMessages: [PassengerInformationMessage]
+    stationMessages: [PassengerInformationMessageStation]
 }
 
 type CategoryCode {
@@ -273,24 +273,31 @@ type PassengerInformationMessage {
     trainDepartureDate: Date
     trainNumber: Int
     train: Train
-    stations: [PassengerInformationStation]
+    messageStations: [PassengerInformationMessageStation]
     audio: PassengerInformationAudio
     video: PassengerInformationVideo
 }
 
-type PassengerInformationStation {
+type PassengerInformationMessageStation {
     stationShortCode: String!
-    station: Station
+    station: Station!
+    message: PassengerInformationMessage!
+    messageId: String!
+    messageVersion: Int!
 }
 
 type PassengerInformationAudio {
     text: PassengerInformationTextContent!
     deliveryRules: PassengerInformationAudioDeliveryRules!
+    messageId: String!
+    messageVersion: Int!
 }
 
 type PassengerInformationVideo {
     text: PassengerInformationTextContent!
     deliveryRules: PassengerInformationVideoDeliveryRules!
+    messageId: String!
+    messageVersion: Int!
 }
 
 type PassengerInformationVideoDeliveryRules {

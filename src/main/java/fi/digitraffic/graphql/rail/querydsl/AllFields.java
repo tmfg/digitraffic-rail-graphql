@@ -9,7 +9,10 @@ import fi.digitraffic.graphql.rail.entities.QDetailedCategoryCode;
 import fi.digitraffic.graphql.rail.entities.QJourneySection;
 import fi.digitraffic.graphql.rail.entities.QLocomotive;
 import fi.digitraffic.graphql.rail.entities.QOperator;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationAudio;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
+import fi.digitraffic.graphql.rail.entities.QPassengerInformationVideo;
 import fi.digitraffic.graphql.rail.entities.QRoutesection;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.QStation;
@@ -235,8 +238,46 @@ public class AllFields {
             QPassengerInformationMessage.passengerInformationMessage.endValidity,
             QPassengerInformationMessage.passengerInformationMessage.trainNumber,
             QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
-            QPassengerInformationMessage.passengerInformationMessage.stations,
-            QPassengerInformationMessage.passengerInformationMessage.audio,
-            QPassengerInformationMessage.passengerInformationMessage.video
+            };
+
+    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_STATION = new Expression[] {
+            QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode,
+            QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion,
+            QPassengerInformationMessageStation.passengerInformationMessageStation.messageId,
+            };
+
+    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_AUDIO = new Expression[] {
+            QPassengerInformationAudio.passengerInformationAudio.id,
+            QPassengerInformationAudio.passengerInformationAudio.textEn,
+            QPassengerInformationAudio.passengerInformationAudio.textFi,
+            QPassengerInformationAudio.passengerInformationAudio.textSv,
+            QPassengerInformationAudio.passengerInformationAudio.startDateTime,
+            QPassengerInformationAudio.passengerInformationAudio.endDateTime,
+            QPassengerInformationAudio.passengerInformationAudio.startDateTime,
+            QPassengerInformationAudio.passengerInformationAudio.endTime,
+            QPassengerInformationAudio.passengerInformationAudio.deliveryAt,
+            QPassengerInformationAudio.passengerInformationAudio.deliveryType,
+            QPassengerInformationAudio.passengerInformationAudio.eventType,
+            QPassengerInformationAudio.passengerInformationAudio.messageId,
+            QPassengerInformationAudio.passengerInformationAudio.messageVersion,
+            QPassengerInformationAudio.passengerInformationAudio.repeatEvery,
+            QPassengerInformationAudio.passengerInformationAudio.repetitions,
+            QPassengerInformationAudio.passengerInformationAudio.weekDays
     };
+
+    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_VIDEO = new Expression[] {
+            QPassengerInformationVideo.passengerInformationVideo.id,
+            QPassengerInformationVideo.passengerInformationVideo.textEn,
+            QPassengerInformationVideo.passengerInformationVideo.textFi,
+            QPassengerInformationVideo.passengerInformationVideo.textSv,
+            QPassengerInformationVideo.passengerInformationVideo.startDateTime,
+            QPassengerInformationVideo.passengerInformationVideo.endDateTime,
+            QPassengerInformationVideo.passengerInformationVideo.startDateTime,
+            QPassengerInformationVideo.passengerInformationVideo.endTime,
+            QPassengerInformationVideo.passengerInformationVideo.deliveryType,
+            QPassengerInformationVideo.passengerInformationVideo.messageId,
+            QPassengerInformationVideo.passengerInformationVideo.messageVersion,
+            QPassengerInformationVideo.passengerInformationVideo.weekDays
+    };
+
 }

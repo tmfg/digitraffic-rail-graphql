@@ -53,8 +53,8 @@ public class PassengerInformationMessage {
     public LocalDate trainDepartureDate;
     public Long trainNumber;
     @OneToMany(mappedBy = "message",
-               fetch = FetchType.EAGER)
-    public List<PassengerInformationStation> stations;
+               fetch = FetchType.LAZY)
+    public List<PassengerInformationMessageStation> stations;
     @OneToOne(mappedBy = "message",
               fetch = FetchType.LAZY,
               optional = true)
@@ -71,7 +71,7 @@ public class PassengerInformationMessage {
     public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
                                        final ZonedDateTime startValidity,
                                        final ZonedDateTime endValidity, final LocalDate trainDepartureDate, final Long trainNumber,
-                                       final List<PassengerInformationStation> stations, final PassengerInformationAudio audio,
+                                       final List<PassengerInformationMessageStation> stations, final PassengerInformationAudio audio,
                                        final PassengerInformationVideo video, final MessageType messageType) {
         this.id = id;
         this.creationDateTime = creationDateTime;
@@ -98,22 +98,6 @@ public class PassengerInformationMessage {
 
     public PassengerInformationMessage() {
 
-    }
-
-    @Override
-    public String toString() {
-        return "PassengerInformationMessage{" +
-                "id='" + id.id + '\'' +
-                ", version=" + id.version +
-                ", creationDateTime=" + creationDateTime +
-                ", startValidity=" + startValidity +
-                ", endValidity=" + endValidity +
-                ", trainDepartureDate=" + trainDepartureDate +
-                ", trainNumber=" + trainNumber +
-                ", stations=" + stations +
-                ", audio=" + audio +
-                ", video=" + video +
-                '}';
     }
 
 }
