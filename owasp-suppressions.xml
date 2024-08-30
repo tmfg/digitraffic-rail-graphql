@@ -35,7 +35,7 @@
         <vulnerabilityName>CVE-2024-40094</vulnerabilityName>
     </suppress>
 
-    <suppress until="2024-10-01">>
+    <suppress until="2024-10-01">
         <!-- we need to update spring boot -->
         <notes><![CDATA[
    file name: spring-web-6.1.8.jar
