@@ -103,9 +103,8 @@ public class GraphQLProvider {
                 .builder(schema)
                 .exceptionResolvers(resolvers)
                 .instrumentation(List.of(
-                        new ExecutionTimeInstrumentation()
-                        // Fails if a query contains null-variable. Seems like a bug in graphql-java
-                        // new NoCircularQueriesInstrumentation(this.digitrafficConfig)
+                        new ExecutionTimeInstrumentation(),
+                        new NoCircularQueriesInstrumentation(this.digitrafficConfig)
                 ))
                 .build();
     }
