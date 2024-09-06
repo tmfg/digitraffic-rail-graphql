@@ -17,6 +17,7 @@ import graphql.analysis.QueryVisitorFieldEnvironment;
 import graphql.analysis.QueryVisitorStub;
 import graphql.execution.AbortExecutionException;
 import graphql.execution.instrumentation.InstrumentationContext;
+import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
 import graphql.language.Definition;
@@ -28,36 +29,36 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
 
     private Set<String> ALLOWED_FIELDS;
 
-    public NoCircularQueriesInstrumentation(DigitrafficConfig digitrafficConfig) {
+    public NoCircularQueriesInstrumentation(final DigitrafficConfig digitrafficConfig) {
         this.ALLOWED_FIELDS = digitrafficConfig.getFieldsThatCanBeQueriedTwice();
     }
 
     @Override
-    public InstrumentationContext<List<ValidationError>> beginValidation(InstrumentationValidationParameters parameters) {
+    public InstrumentationContext<List<ValidationError>> beginValidation(final InstrumentationValidationParameters parameters,
+                                                                         final InstrumentationState state) {
         return whenCompleted((errors, throwable) -> {
             if ((errors != null && errors.size() > 0) || throwable != null) {
                 return;
             }
-
             if (isInstrospectionQuery(parameters)) {
                 return;
             }
-            QueryTraverser queryTraverser = newQueryTraverser(parameters);
+            final QueryTraverser queryTraverser = newQueryTraverser(parameters);
 
-            Map<String, Integer> typesSeenAtDepth = new HashMap<>();
+            final Map<String, Integer> typesSeenAtDepth = new HashMap<>();
             queryTraverser.visitPostOrder(new QueryVisitorStub() {
                 @Override
-                public void visitField(QueryVisitorFieldEnvironment env) {
-                    Integer depth = calculateDepthForField(env);
+                public void visitField(final QueryVisitorFieldEnvironment env) {
+                    final Integer depth = calculateDepthForField(env);
+                    final String name = env.getField().getName();
 
-                    String name = env.getField().getName();
-
-                    Integer typeLastDepth = typesSeenAtDepth.get(name);
+                    final Integer typeLastDepth = typesSeenAtDepth.get(name);
+                    
                     if (typeLastDepth != null &&
                             typeLastDepth != depth &&
                             env.getField().getSelectionSet() != null &&
                             !ALLOWED_FIELDS.contains(name)) {
-                        AbortExecutionException exception = new AbortExecutionException("Illegal query: " + name + " queried twice");
+                        final AbortExecutionException exception = new AbortExecutionException("Illegal query: " + name + " queried twice");
                         log.info(exception.toString());
                         throw exception;
                     } else if (typeLastDepth == null) {
@@ -68,12 +69,13 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
         });
     }
 
-    private boolean isInstrospectionQuery(InstrumentationValidationParameters parameters) {
-        List<Definition> definitions = parameters.getDocument().getDefinitions().stream().filter(s -> s instanceof OperationDefinition).collect(Collectors.toList());
+    private boolean isInstrospectionQuery(final InstrumentationValidationParameters parameters) {
+        final List<Definition> definitions =
+                parameters.getDocument().getDefinitions().stream().filter(s -> s instanceof OperationDefinition).collect(Collectors.toList());
         if (definitions.size() == 1) {
-            Definition firstDefinition = definitions.get(0);
+            final Definition firstDefinition = definitions.get(0);
             if (firstDefinition instanceof OperationDefinition) {
-                String name = ((OperationDefinition) firstDefinition).getName();
+                final String name = ((OperationDefinition) firstDefinition).getName();
                 return name != null && name.equals("IntrospectionQuery");
             }
         }
@@ -90,7 +92,7 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
         return depth;
     }
 
-    private QueryTraverser newQueryTraverser(InstrumentationValidationParameters parameters) {
+    private QueryTraverser newQueryTraverser(final InstrumentationValidationParameters parameters) {
         return QueryTraverser.newQueryTraverser()
                 .schema(parameters.getSchema())
                 .document(parameters.getDocument())
@@ -98,6 +100,5 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
                 .variables(parameters.getVariables())
                 .build();
     }
-
 
 }
