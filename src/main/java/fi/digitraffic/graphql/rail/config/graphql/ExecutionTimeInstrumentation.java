@@ -18,7 +18,7 @@ import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.SimplePerformantInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationCreateStateParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import graphql.execution.instrumentation.parameters.InstrumentationFieldParameters;
+import graphql.execution.instrumentation.parameters.InstrumentationFieldFetchParameters;
 import graphql.schema.GraphQLNamedOutputType;
 
 class ExecutionTimesByFieldState implements InstrumentationState {
@@ -45,11 +45,11 @@ public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentatio
     }
 
     @Override
-    public InstrumentationContext<ExecutionResult> beginField(final InstrumentationFieldParameters parameters, final InstrumentationState state) {
+    public InstrumentationContext<Object> beginFieldFetch(final InstrumentationFieldFetchParameters parameters, final InstrumentationState state) {
         final long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
             @Override
-            public void onCompleted(final ExecutionResult result, final Throwable t) {
+            public void onCompleted(final Object result, final Throwable t) {
                 final ExecutionStepInfo parent = parameters.getExecutionStepInfo().getParent();
                 final String fieldTypeAndName;
                 if (parent.getType() instanceof final GraphQLNamedOutputType parentType) {

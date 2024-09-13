@@ -1,5 +1,8 @@
 name: Build
-on: [push]
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
   build:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
@@ -20,7 +23,7 @@ jobs:
       - name: Setup database
         working-directory: digitraffic-rail/dbrail
         run: |
-          docker-compose up -d
+          docker compose up -d
       - name: Get database IP
         run: echo "db_addr=$(docker inspect dbrail_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Run tests
