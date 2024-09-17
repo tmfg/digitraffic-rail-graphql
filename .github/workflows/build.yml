@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 21
-          distribution: temurin
+          distribution: corretto
           cache: maven
       - name: Compile
         run: mvn -f pom.xml install -e -U -DskipTests=true -Ddependency-check.skip=true

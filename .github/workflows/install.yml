@@ -41,7 +41,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 21
-          distribution: temurin
+          distribution: corretto
           cache: maven
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
