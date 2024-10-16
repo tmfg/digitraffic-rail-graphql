@@ -5,6 +5,9 @@
 !/LICENSE
 !/README.md
 
+!common/
+!common/**
+
 !src/
 !src/**/
 !src/**/java/**/*.java
