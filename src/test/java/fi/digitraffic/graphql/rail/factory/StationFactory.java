@@ -12,12 +12,12 @@ public class StationFactory {
     @Autowired
     private StationRepository stationRepository;
 
-    public Station create(String shortCode, int uicCode, String country) {
-        Station station = new Station();
+    public Station create(final String shortCode, final int uicCode, final String country) {
+        final Station station = new Station();
         station.countryCode = country;
         station.name = shortCode;
         station.shortCode = shortCode;
-        station.id = Long.valueOf(station.name.hashCode());
+        station.id = (long) station.name.hashCode();
         station.passengerTraffic = true;
         station.longitude = 1D;
         station.latitude = 2D;

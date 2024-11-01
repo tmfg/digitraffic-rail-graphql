@@ -23,11 +23,9 @@ public class PassengerInformationMessageId implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PassengerInformationMessageId)) {
+        if (!(o instanceof final PassengerInformationMessageId messageId)) {
             return false;
         }
-
-        final PassengerInformationMessageId messageId = (PassengerInformationMessageId) o;
 
         if (!id.equals(messageId.id)) {
             return false;
