@@ -4,6 +4,7 @@
 !/pom.xml
 !/LICENSE
 !/README.md
+!/versions-maven-plugin-rules.xml
 
 !src/
 !src/**/
