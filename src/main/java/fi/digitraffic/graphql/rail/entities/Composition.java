@@ -45,11 +45,9 @@ public class Composition {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof Composition)) return false;
-
-        Composition that = (Composition) o;
+        if (!(o instanceof final Composition that)) return false;
 
         if (!id.equals(that.id)) return false;
 

@@ -113,13 +113,11 @@ public class GraphQLProvider {
     private void addGenericArgumentsToCollections(final TypeDefinitionRegistry typeRegistry) {
         for (final Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
             final TypeDefinition value = typeEntry.getValue();
-            if (value instanceof ObjectTypeDefinition && !value.getName().equals("Query")) {
-                final ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) value;
+            if (value instanceof final ObjectTypeDefinition objectTypeDefinition && !value.getName().equals("Query")) {
 
                 final List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
                 for (final FieldDefinition fieldDefinition : objectTypeDefinition.getFieldDefinitions()) {
-                    if (fieldDefinition.getType() instanceof ListType) {
-                        final ListType listType = (ListType) fieldDefinition.getType();
+                    if (fieldDefinition.getType() instanceof final ListType listType) {
                         final TypeName childType = (TypeName) listType.getType();
                         if (childType.getName().equals("Float")) {
                             newFieldDefinitions.add(fieldDefinition);
@@ -166,8 +164,7 @@ public class GraphQLProvider {
 
                 final List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
                 for (final FieldDefinition fieldDefinition : queryObjectTypeDefinition.getFieldDefinitions()) {
-                    if (fieldDefinition.getType() instanceof ListType) {
-                        final ListType listType = (ListType) fieldDefinition.getType();
+                    if (fieldDefinition.getType() instanceof final ListType listType) {
                         final TypeName namedType = (TypeName) listType.getType();
 
                         final List<InputValueDefinition> newInputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
@@ -339,8 +336,7 @@ public class GraphQLProvider {
 
     private void removeBlacklistedFields(final TypeDefinitionRegistry typeRegistry) {
         for (final Map.Entry<String, TypeDefinition> entry : typeRegistry.types().entrySet()) {
-            if (entry.getValue() instanceof ObjectTypeDefinition) {
-                final ObjectTypeDefinition objectTypeDefinition = (ObjectTypeDefinition) entry.getValue();
+            if (entry.getValue() instanceof final ObjectTypeDefinition objectTypeDefinition) {
                 final List<FieldDefinition> newDefinitions = objectTypeDefinition.getFieldDefinitions();
                 final Set<FieldDefinition> toBeRemoved = new HashSet<>();
 

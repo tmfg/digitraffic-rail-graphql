@@ -34,12 +34,12 @@ public class JourneySectionToLocomotiveLink extends OneToManyLink<Long, JourneyS
 
     @Override
     public Long createKeyFromParent(final JourneySectionTO journeySectionTO) {
-        return Long.valueOf(journeySectionTO.getId());
+        return (long) journeySectionTO.getId();
     }
 
     @Override
     public Long createKeyFromChild(final LocomotiveTO locomotiveTO) {
-        return Long.valueOf(locomotiveTO.getJourneysectionId());
+        return (long) locomotiveTO.getJourneysectionId();
     }
 
     @Override

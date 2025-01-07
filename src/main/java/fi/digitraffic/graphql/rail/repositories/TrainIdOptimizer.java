@@ -39,13 +39,13 @@ public class TrainIdOptimizer {
             final Function<TrainIdType, LocalDate> departureDateProvider,
             final Function<TrainIdType, TrainNumberType> trainNumberProvider,
             final BiFunction<LocalDate, List<TrainNumberType>, BooleanExpression> dayExpressionProvider) {
-        final var departureDateMultiMap = Multimaps.index(trainIds, s -> departureDateProvider.apply(s));
+        final var departureDateMultiMap = Multimaps.index(trainIds, departureDateProvider::apply);
 
         BooleanExpression expression = null;
         final var keys = departureDateMultiMap.keySet();
         for (final LocalDate localDate : keys) {
             final var trainNumbers =
-                    departureDateMultiMap.get(localDate).stream().map(s -> trainNumberProvider.apply(s)).collect(Collectors.toSet()).stream().sorted()
+                    departureDateMultiMap.get(localDate).stream().map(trainNumberProvider::apply).collect(Collectors.toSet()).stream().sorted()
                             .collect(Collectors.toList());
             final var expressionForDay = dayExpressionProvider.apply(localDate, trainNumbers);
             if (expression == null) {

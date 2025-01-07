@@ -6,6 +6,9 @@
 !/README.md
 !/versions-maven-plugin-rules.xml
 
+!common/
+!common/**
+
 !src/
 !src/**/
 !src/**/java/**/*.java
