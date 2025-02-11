@@ -21,14 +21,17 @@ public class RequestScopedInterceptor implements WebGraphQlInterceptor {
     @Autowired
     private List<BaseLink> fetchers;
 
+    private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions();
+    private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false);
+
     @Override
     public Mono<WebGraphQlResponse> intercept(final WebGraphQlRequest request, final WebGraphQlInterceptor.Chain chain) {
         request.configureExecutionInput((executionInput, builder) -> {
             final DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
-            final var options = DataLoaderOptions.newOptions().setCachingEnabled(false);
 
             for (final var fetcher : fetchers) {
                 final BatchLoaderWithContext<?, ?> dataLoader = fetcher.createLoader();
+                final DataLoaderOptions options = fetcher.cachingEnabled() ? CACHING_ENABLED : CACHING_DISABLED;
                 final DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader, options);
                 dataLoaderRegistry.register(fetcher.createDataLoaderKey(), loader);
             }

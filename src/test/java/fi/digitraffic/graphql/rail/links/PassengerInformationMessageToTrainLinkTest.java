@@ -23,7 +23,7 @@ public class PassengerInformationMessageToTrainLinkTest extends BaseWebMVCTest {
 
         final ResultActions result = this.query("""
                 {
-                  passengerInformationMessages {             
+                  passengerInformationMessages {
                     train {
                       trainNumber
                     }

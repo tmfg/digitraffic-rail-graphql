@@ -57,6 +57,10 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     @Autowired
     private OrderByExpressionBuilder orderByExpressionBuilder;
 
+    public boolean cachingEnabled() {
+        return true;
+    }
+
     public abstract String getTypeName();
 
     public abstract String getFieldName();
