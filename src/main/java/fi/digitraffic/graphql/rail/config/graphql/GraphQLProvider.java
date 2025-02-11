@@ -64,9 +64,9 @@ public class GraphQLProvider {
     @Autowired
     private List<BaseQuery> rootFetchers;
 
-    private Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
-    private Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
-    private Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
+    private final Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
+    private final Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
+    private final Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
 
     @Bean
     public RuntimeWiringConfigurer runtimeWiringConfigurer() {

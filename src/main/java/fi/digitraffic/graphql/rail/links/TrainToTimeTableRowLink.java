@@ -65,7 +65,7 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return TrainIdOptimizer.optimize(QTimeTableRow.timeTableRow.train.id, keys);
     }
 }

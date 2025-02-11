@@ -18,9 +18,7 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
         extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, List<ChildTOType>> {
 
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {
-        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
-            return queryFactory.select(getFields()).from(getEntityTable());
-        };
+        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> queryFactory.select(getFields()).from(getEntityTable());
         return doCreateLoader(queryAfterFromFunction);
     }
 
@@ -33,12 +31,8 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
         return createDataLoader((children, dataFetchingEnvironment) -> {
                     final Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
                     for (final ChildTOType child1 : children) {
-                        final KeyType parentId = ((Function<ChildTOType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
-                        List<ChildTOType> childTOs = childrenGroupedBy.get(parentId);
-                        if (childTOs == null) {
-                            childTOs = new ArrayList<>();
-                            childrenGroupedBy.put(parentId, childTOs);
-                        }
+                        final KeyType parentId = createKeyFromChild(child1);
+                        final List<ChildTOType> childTOs = childrenGroupedBy.computeIfAbsent(parentId, k -> new ArrayList<>());
                         childTOs.add(child1);
                     }
 

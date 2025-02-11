@@ -35,17 +35,17 @@ public class TimeTableRowToTrainLink extends OneToOneLink<TrainId, TimeTableRowT
     }
 
     @Override
-    public TrainId createKeyFromParent(TimeTableRowTO timeTableRowTO) {
+    public TrainId createKeyFromParent(final TimeTableRowTO timeTableRowTO) {
         return new TrainId(timeTableRowTO.getTrainNumber(), timeTableRowTO.getDepartureDate());
     }
 
     @Override
-    public TrainId createKeyFromChild(TrainTO trainTO) {
+    public TrainId createKeyFromChild(final TrainTO trainTO) {
         return new TrainId(trainTO.getTrainNumber(), trainTO.getDepartureDate());
     }
 
     @Override
-    public TrainTO createChildTOFromTuple(Tuple tuple) {
+    public TrainTO createChildTOFromTuple(final Tuple tuple) {
         return trainTOConverter.convert(tuple);
     }
 
@@ -65,7 +65,7 @@ public class TimeTableRowToTrainLink extends OneToOneLink<TrainId, TimeTableRowT
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return TrainIdOptimizer.optimize(QTrain.train.id, keys);
     }
 }
