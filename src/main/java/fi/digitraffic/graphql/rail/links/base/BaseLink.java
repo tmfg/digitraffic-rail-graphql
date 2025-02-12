@@ -144,11 +144,9 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
             final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
         return (keys, loaderContext) -> {
             final var batches = createBatches(keys, loaderContext.getKeyContextsList());
-            final boolean anyAlias = batches.stream().anyMatch(b -> b.dfe.getMergedField().getSingleField().getAlias() != null);
 
             return CompletableFuture.supplyAsync(() -> {
-                final var childMap = new HashMap<KeyType, ResultType>(keys.size());
-                final var children = new ArrayList<ResultType>(keys.size());
+                final var resultMap = new CountingKeyMap<KeyType, ResultType>(keys.size());
 
                 final Class<ChildEntityType> entityClass = getEntityClass();
                 final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass,
@@ -177,9 +175,8 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                 for (final Future<Map<KeyType, ResultType>> future : futures) {
                     try {
                         final var map = future.get();
-                        childMap.putAll(map);
 
-                        children.addAll(map.values());
+                        resultMap.putAll(map);
                     } catch (final QueryTimeoutException e) {
                         log.info("Timeout fetching children", e);
                         throw new AbortExecutionException(e);
@@ -189,14 +186,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     }
                 }
 
-                // the problem with this codebase and aliases is that they have the same key
-                // and the keys-parameter can have duplicate keys with different sorting & filtering
-                // try to fix this by using another list when using aliases
-                if(anyAlias) {
-                    return children;
-                }
-
-                return keys.stream().map(childMap::get).toList();
+                return resultMap.getResults(keys);
             }, executor);
         };
     }
