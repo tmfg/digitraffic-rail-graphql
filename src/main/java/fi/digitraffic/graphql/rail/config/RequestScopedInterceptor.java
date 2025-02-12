@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class RequestScopedInterceptor implements WebGraphQlInterceptor {
 
     @Autowired
-    private List<BaseLink> fetchers;
+    private List<BaseLink<?, ?, ?, ?, ?>> fetchers;
 
     private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions();
     private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false);

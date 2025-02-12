@@ -89,6 +89,5 @@ public class TrainLocationQueriesTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.latestTrainLocations[3].train.trainNumber").value(68));
         result.andExpect(jsonPath("$.data.latestTrainLocations[4].train.trainNumber").value(67));
         result.andExpect(jsonPath("$.data.latestTrainLocations[5].train.trainNumber").value(66));
-
     }
 }

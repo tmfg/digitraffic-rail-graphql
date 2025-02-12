@@ -182,7 +182,7 @@ public class PrimitiveFilterQueriesTest extends BaseWebMVCTest {
                 .createBaseTrain(new TrainId(67, DATE_2000_09_17), ZonedDateTime.of(2000, 9, 17, 12, 0, 0, 0, ZoneId.of("UTC")), 1L);
 
         final ResultActions result = this.query("""
-                        { trainsByDepartureDate(departureDate: "2000-09-17", 
+                        { trainsByDepartureDate(departureDate: "2000-09-17",
                             where: { 
                                 timeTableRows: {
                                     contains: {

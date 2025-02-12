@@ -15,13 +15,13 @@ import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 
 @Component
 public class TrainLocationFactory {
-    private GeometryFactory geometryFactory = new GeometryFactory();
+    private final GeometryFactory geometryFactory = new GeometryFactory();
 
     @Autowired
     private TrainLocationRepository trainLocationRepository;
 
     @Transactional
-    public TrainLocation create(double x, double y, Integer speed, Train train) {
+    public TrainLocation create(final double x, final double y, final Integer speed, final Train train) {
         final TrainLocation trainLocation = new TrainLocation();
         trainLocation.trainLocationId = new TrainLocationId(train.id.trainNumber, train.id.departureDate, ZonedDateTime.now());
         trainLocation.speed = speed;

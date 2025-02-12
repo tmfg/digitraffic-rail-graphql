@@ -9,10 +9,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.apache.catalina.Loader;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
@@ -110,7 +107,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         };
     }
 
-    private record LoaderBatch<KeyType>(List<KeyType> keys, DataFetchingEnvironment dfe) {};
+    private record LoaderBatch<KeyType>(List<KeyType> keys, DataFetchingEnvironment dfe) {}
 
     private List<LoaderBatch<KeyType>> createBatches(final List<KeyType> keys, final List<Object> keyContextsList) {
         final var batches = new ArrayList<LoaderBatch<KeyType>>();
@@ -181,6 +178,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     try {
                         final var map = future.get();
                         childMap.putAll(map);
+
                         children.addAll(map.values());
                     } catch (final QueryTimeoutException e) {
                         log.info("Timeout fetching children", e);
@@ -191,9 +189,9 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     }
                 }
 
-                // if there are any alises, return "children", otherwise use keys
-                // (aliases have the same key, and won't work correctly), on the other hand
-                // order might be wrong and the "keys" have the correct ordering
+                // the problem with this codebase and aliases is that they have the same key
+                // and the keys-parameter can have duplicate keys with different sorting & filtering
+                // try to fix this by using another list when using aliases
                 if(anyAlias) {
                     return children;
                 }

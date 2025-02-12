@@ -49,14 +49,14 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
         final Integer skip = dataFetchingEnvironment.getArgument("skip");
         final Integer take = dataFetchingEnvironment.getArgument("take");
         if (skip != null || take != null) {
-            final Integer start = skip != null ? skip : 0;
-            final Integer elementsToPotentiallyTake = take != null ? take : Integer.MAX_VALUE;
+            final int start = skip != null ? skip : 0;
+            final int elementsToPotentiallyTake = take != null ? take : Integer.MAX_VALUE;
 
             for (final Map.Entry<KeyType, List<ChildTOType>> keyTypeListEntry : childrenGroupedBy.entrySet()) {
                 final List<ChildTOType> values = keyTypeListEntry.getValue();
                 final KeyType key = keyTypeListEntry.getKey();
                 if (start < values.size()) {
-                    final Integer end = Math.min(start + elementsToPotentiallyTake, values.size());
+                    final int end = Math.min(start + elementsToPotentiallyTake, values.size());
                     childrenGroupedBy.put(key, values.subList(start, end));
                 } else {
                     childrenGroupedBy.put(key, new ArrayList<>());

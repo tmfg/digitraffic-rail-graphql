@@ -17,7 +17,7 @@ public class TrainLocationTOConverter extends BaseConverter<TrainLocationTO> {
                 tuple.get(QTrainLocation.trainLocation.accuracy),
                 tuple.get(QTrainLocation.trainLocation.trainLocationId.timestamp),
                 nullableInt(tuple.get(QTrainLocation.trainLocation.trainLocationId.trainNumber)),
-                List.of((double) tuple.get(QTrainLocation.trainLocation.location).getX(), (double) tuple.get(QTrainLocation.trainLocation.location).getY()),
+                List.of(tuple.get(QTrainLocation.trainLocation.location).getX(), tuple.get(QTrainLocation.trainLocation.location).getY()),
                 null
         );
     }

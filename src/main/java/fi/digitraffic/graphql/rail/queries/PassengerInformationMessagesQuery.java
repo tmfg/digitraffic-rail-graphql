@@ -111,7 +111,7 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
 
             try {
                 final List<Tuple> rows = queryAfterLimit.fetch();
-                return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+                return rows.stream().map(this::convertEntityToTO).toList();
             } catch (final QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
             }

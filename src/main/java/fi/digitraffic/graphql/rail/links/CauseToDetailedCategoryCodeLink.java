@@ -1,6 +1,7 @@
 package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,22 +34,18 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseT
     }
 
     @Override
-    public String createKeyFromParent(CauseTO causeTO) {
-        String detailedCategoryCodeId = causeTO.getDetailedCategoryCodeOid();
-        if (detailedCategoryCodeId == null) {
-            return "-";
-        } else {
-            return detailedCategoryCodeId;
-        }
+    public String createKeyFromParent(final CauseTO causeTO) {
+        final String detailedCategoryCodeId = causeTO.getDetailedCategoryCodeOid();
+        return Objects.requireNonNullElse(detailedCategoryCodeId, "-");
     }
 
     @Override
-    public String createKeyFromChild(DetailedCategoryCodeTO detailedCategoryCodeTO) {
+    public String createKeyFromChild(final DetailedCategoryCodeTO detailedCategoryCodeTO) {
         return detailedCategoryCodeTO.getOid();
     }
 
     @Override
-    public DetailedCategoryCodeTO createChildTOFromTuple(Tuple tuple) {
+    public DetailedCategoryCodeTO createChildTOFromTuple(final Tuple tuple) {
         return detailedCategoryCodeTOConverter.convert(tuple);
     }
 
@@ -68,7 +65,7 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseT
     }
 
     @Override
-    public BooleanExpression createWhere(List<String> keys) {
+    public BooleanExpression createWhere(final List<String> keys) {
         return QDetailedCategoryCode.detailedCategoryCode.oid.in(keys);
     }
 }

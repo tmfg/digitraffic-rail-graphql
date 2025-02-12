@@ -29,14 +29,14 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 public class WhereExpressionBuilder {
-    private static Map<String, Operator> stringToOperationMap = Map.of(
+    private static final Map<String, Operator> stringToOperationMap = Map.of(
             "greaterThan", Ops.GT,
             "lessThan", Ops.LT,
             "equals", Ops.EQ,
             "unequals", Ops.NE
     );
 
-    private Map<String, Enum> enumValues = new HashMap<>();
+    private final Map<String, Enum> enumValues = new HashMap<>();
 
     @PostConstruct
     public void setup() {
@@ -105,10 +105,9 @@ public class WhereExpressionBuilder {
         }
     }
 
-    private BooleanExpression inside(final PathBuilder path, final List<Double> value) {
+    private BooleanExpression inside(final PathBuilder path, final List<Double> coordinates) {
         final BooleanExpression start;//TODO: Use Querydsl-spatial for this
 
-        final List<Double> coordinates = value;
         final BooleanExpression expression1 = Expressions.asNumber(path.get("x")).goe(coordinates.get(0));
         final BooleanExpression expression2 = Expressions.asNumber(path.get("y")).goe(coordinates.get(1));
         final BooleanExpression expression3 = Expressions.asNumber(path.get("x")).loe(coordinates.get(2));

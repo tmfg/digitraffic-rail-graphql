@@ -20,8 +20,8 @@ public class TimeTableRowFactory {
     @Autowired
     private TimeTableRowRepository timeTableRowRepository;
 
-    public TimeTableRow create(Train train, ZonedDateTime scheduledTime, final ZonedDateTime actualTime,
-                               Station station, final TimeTableRow.TimeTableRowType timeTableRowType) {
+    public TimeTableRow create(final Train train, final ZonedDateTime scheduledTime, final ZonedDateTime actualTime,
+                               final Station station, final TimeTableRow.TimeTableRowType timeTableRowType) {
         final String stationShortCode = station.shortCode;
         final int stationcUICCode = station.uicCode;
         final String countryCode = station.countryCode;
@@ -35,12 +35,12 @@ public class TimeTableRowFactory {
 
         final long trainNumber = train.id.trainNumber;
         final LocalDate departureDate = train.id.departureDate;
-        final Boolean commercialStop = true;
-        long version = 1L;
+        final boolean commercialStop = true;
+        final long version = 1L;
 //        final TimeTableRow timeTableRow = new TimeTableRow(stationShortCode, stationcUICCode, countryCode, type, commercialTrack, cancelled,
 //                scheduledTime, liveEstimateTime, actualTime, differenceInMinutes, atappiId, trainNumber, departureDate, commercialStop,
 //                version,null, TimeTableRow.EstimateSourceEnum.LIIKE_AUTOMATIC);
-        TimeTableRow timeTableRow = new TimeTableRow();
+        final TimeTableRow timeTableRow = new TimeTableRow();
         timeTableRow.actualTime = actualTime;
         timeTableRow.cancelled = cancelled;
         timeTableRow.commercialStop = commercialStop;
@@ -57,8 +57,6 @@ public class TimeTableRowFactory {
         timeTableRow.type = type;
         timeTableRow.unknownDelay = null;
         timeTableRow.id = new TimeTableRowId(atappiId, departureDate, trainNumber);
-
-        timeTableRow.train = train;
 
         return timeTableRowRepository.save(timeTableRow);
     }

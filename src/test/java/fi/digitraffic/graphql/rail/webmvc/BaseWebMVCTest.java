@@ -56,6 +56,6 @@ public abstract class BaseWebMVCTest {
     }
 
     public ResultActions query(final String query) throws Exception {
-        return queryAndExpectError(query).andExpect(jsonPath("$.errors.length()").doesNotExist());
+        return queryAndExpectError(query).andExpect(jsonPath("$.errors").doesNotExist());
     }
 }

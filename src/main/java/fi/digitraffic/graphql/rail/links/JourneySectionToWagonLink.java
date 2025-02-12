@@ -34,12 +34,12 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
 
     @Override
     public Long createKeyFromParent(final JourneySectionTO journeySectionTO) {
-        return Long.valueOf(journeySectionTO.getId());
+        return (long) journeySectionTO.getId();
     }
 
     @Override
     public Long createKeyFromChild(final WagonTO wagonTO) {
-        return Long.valueOf(wagonTO.getJourneysectionId());
+        return (long) wagonTO.getJourneysectionId();
     }
 
     @Override

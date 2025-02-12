@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 
 @Configuration
 public class PropertyLogger {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private Environment environment;

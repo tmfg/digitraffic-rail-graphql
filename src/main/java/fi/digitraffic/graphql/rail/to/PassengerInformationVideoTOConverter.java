@@ -25,8 +25,7 @@ public class PassengerInformationVideoTOConverter {
                         tuple.get(QPassengerInformationVideo.passengerInformationVideo.startTime),
                         tuple.get(QPassengerInformationVideo.passengerInformationVideo.endTime),
                         tuple.get(QPassengerInformationVideo.passengerInformationVideo.weekDays).stream()
-                                .map(weekDay -> DayOfWeekTO.valueOf(weekDay)).collect(
-                                        Collectors.toList())),
+                                .map(DayOfWeekTO::valueOf).toList()),
                 tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageId),
                 tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageVersion)
         );
