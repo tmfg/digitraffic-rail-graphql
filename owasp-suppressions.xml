@@ -6,6 +6,7 @@
     -->
 
     <!-- From spring-cloud-starter-aws-secrets-manager-config -->
+    <!-- waiting for update (last updated Feb 02, 2023) -->
     <suppress until="2025-06-01">
         <notes><![CDATA[file name: ion-java-1.0.2.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/software\.amazon\.ion/ion\-java@.*$</packageUrl>
@@ -29,17 +30,9 @@
         <cve>CVE-2022-31159</cve>
     </suppress>
 
-    <!-- Waiting for update to Spring Boot -->
-    <suppress until="2025-02-01">
-        <notes><![CDATA[
-   file name: logback-core-1.5.11.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback-core@.*$</packageUrl>
-        <vulnerabilityName>CVE-2024-12798</vulnerabilityName>
-    </suppress>
 
     <!-- No updates available to querydsl-core. Latest version is from Jan 29, 2024 -->
-    <suppress until="2025-02-01">
+    <suppress until="2025-06-01">
         <notes><![CDATA[
    file name: querydsl-apt-5.1.0-jakarta.jar
    ]]></notes>
