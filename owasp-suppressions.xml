@@ -14,6 +14,15 @@
         <cve>CVE-2024-21634</cve>
     </suppress>
 
+    <!-- Waiting Spring Boot update. Fixed in 3.4.2 -->
+    <suppress until="2025-03-15">
+        <notes><![CDATA[
+   file name: logback-core-1.5.11.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback-core@.*$</packageUrl>
+        <vulnerabilityName>CVE-2024-12798</vulnerabilityName>
+    </suppress>
+
     <!-- From dice-fairlink -->
     <suppress until="2025-06-01">
         <notes><![CDATA[file name: aws-java-sdk-rds-1.11.251.jar]]></notes>
