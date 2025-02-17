@@ -27,7 +27,7 @@ public class PassengerInformationAudioTOConverter {
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.startTime),
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.endTime),
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.weekDays).stream()
-                                .map(weekDay -> DayOfWeekTO.valueOf(weekDay)).collect(
+                                .map(DayOfWeekTO::valueOf).collect(
                                         Collectors.toList()), tuple.get(QPassengerInformationAudio.passengerInformationAudio.deliveryAt),
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.repetitions),
                         tuple.get(QPassengerInformationAudio.passengerInformationAudio.repeatEvery)),

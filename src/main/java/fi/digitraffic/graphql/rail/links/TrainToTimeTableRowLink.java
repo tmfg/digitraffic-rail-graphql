@@ -25,6 +25,11 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     private TimeTableRowTOConverter timeTableRowTOConverter;
 
     @Override
+    public boolean cachingEnabled() {
+        return false;
+    }
+
+    @Override
     public String getTypeName() {
         return "Train";
     }
@@ -65,7 +70,7 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
+    public BooleanExpression createWhere(final List<TrainId> keys) {
         return TrainIdOptimizer.optimize(QTimeTableRow.timeTableRow.train.id, keys);
     }
 }

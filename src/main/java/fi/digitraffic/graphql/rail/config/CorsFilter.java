@@ -30,7 +30,7 @@ public class CorsFilter implements Filter {
             response.setHeader("Access-Control-Allow-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Digitraffic-User");
             response.setHeader("Access-Control-Expose-Headers", "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range,Digitraffic-User");
 
-            if (request.getMethod().toUpperCase().equals("OPTIONS")) {
+            if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
                 response.setHeader("Access-Control-Max-Age", PREFLIGHT_MAX_AGE_MS);
                 response.setHeader("Content-Type", "text/plain; charset=utf-8");
                 response.setHeader("Content-Length", "0");

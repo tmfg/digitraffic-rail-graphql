@@ -8,6 +8,7 @@ import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +54,7 @@ import graphql.schema.idl.TypeRuntimeWiring;
 
 @Component
 public class GraphQLProvider {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private DigitrafficConfig digitrafficConfig;
@@ -64,9 +65,9 @@ public class GraphQLProvider {
     @Autowired
     private List<BaseQuery> rootFetchers;
 
-    private Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
-    private Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
-    private Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
+    private final Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
+    private final Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
+    private final Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
 
     @Bean
     public RuntimeWiringConfigurer runtimeWiringConfigurer() {
@@ -85,7 +86,7 @@ public class GraphQLProvider {
     @Bean
     public GraphQlSource graphQlSource(final List<DataFetcherExceptionResolver> resolvers) throws IOException {
         final URL url = Resources.getResource("schema.graphqls");
-        final String sdl = Resources.toString(url, Charsets.UTF_8);
+        final String sdl = Resources.toString(url, StandardCharsets.UTF_8);
         final TypeDefinitionRegistry typeRegistry = new SchemaParser().parse(sdl);
 
         removeBlacklistedFields(typeRegistry);
@@ -229,7 +230,6 @@ public class GraphQLProvider {
                         if (fieldNameWhereOverrides.containsKey(fieldName)) {
                             type = TypeName.newTypeName(fieldNameWhereOverrides.get(fieldName)).build();
                         } else if (PRIMITIVE_TYPES.contains(name)) {
-                            ;
                             type = TypeName.newTypeName(typeName.get() + "Where").build();
                         } else if (name.endsWith("Type")) {
                             type = TypeName.newTypeName("EnumWhere").build();

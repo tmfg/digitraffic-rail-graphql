@@ -114,7 +114,7 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
 
     private List<TrainId> extractNewerTrainIds(final long version, final List<Object[]> liveTrains) {
         return liveTrains.stream().filter(train -> ((Long) train[3]) > version).map(tuple -> {
-            final LocalDate departureDate = LocalDate.from(((Date) tuple[1]).toLocalDate());
+            final LocalDate departureDate = ((Date) tuple[1]).toLocalDate();
             final Long trainNumber = (Long) tuple[2];
             return new TrainId(trainNumber, departureDate);
         }).collect(Collectors.toList());

@@ -33,17 +33,17 @@ public class TimeTableRowToStationLink extends OneToOneLink<String, TimeTableRow
     }
 
     @Override
-    public String createKeyFromParent(TimeTableRowTO timeTableRowTO) {
+    public String createKeyFromParent(final TimeTableRowTO timeTableRowTO) {
         return timeTableRowTO.getStationShortCode();
     }
 
     @Override
-    public String createKeyFromChild(StationTO stationTO) {
+    public String createKeyFromChild(final StationTO stationTO) {
         return stationTO.getShortCode();
     }
 
     @Override
-    public StationTO createChildTOFromTuple(Tuple tuple) {
+    public StationTO createChildTOFromTuple(final Tuple tuple) {
         return stationTOConverter.convert(tuple);
     }
 
@@ -63,7 +63,7 @@ public class TimeTableRowToStationLink extends OneToOneLink<String, TimeTableRow
     }
 
     @Override
-    public BooleanExpression createWhere(List<String> keys) {
+    public BooleanExpression createWhere(final List<String> keys) {
         return QStation.station.shortCode.in(keys);
     }
 }

@@ -1,6 +1,7 @@
 package fi.digitraffic.graphql.rail.links.base;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -8,7 +9,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
@@ -40,10 +40,10 @@ import jakarta.persistence.QueryTimeoutException;
 import org.springframework.beans.factory.annotation.Value;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
-    private static ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
-    private static ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(10);
+    private static final ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
+    private static final ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(10);
 
-    private static Logger log = LoggerFactory.getLogger(BaseLink.class);
+    private static final Logger log = LoggerFactory.getLogger(BaseLink.class);
 
     @Value("${digitraffic.batch-load-size:500}")
     private Integer BATCH_LOAD_SIZE;
@@ -54,9 +54,17 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     @Autowired
     private OrderByExpressionBuilder orderByExpressionBuilder;
 
+    public boolean cachingEnabled() {
+        return true;
+    }
+
     public abstract String getTypeName();
 
     public abstract String getFieldName();
+
+    public String createDataLoaderKey() {
+        return this.getTypeName() + "." + this.getFieldName();
+    }
 
     public abstract KeyType createKeyFromParent(final ParentTOType parent);
 
@@ -99,38 +107,76 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         };
     }
 
+    private record LoaderBatch<KeyType>(List<KeyType> keys, DataFetchingEnvironment dfe) {}
+
+    private List<LoaderBatch<KeyType>> createBatches(final List<KeyType> keys, final List<Object> keyContextsList) {
+        final var batches = new ArrayList<LoaderBatch<KeyType>>();
+        final var other = new ArrayList<LoaderBatch<KeyType>>();
+
+        // make new batches for those that have alias
+        // and collect all others to one list
+        for(int i = 0; i < keys.size(); i++) {
+            final var key = keys.get(i);
+            final var dfe = (DataFetchingEnvironment) keyContextsList.get(i);
+
+            if(dfe.getMergedField().getSingleField().getAlias() != null) {
+                batches.add(new LoaderBatch<>(List.of(key), dfe));
+            } else {
+                if(other.isEmpty()) {
+                    other.add(new LoaderBatch<>(new ArrayList<>(), dfe));
+                }
+
+                other.get(0).keys.add(key);
+            }
+        }
+
+        // then partition the list with required size
+        if(!other.isEmpty()) {
+            final List<List<KeyType>> partitions = Lists.partition(other.get(0).keys, BATCH_LOAD_SIZE);
+            batches.addAll(partitions.stream().map(p -> new LoaderBatch<>(p, other.get(0).dfe)).toList());
+        }
+
+        return batches;
+    }
+
     protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(
             final BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
             final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
-        final BatchLoaderWithContext<KeyType, ResultType> batchLoaderWithCtx = (keys, loaderContext) -> {
-            final DataFetchingEnvironment dataFetchingEnvironment = (DataFetchingEnvironment) loaderContext.getKeyContextsList().get(0);
+        return (keys, loaderContext) -> {
+            final var batches = createBatches(keys, loaderContext.getKeyContextsList());
 
             return CompletableFuture.supplyAsync(() -> {
-                MDC.put("execution_id", dataFetchingEnvironment.getExecutionId().toString());
-
-                final List<List<KeyType>> partitions = Lists.partition(keys, BATCH_LOAD_SIZE);
-                final List<ChildTOType> children = new ArrayList<>(keys.size());
+                final var resultMap = new CountingKeyMap<KeyType, ResultType>(keys.size());
 
                 final Class<ChildEntityType> entityClass = getEntityClass();
                 final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass,
                         entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
-                final List<Future<List<ChildTOType>>> futures = new ArrayList<>();
-                for (final List<KeyType> partition : partitions) {
-                    final BooleanExpression basicWhere = BaseLink.this.createWhere(partition);
+                final List<Future<Map<KeyType, ResultType>>> futures = new ArrayList<>();
+
+                for (final LoaderBatch<KeyType> batch : batches) {
+                    MDC.put("execution_id", batch.dfe.getExecutionId().toString());
+
+                    final BooleanExpression basicWhere = BaseLink.this.createWhere(batch.keys);
                     final JPAQuery<Tuple> queryAfterFrom = queryAfterFromFunction.apply(queryFactory);
                     final JPAQuery<Tuple> queryAfterWhere =
-                            createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
+                            createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, batch.dfe.getArgument("where"));
                     final JPAQuery<Tuple> queryAfterOrderBy =
-                            createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
+                            createOrderByQuery(queryAfterWhere, pathBuilder, batch.dfe.getArgument("orderBy"));
 
                     futures.add(sqlExecutor.submit(
-                            () -> queryAfterOrderBy.fetch().stream().map(s -> BaseLink.this.createChildTOFromTuple(s)).collect(Collectors.toList())));
+                            () -> childGroupFunction.apply(
+                                    queryAfterOrderBy.fetch().stream()
+                                    .map(BaseLink.this::createChildTOFromTuple)
+                                    .toList()
+                            , batch.dfe)));
                 }
 
-                for (final Future<List<ChildTOType>> future : futures) {
+                for (final Future<Map<KeyType, ResultType>> future : futures) {
                     try {
-                        children.addAll(future.get());
+                        final var map = future.get();
+
+                        resultMap.putAll(map);
                     } catch (final QueryTimeoutException e) {
                         log.info("Timeout fetching children", e);
                         throw new AbortExecutionException(e);
@@ -140,13 +186,9 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     }
                 }
 
-                final Map<KeyType, ResultType> childrenGroupedBy = childGroupFunction.apply(children, dataFetchingEnvironment);
-
-                return keys.stream().map(s -> childrenGroupedBy.get(s)).collect(Collectors.toList());
+                return resultMap.getResults(keys);
             }, executor);
         };
-
-        return batchLoaderWithCtx;
     }
 
     private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,

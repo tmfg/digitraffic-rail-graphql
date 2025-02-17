@@ -14,19 +14,15 @@ public abstract class OneToOneLink<KeyType, ParentTOType, ChildEntityType, Child
         extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildTOType> {
 
     public BatchLoaderWithContext<KeyType, ChildTOType> createLoader() {
-        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
-            return queryFactory.select(getFields()).from(getEntityTable());
-        };
+        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> queryFactory.select(getFields()).from(getEntityTable());
         return doCreateLoader(queryAfterFromFunction);
     }
 
     public BatchLoaderWithContext<KeyType, ChildTOType> doCreateLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
         return createDataLoader((children, dataFetchingEnvironment) -> {
                     final Map<KeyType, ChildTOType> childrenMap = new HashMap<>();
-                    for (final ChildTOType child1 : children) {
-                        final KeyType parentId = ((Function<ChildTOType, KeyType>) child -> createKeyFromChild(child)).apply(child1);
-                        childrenMap.put(parentId, child1);
-                    }
+
+                    children.forEach(child -> childrenMap.put(createKeyFromChild(child), child));
 
                     return childrenMap;
                 }

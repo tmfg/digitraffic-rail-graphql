@@ -77,9 +77,8 @@ public class TrainToPassengerInformationMessagesLink extends
 
     @Override
     public BatchLoaderWithContext<TrainId, List<PassengerInformationMessageTO>> createLoader() {
-        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> {
-            return getPassengerInformationBaseQuery(queryFactory, getEntityTable());
-        };
+        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction =
+                (queryFactory) -> getPassengerInformationBaseQuery(queryFactory, getEntityTable());
         return doCreateLoader(queryAfterFromFunction);
     }
 

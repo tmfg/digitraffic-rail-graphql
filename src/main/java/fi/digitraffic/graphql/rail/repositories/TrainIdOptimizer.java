@@ -46,7 +46,7 @@ public class TrainIdOptimizer {
         for (final LocalDate localDate : keys) {
             final var trainNumbers =
                     departureDateMultiMap.get(localDate).stream().map(trainNumberProvider::apply).collect(Collectors.toSet()).stream().sorted()
-                            .collect(Collectors.toList());
+                            .toList();
             final var expressionForDay = dayExpressionProvider.apply(localDate, trainNumbers);
             if (expression == null) {
                 expression = expressionForDay;

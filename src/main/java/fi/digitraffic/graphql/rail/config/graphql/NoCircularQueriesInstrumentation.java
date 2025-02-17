@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import graphql.execution.instrumentation.SimplePerformantInstrumentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,10 +25,10 @@ import graphql.language.Definition;
 import graphql.language.OperationDefinition;
 import graphql.validation.ValidationError;
 
-public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
+public class NoCircularQueriesInstrumentation extends SimplePerformantInstrumentation {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private Set<String> ALLOWED_FIELDS;
+    private final Set<String> ALLOWED_FIELDS;
 
     public NoCircularQueriesInstrumentation(final DigitrafficConfig digitrafficConfig) {
         this.ALLOWED_FIELDS = digitrafficConfig.getFieldsThatCanBeQueriedTwice();
@@ -37,7 +38,7 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
     public InstrumentationContext<List<ValidationError>> beginValidation(final InstrumentationValidationParameters parameters,
                                                                          final InstrumentationState state) {
         return whenCompleted((errors, throwable) -> {
-            if ((errors != null && errors.size() > 0) || throwable != null) {
+            if ((errors != null && !errors.isEmpty()) || throwable != null) {
                 return;
             }
             if (isInstrospectionQuery(parameters)) {
@@ -55,7 +56,7 @@ public class NoCircularQueriesInstrumentation extends SimpleInstrumentation {
                     final Integer typeLastDepth = typesSeenAtDepth.get(name);
                     
                     if (typeLastDepth != null &&
-                            typeLastDepth != depth &&
+                            !typeLastDepth.equals(depth) &&
                             env.getField().getSelectionSet() != null &&
                             !ALLOWED_FIELDS.contains(name)) {
                         final AbortExecutionException exception = new AbortExecutionException("Illegal query: " + name + " queried twice");

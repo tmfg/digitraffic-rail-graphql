@@ -53,7 +53,7 @@ public class StationToPassengerInformationMessagesLinkTest extends
         final ResultActions result = this.query("""
                 {
                   stations {
-                    shortCode             
+                    shortCode
                     stationMessages {
                       message {
                         id

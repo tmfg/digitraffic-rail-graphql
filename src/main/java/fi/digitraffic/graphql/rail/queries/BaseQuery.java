@@ -49,11 +49,11 @@ public abstract class BaseQuery<T> {
 
     public abstract String getQueryName();
 
-    public abstract Class getEntityClass();
+    public abstract Class<T> getEntityClass();
 
     public abstract Expression<?>[] getFields();
 
-    public abstract EntityPath getEntityTable();
+    public abstract EntityPath<T> getEntityTable();
 
     public abstract BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment);
 
@@ -61,7 +61,7 @@ public abstract class BaseQuery<T> {
 
     public DataFetcher<List<T>> createFetcher() {
         return dataFetchingEnvironment -> {
-            final Class entityClass = getEntityClass();
+            final Class<T> entityClass = getEntityClass();
             final PathBuilder<T> pathBuilder = new PathBuilder<>(entityClass,
                     entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
 
@@ -80,7 +80,7 @@ public abstract class BaseQuery<T> {
 
             try {
                 final List<Tuple> rows = queryAfterLimit.fetch();
-                return rows.stream().map(s -> convertEntityToTO(s)).collect(Collectors.toList());
+                return rows.stream().map(this::convertEntityToTO).toList();
             } catch (final QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
             } catch (final IllegalArgumentException e) {

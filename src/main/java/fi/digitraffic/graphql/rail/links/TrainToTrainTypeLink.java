@@ -34,12 +34,12 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
 
     @Override
     public Long createKeyFromParent(final TrainTO trainTO) {
-        return Long.valueOf(trainTO.getTrainTypeId());
+        return (long) trainTO.getTrainTypeId();
     }
 
     @Override
     public Long createKeyFromChild(final TrainTypeTO trainTypeTO) {
-        return Long.valueOf(trainTypeTO.getId());
+        return (long) trainTypeTO.getId();
     }
 
     @Override
