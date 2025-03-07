@@ -73,7 +73,7 @@ public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentatio
         MDC.put("execution_id", executionId.toString());
         MDC.remove("execution_time");
         // log.info("Starting query {} {}", executionId, query);
-
+        
         final long startNanos = System.nanoTime();
         return new SimpleInstrumentationContext<>() {
             @Override
@@ -81,15 +81,17 @@ public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentatio
                 final Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
                 MDC.put("execution_time", String.valueOf(duration.toMillis()));
 
+                log.debug("execution {} query {}", executionId, query);
+
                 if (t != null) {
-                    log.error(String.format("Exception in query %s %s", executionId, query), t);
+                    log.error(String.format("Exception in query %s", executionId), t);
                 }
 
                 if (!result.getErrors().isEmpty()) {
-                    log.warn("Ending query {} {} tookMs={}. Details: {}", executionId, query, duration, state);
+                    log.warn("Ending query {} tookMs={}. Details: {}", executionId, duration, state);
                     log.debug("errors: {}", result.getErrors());
                 } else {
-                    log.info("Ending query {} {} tookMs={}. Details: {}", executionId, query, duration, state);
+                    log.info("Ending query {} tookMs={}. Details: {}", executionId, duration, state);
                 }
             }
         };
