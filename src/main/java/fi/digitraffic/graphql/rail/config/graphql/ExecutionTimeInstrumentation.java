@@ -88,10 +88,10 @@ public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentatio
                 }
 
                 if (!result.getErrors().isEmpty()) {
-                    log.warn("Ending query {} tookMs={}", executionId, duration);
+                    log.warn("Ending query {} tookMs={}", executionId, duration.toMillis());
                     log.debug("errors: {}", result.getErrors());
                 } else {
-                    log.info("Ending query {} tookMs={}", executionId, duration);
+                    log.info("Ending query {} tookMs={}", executionId, duration.toMillis());
                 }
             }
         };
