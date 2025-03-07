@@ -81,17 +81,17 @@ public class ExecutionTimeInstrumentation extends SimplePerformantInstrumentatio
                 final Duration duration = Duration.ofNanos(System.nanoTime() - startNanos);
                 MDC.put("execution_time", String.valueOf(duration.toMillis()));
 
-                log.debug("execution {} query {}", executionId, query);
+                log.debug("execution {} query {} Details {}", executionId, query, state);
 
                 if (t != null) {
                     log.error(String.format("Exception in query %s", executionId), t);
                 }
 
                 if (!result.getErrors().isEmpty()) {
-                    log.warn("Ending query {} tookMs={}. Details: {}", executionId, duration, state);
+                    log.warn("Ending query {} tookMs={}", executionId, duration);
                     log.debug("errors: {}", result.getErrors());
                 } else {
-                    log.info("Ending query {} tookMs={}. Details: {}", executionId, duration, state);
+                    log.info("Ending query {} tookMs={}", executionId, duration);
                 }
             }
         };
