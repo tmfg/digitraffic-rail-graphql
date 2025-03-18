@@ -12,7 +12,7 @@ import fi.digitraffic.graphql.rail.model.TimeTableRowTypeTO;
 @Component
 public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
     @Override
-    public TimeTableRowTO convert(Tuple tuple) {
+    public TimeTableRowTO convert(final Tuple tuple) {
         return new TimeTableRowTO(
                 tuple.get(QTimeTableRow.timeTableRow.stationShortCode),
                 tuple.get(QTimeTableRow.timeTableRow.stationUICCode),
@@ -28,6 +28,7 @@ public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
                 tuple.get(QTimeTableRow.timeTableRow.liveEstimateTime),
                 convertEstimateSource(tuple.get(QTimeTableRow.timeTableRow.estimateSource)),
                 tuple.get(QTimeTableRow.timeTableRow.unknownDelay),
+                tuple.get(QTimeTableRow.timeTableRow.stopSector),
                 tuple.get(QTimeTableRow.timeTableRow.id.attapId).intValue(),
                 tuple.get(QTimeTableRow.timeTableRow.id.trainNumber).intValue(),
                 tuple.get(QTimeTableRow.timeTableRow.id.departureDate),
@@ -36,7 +37,7 @@ public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
                 null);
     }
 
-    private EstimateSourceTypeTO convertEstimateSource(TimeTableRow.EstimateSourceEnum estimateSourceEnum) {
+    private EstimateSourceTypeTO convertEstimateSource(final TimeTableRow.EstimateSourceEnum estimateSourceEnum) {
         if (estimateSourceEnum == null) {
             return null;
         } else if (estimateSourceEnum == TimeTableRow.EstimateSourceEnum.COMBOCALC) {
@@ -54,7 +55,7 @@ public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
         }
     }
 
-    public TimeTableRowTypeTO convertTimeTableRowType(TimeTableRow.TimeTableRowType type) {
+    public TimeTableRowTypeTO convertTimeTableRowType(final TimeTableRow.TimeTableRowType type) {
         if (type == null) {
             return null;
         } else if (type == TimeTableRow.TimeTableRowType.ARRIVAL) {

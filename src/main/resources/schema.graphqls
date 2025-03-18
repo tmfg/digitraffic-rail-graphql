@@ -74,6 +74,7 @@ type TimeTableRow {
     liveEstimateTime : DateTime
     estimateSourceType : EstimateSourceType
     unknownDelay : Boolean
+    stopSector : String
 
     id : Int!
     trainNumber : Int!
