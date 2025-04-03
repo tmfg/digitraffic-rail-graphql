@@ -55,7 +55,7 @@ public class CountingKeyMap<KeyType, ResultType> {
                     newList.add(values.get(index));
                 } else {
                     log.error("Could not get index {} for key {}", index, key);
-                    newList.add(null);
+                    newList.add(values.get(values.size() - 1));
                 }
             }
             //newList.add(values != null ? this.map.get(key).get(index) : null);

@@ -24,9 +24,11 @@ import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
 @Component
 public class PassengerInformationMessageToTrainLink extends OneToOneLink<TrainId, PassengerInformationMessageTO, Train, TrainTO> {
+    private final TrainTOConverter trainTOConverter;
 
-    @Autowired
-    private TrainTOConverter trainTOConverter;
+    public PassengerInformationMessageToTrainLink(final TrainTOConverter trainTOConverter) {
+        this.trainTOConverter = trainTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -55,17 +57,17 @@ public class PassengerInformationMessageToTrainLink extends OneToOneLink<TrainId
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Train> getEntityClass() {
         return Train.class;
     }
 
     @Override
-    public Expression[] getFields() {
+    public Expression<?>[] getFields() {
         return AllFields.TRAIN;
     }
 
     @Override
-    public EntityPath getEntityTable() {
+    public EntityPath<?> getEntityTable() {
         return QTrain.train;
     }
 

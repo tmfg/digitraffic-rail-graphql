@@ -25,6 +25,10 @@ public class FailingQueriesTest extends BaseWebMVCTest {
                 ZonedDateTime.now().plusDays(1),
                 LocalDate.of(2025, 3, 25), 2257);
 
+        factory.create("2", 1, ZonedDateTime.now().minusDays(2),
+                ZonedDateTime.now().plusDays(1),
+                LocalDate.of(2025, 3, 25), 2257);
+
         final ResultActions result = this.query("""
                 {passengerInformationMessages(where: {trainDepartureDate: {equals: "2025-03-25"}}
                 ) {
@@ -40,6 +44,6 @@ public class FailingQueriesTest extends BaseWebMVCTest {
                 }"""
         );
 
-        result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(2));
     }
 }
