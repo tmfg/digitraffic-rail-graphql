@@ -1,5 +1,8 @@
 package fi.digitraffic.graphql.rail.links.base;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +25,10 @@ import java.util.Map;
 public class CountingKeyMap<KeyType, ResultType> {
     private final Map<KeyType, List<ResultType>> map;
 
+    private static final Logger log = LoggerFactory.getLogger(CountingKeyMap.class);
+
     public CountingKeyMap(final int size) {
-        this.map = new HashMap<KeyType, List<ResultType>>(size);
+        this.map = new HashMap<>(size);
     }
 
     public void putAll(final Map<KeyType, ResultType> valueMap) {
@@ -43,7 +48,17 @@ public class CountingKeyMap<KeyType, ResultType> {
             final var values = this.map.get(key);
 
             // get the value from correct index, or return null if no value found
-            newList.add(values != null ? this.map.get(key).get(index) : null);
+            if(values == null) {
+                newList.add(null);
+            } else {
+                if(values.size() >= index - 1) {
+                    newList.add(values.get(index));
+                } else {
+                    log.error("Could not get index {} for key {}", index, key);
+                    newList.add(null);
+                }
+            }
+            //newList.add(values != null ? this.map.get(key).get(index) : null);
 
             indexMap.put(key, index + 1);
         });

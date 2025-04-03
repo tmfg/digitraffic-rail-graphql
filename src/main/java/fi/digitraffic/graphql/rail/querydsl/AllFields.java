@@ -28,13 +28,13 @@ import fi.digitraffic.graphql.rail.entities.QTrainType;
 import fi.digitraffic.graphql.rail.entities.QWagon;
 
 public class AllFields {
-    public static final Expression[] OPERATOR = new Expression[] {
+    public static final Expression<?>[] OPERATOR = new Expression[] {
             QOperator.operator.shortCode,
             QOperator.operator.name,
             QOperator.operator.id,
             QOperator.operator.operatorUicCode
     };
-    public static final Expression[] ROUTESECTION = new Expression[] {
+    public static final Expression<?>[] ROUTESECTION = new Expression[] {
             QRoutesection.routesection.sectionOrder,
             QRoutesection.routesection.routesetId,
             QRoutesection.routesection.id,
@@ -42,7 +42,7 @@ public class AllFields {
             QRoutesection.routesection.stationCode,
             QRoutesection.routesection.sectionId
     };
-    public static final Expression[] WAGON = new Expression[] {
+    public static final Expression<?>[] WAGON = new Expression[] {
             QWagon.wagon.catering,
             QWagon.wagon.disabled,
             QWagon.wagon.id,
@@ -58,7 +58,7 @@ public class AllFields {
             QWagon.wagon.video,
             QWagon.wagon.wagonType
     };
-    public static final Expression[] LOCOMOTIVE = new Expression[] {
+    public static final Expression<?>[] LOCOMOTIVE = new Expression[] {
             QLocomotive.locomotive.id,
             QLocomotive.locomotive.journeysectionId,
             QLocomotive.locomotive.location,
@@ -66,7 +66,7 @@ public class AllFields {
             QLocomotive.locomotive.powerTypeAbbreviation,
             QLocomotive.locomotive.vehicleNumber
     };
-    public static final Expression[] JOURNEY_SECTION = new Expression[] {
+    public static final Expression<?>[] JOURNEY_SECTION = new Expression[] {
             QJourneySection.journeySection.id,
             QJourneySection.journeySection.attapId,
             QJourneySection.journeySection.maximumSpeed,
@@ -75,7 +75,7 @@ public class AllFields {
             QJourneySection.journeySection.trainId.trainNumber,
             QJourneySection.journeySection.trainId.departureDate
     };
-    public static final Expression[] THIRD_CATEGORY_CODE = new Expression[] {
+    public static final Expression<?>[] THIRD_CATEGORY_CODE = new Expression[] {
             QThirdCategoryCode.thirdCategoryCode.oid,
             QThirdCategoryCode.thirdCategoryCode.detailedCategoryCodeOid,
             QThirdCategoryCode.thirdCategoryCode.code,
@@ -84,7 +84,7 @@ public class AllFields {
             QThirdCategoryCode.thirdCategoryCode.validFrom,
             QThirdCategoryCode.thirdCategoryCode.validTo
     };
-    public static final Expression[] DETAILED_CATEGORY_CODE = new Expression[] {
+    public static final Expression<?>[] DETAILED_CATEGORY_CODE = new Expression[] {
             QDetailedCategoryCode.detailedCategoryCode.oid,
             QDetailedCategoryCode.detailedCategoryCode.categoryCodeOid,
             QDetailedCategoryCode.detailedCategoryCode.code,
@@ -92,7 +92,7 @@ public class AllFields {
             QDetailedCategoryCode.detailedCategoryCode.validFrom,
             QDetailedCategoryCode.detailedCategoryCode.validTo
     };
-    public static Expression[] CATEGORY_CODE = new Expression[] {
+    public static Expression<?>[] CATEGORY_CODE = new Expression[] {
             QCategoryCode.categoryCode.oid,
             QCategoryCode.categoryCode.code,
             QCategoryCode.categoryCode.name,
@@ -100,7 +100,7 @@ public class AllFields {
             QCategoryCode.categoryCode.validTo
     };
 
-    public static Expression[] CAUSE = new Expression[] {
+    public static Expression<?>[] CAUSE = new Expression[] {
             QCause.cause.id,
             QCause.cause.timeTableRowId.trainNumber,
             QCause.cause.timeTableRowId.departureDate,
@@ -110,17 +110,17 @@ public class AllFields {
             QCause.cause.thirdCategoryCodeOid
     };
 
-    public static Expression[] TRAIN_TYPE = new Expression[] {
+    public static Expression<?>[] TRAIN_TYPE = new Expression<?>[] {
             QTrainType.trainType.id,
             QTrainType.trainType.name,
             QTrainType.trainType.trainCategoryId
     };
 
-    public static Expression[] TRAIN_CATEGORY = new Expression[] {
+    public static Expression<?>[] TRAIN_CATEGORY = new Expression<?>[] {
             QTrainCategory.trainCategory.id,
             QTrainCategory.trainCategory.name
     };
-    public static Expression[] TRAIN = new Expression[] {
+    public static Expression<?>[] TRAIN = new Expression<?>[] {
             QTrain.train.cancelled,
             QTrain.train.commuterLineid,
             QTrain.train.deleted,
@@ -135,7 +135,7 @@ public class AllFields {
             QTrain.train.id.trainNumber,
             QTrain.train.id.departureDate };
 
-    public static Expression[] COMPOSITION = new Expression[] {
+    public static Expression<?>[] COMPOSITION = new Expression<?>[] {
             QComposition.composition.version,
             QComposition.composition.operatorShortCode,
             QComposition.composition.operatorUicCode,
@@ -145,7 +145,7 @@ public class AllFields {
             QComposition.composition.id.trainNumber,
             };
 
-    public static Expression[] TRAIN_LOCATION = new Expression[] {
+    public static Expression<?>[] TRAIN_LOCATION = new Expression<?>[] {
             QTrainLocation.trainLocation.id,
             QTrainLocation.trainLocation.location,
             QTrainLocation.trainLocation.speed,
@@ -155,7 +155,7 @@ public class AllFields {
             QTrainLocation.trainLocation.trainLocationId.trainNumber
     };
 
-    public static Expression[] ROUTESET = new Expression[] {
+    public static Expression<?>[] ROUTESET = new Expression<?>[] {
             QRoutesetMessage.routesetMessage.clientSystem,
             QRoutesetMessage.routesetMessage.departureDate,
             QRoutesetMessage.routesetMessage.id,
@@ -167,7 +167,7 @@ public class AllFields {
             QRoutesetMessage.routesetMessage.trainId.virtualDepartureDate
     };
 
-    public static Expression[] TRAIN_TRACKING_MESSAGE = new Expression[] {
+    public static Expression<?>[] TRAIN_TRACKING_MESSAGE = new Expression[] {
             QTrainTrackingMessage.trainTrackingMessage.version,
             QTrainTrackingMessage.trainTrackingMessage.timestamp,
             QTrainTrackingMessage.trainTrackingMessage.type,
@@ -183,7 +183,7 @@ public class AllFields {
             QTrainTrackingMessage.trainTrackingMessage.track_section
     };
 
-    public static Expression[] TIME_TABLE_ROW = new Expression[] {
+    public static Expression<?>[] TIME_TABLE_ROW = new Expression[] {
             QTimeTableRow.timeTableRow.actualTime,
             QTimeTableRow.timeTableRow.cancelled,
             QTimeTableRow.timeTableRow.commercialStop,
@@ -203,7 +203,7 @@ public class AllFields {
             QTimeTableRow.timeTableRow.unknownDelay
     };
 
-    public static Expression[] STATION = new Expression[] {
+    public static Expression<?>[] STATION = new Expression[] {
             QStation.station.shortCode,
             QStation.station.countryCode,
             QStation.station.id,
@@ -215,12 +215,12 @@ public class AllFields {
             QStation.station.uicCode
     };
 
-    public static Expression[] TRACK_SECTION = new Expression[] {
+    public static Expression<?>[] TRACK_SECTION = new Expression[] {
             QTrackSection.trackSection.trackSectionCode,
             QTrackSection.trackSection.id,
             };
 
-    public static Expression[] TRACK_RANGE = new Expression[] {
+    public static Expression<?>[] TRACK_RANGE = new Expression[] {
             QTrackRange.trackRange.trackSectionId,
             QTrackRange.trackRange.startTrack,
             QTrackRange.trackRange.startKilometres,
@@ -230,7 +230,7 @@ public class AllFields {
             QTrackRange.trackRange.endMetres
     };
 
-    public static final Expression[] PASSENGER_INFORMATION_MESSAGE = new Expression[] {
+    public static final Expression<?>[] PASSENGER_INFORMATION_MESSAGE = new Expression[] {
             QPassengerInformationMessage.passengerInformationMessage.id.id,
             QPassengerInformationMessage.passengerInformationMessage.id.version,
             QPassengerInformationMessage.passengerInformationMessage.creationDateTime,
@@ -240,13 +240,13 @@ public class AllFields {
             QPassengerInformationMessage.passengerInformationMessage.trainDepartureDate,
             };
 
-    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_STATION = new Expression[] {
+    public static final Expression<?>[] PASSENGER_INFORMATION_MESSAGE_STATION = new Expression[] {
             QPassengerInformationMessageStation.passengerInformationMessageStation.stationShortCode,
             QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion,
             QPassengerInformationMessageStation.passengerInformationMessageStation.messageId,
             };
 
-    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_AUDIO = new Expression[] {
+    public static final Expression<?>[] PASSENGER_INFORMATION_MESSAGE_AUDIO = new Expression[] {
             QPassengerInformationAudio.passengerInformationAudio.id,
             QPassengerInformationAudio.passengerInformationAudio.textEn,
             QPassengerInformationAudio.passengerInformationAudio.textFi,
@@ -265,7 +265,7 @@ public class AllFields {
             QPassengerInformationAudio.passengerInformationAudio.weekDays
     };
 
-    public static final Expression[] PASSENGER_INFORMATION_MESSAGE_VIDEO = new Expression[] {
+    public static final Expression<?>[] PASSENGER_INFORMATION_MESSAGE_VIDEO = new Expression[] {
             QPassengerInformationVideo.passengerInformationVideo.id,
             QPassengerInformationVideo.passengerInformationVideo.textEn,
             QPassengerInformationVideo.passengerInformationVideo.textFi,
