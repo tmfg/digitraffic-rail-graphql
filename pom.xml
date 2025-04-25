@@ -22,6 +22,17 @@
     </parent>
 
     <dependencies>
+
+        <!-- TEMPORARY DEPS TO MITIGATE SECURITY VULNERABILITIES STARTS -->
+        <!-- TODO: Temporary patch for CVE-2025-22234 in spring-security-crypto 6.4.4 -->
+        <!-- Remove this dependency once spring-cloud-starter-bootstrap is updated -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>6.4.5</version>
+        </dependency>
+        <!-- TEMPORARY DEPS TO MITIGATE SECURITY VULNERABILITIES ENDS -->
+
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
