@@ -200,7 +200,8 @@ public class AllFields {
             QTimeTableRow.timeTableRow.stationUICCode,
             QTimeTableRow.timeTableRow.trainStopping,
             QTimeTableRow.timeTableRow.type,
-            QTimeTableRow.timeTableRow.unknownDelay
+            QTimeTableRow.timeTableRow.unknownDelay,
+            QTimeTableRow.timeTableRow.stopSector
     };
 
     public static Expression<?>[] STATION = new Expression[] {

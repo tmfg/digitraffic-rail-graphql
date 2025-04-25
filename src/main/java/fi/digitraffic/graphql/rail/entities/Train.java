@@ -57,7 +57,7 @@ public class Train {
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
-    private Set<TimeTableRow> timeTableRows;
+    public Set<TimeTableRow> timeTableRows;
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)

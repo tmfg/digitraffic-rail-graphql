@@ -35,7 +35,6 @@ public class TimeTableRow {
             @JoinColumn(name = "trainNumber", referencedColumnName = "trainNumber", nullable = false, insertable = false, updatable = false)})
     public Train train;
 
-
     @Column(name = "station_uic_code")
     public int stationUICCode;
     public String stationShortCode;
@@ -61,4 +60,6 @@ public class TimeTableRow {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stationShortCode", referencedColumnName = "shortCode", updatable = false, insertable = false)
     private Station station;
+
+    public String stopSector;
 }
