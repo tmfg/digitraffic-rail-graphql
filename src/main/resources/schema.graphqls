@@ -1,26 +1,26 @@
 type Query {
-    train(trainNumber : Int!, departureDate : Date!) : [Train]
-    trainsByDepartureDate(departureDate : Date!) : [Train]
-    trainsByVersionGreaterThan(version : String!) : [Train]
-    trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train]
-    currentlyRunningTrains : [Train]
+    train(trainNumber : Int!, departureDate : Date!) : [Train!]!
+    trainsByDepartureDate(departureDate : Date!) : [Train!]!
+    trainsByVersionGreaterThan(version : String!) : [Train!]!
+    trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train!]!
+    currentlyRunningTrains : [Train!]!
 
-    latestTrainLocations : [TrainLocation]
+    latestTrainLocations : [TrainLocation!]!
 
-    compositionsGreaterThanVersion(version : String!) : [Composition]
+    compositionsGreaterThanVersion(version : String!) : [Composition!]!
 
-    trainTrackingMessagesByVersionGreaterThan(version : String!) : [TrainTrackingMessage]
+    trainTrackingMessagesByVersionGreaterThan(version : String!) : [TrainTrackingMessage!]!
 
-    routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage]
+    routesetMessagesByVersionGreaterThan(version : String!) : [RoutesetMessage!]!
 
-    stations: [Station]
+    stations: [Station!]!
 
-    passengerInformationMessages: [PassengerInformationMessage]
+    passengerInformationMessages: [PassengerInformationMessage!]!
     """
     If onlyGeneral is true, returns only general notices (notices not related to a train number). False by default.
     """
-    passengerInformationMessagesByStation(stationShortCode: String!, onlyGeneral: Boolean): [PassengerInformationMessage]
-    passengerInformationMessagesByTrain(trainNumber: Int!, departureDate: Date!): [PassengerInformationMessage]
+    passengerInformationMessagesByStation(stationShortCode: String!, onlyGeneral: Boolean): [PassengerInformationMessage!]!
+    passengerInformationMessagesByTrain(trainNumber: Int!, departureDate: Date!): [PassengerInformationMessage!]!
 }
 
 type Train {
@@ -39,12 +39,12 @@ type Train {
     trainCategoryId : Int!
     operator : Operator!
     trainType : TrainType!
-    timeTableRows : [TimeTableRow]
+    timeTableRows : [TimeTableRow!]!
     trainLocations : [TrainLocation]
-    compositions : [Composition]
-    trainTrackingMessages : [TrainTrackingMessage]
-    routesetMessages: [RoutesetMessage]
-    passengerInformationMessages: [PassengerInformationMessage]
+    compositions : [Composition!]!
+    trainTrackingMessages : [TrainTrackingMessage!]!
+    routesetMessages: [RoutesetMessage!]!
+    passengerInformationMessages: [PassengerInformationMessage!]!
 }
 
 type TrainType {
@@ -82,7 +82,7 @@ type TimeTableRow {
 
     station : Station!
     train: Train!
-    causes : [Cause]
+    causes : [Cause!]!
 }
 
 type Cause {
@@ -111,7 +111,7 @@ type TrainLocation {
     accuracy: Int
     timestamp : DateTime!
     trainNumber : Int!
-    location : [Float]
+    location : [Float!]!
     train : Train
 }
 
@@ -124,7 +124,7 @@ type Composition {
     version : String!
     operatorUicCode : Int!
     train : Train
-    journeySections : [JourneySection]
+    journeySections : [JourneySection!]!
 }
 
 type JourneySection {
@@ -137,8 +137,8 @@ type JourneySection {
     totalLength : Int!
     startTimeTableRow : TimeTableRow
     endTimeTableRow : TimeTableRow
-    wagons : [Wagon]
-    locomotives : [Locomotive]
+    wagons : [Wagon!]!
+    locomotives : [Locomotive!]!
 }
 
 type Locomotive {
@@ -171,13 +171,13 @@ type Station {
     id : Int!
     passengerTraffic : Boolean!
     countryCode : String!
-    location : [Float]
+    location : [Float!]!
     name : String!
     shortCode : String!
     uicCode : Int!
     type : StationType!
-    timeTableRows: [TimeTableRow]
-    stationMessages: [PassengerInformationMessageStation]
+    timeTableRows: [TimeTableRow!]!
+    stationMessages: [PassengerInformationMessageStation!]!
 }
 
 type CategoryCode {
@@ -235,7 +235,7 @@ type RoutesetMessage {
     departureDate : Date
     routeType : String!
     clientSystem : String!
-    routesections : [Routesection]
+    routesections : [Routesection!]!
     train : Train
 }
 
@@ -252,7 +252,7 @@ type TrackSection {
     trackSectionCode: String!
     stationShortCode: String!
     station: Station
-    ranges: [TrackRange]!
+    ranges: [TrackRange!]!
 }
 
 type TrackRange {
@@ -274,7 +274,7 @@ type PassengerInformationMessage {
     trainDepartureDate: Date
     trainNumber: Int
     train: Train
-    messageStations: [PassengerInformationMessageStation]
+    messageStations: [PassengerInformationMessageStation!]!
     audio: PassengerInformationAudio
     video: PassengerInformationVideo
 }
@@ -307,7 +307,7 @@ type PassengerInformationVideoDeliveryRules {
     endDateTime: DateTime
     startTime: String
     endTime: String
-    weekDays: [DayOfWeek]
+    weekDays: [DayOfWeek!]!
 }
 
 type PassengerInformationAudioDeliveryRules {
@@ -317,7 +317,7 @@ type PassengerInformationAudioDeliveryRules {
     endDateTime: DateTime
     startTime: String
     endTime: String
-    weekDays: [DayOfWeek]
+    weekDays: [DayOfWeek!]!
     deliveryAt: DateTime
     repetitions: Int
     repeatEvery: Int
@@ -398,8 +398,8 @@ input DayOfWeekOrderBy {
 }
 
 input DayOfWeekCollectionWhere {
-    equals: [DayOfWeek]
-    notEquals: [DayOfWeek]
+    equals: [DayOfWeek!]!
+    notEquals: [DayOfWeek!]!
 }
 
 input IntWhere {
@@ -429,7 +429,7 @@ input DateWhere {
 }
 
 input CoordinateWhere {
-    inside : [Float]
+    inside : [Float!]!
 }
 
 input VersionWhere {
