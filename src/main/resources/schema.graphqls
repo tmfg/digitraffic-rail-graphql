@@ -82,7 +82,7 @@ type TimeTableRow {
 
     station : Station!
     train: Train!
-    causes : [Cause!]!
+    causes : [Cause!]
 }
 
 type Cause {

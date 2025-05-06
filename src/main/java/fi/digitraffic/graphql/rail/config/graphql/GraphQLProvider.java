@@ -227,8 +227,8 @@ public class GraphQLProvider {
         for (final ObjectTypeDefinition userType : userTypes) {
             final List<InputValueDefinition> inputValueDefinitions = new ArrayList<>();
             for (final FieldDefinition fieldDefinition : userType.getFieldDefinitions()) {
-                if (fieldDefinition.getType() instanceof ListType) {
-                    final String name = getTypeName(((ListType) fieldDefinition.getType()).getType()).get();
+                if(isListType(fieldDefinition.getType())) {
+                    final var name = getChildType(fieldDefinition.getType()).getName();
                     if (!name.equals("Float")) {
                         final String fieldName = fieldDefinition.getName();
                         final Type type = TypeName.newTypeName(name + "CollectionWhere").build();
