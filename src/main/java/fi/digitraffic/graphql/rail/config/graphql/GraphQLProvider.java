@@ -184,8 +184,8 @@ public class GraphQLProvider {
 
                 final List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
                 for (final FieldDefinition fieldDefinition : queryObjectTypeDefinition.getFieldDefinitions()) {
-                    if (fieldDefinition.getType() instanceof final ListType listType) {
-                        final TypeName namedType = (TypeName) listType.getType();
+                    if (isListType(fieldDefinition.getType())) {
+                        final TypeName namedType = getChildType(fieldDefinition.getType());
 
                         final List<InputValueDefinition> newInputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where")
