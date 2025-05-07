@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.function.TriFunction;
 import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
@@ -142,7 +143,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     }
 
     protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(
-            final BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
+            final TriFunction<List<KeyType>, List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
             final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
         return (keys, loaderContext) -> {
             final var batches = createBatches(keys, loaderContext.getKeyContextsList());
@@ -167,7 +168,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                             createOrderByQuery(queryAfterWhere, pathBuilder, batch.dfe.getArgument("orderBy"));
 
                     futures.add(sqlExecutor.submit(
-                            () -> childGroupFunction.apply(
+                            () -> childGroupFunction.apply(batch.keys,
                                     queryAfterOrderBy.fetch().stream()
                                     .map(BaseLink.this::createChildTOFromTuple)
                                     .toList()
