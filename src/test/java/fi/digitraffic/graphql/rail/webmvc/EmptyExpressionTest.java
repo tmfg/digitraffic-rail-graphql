@@ -36,6 +36,6 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
                     }
                 }""");
 
-        result.andExpect(jsonPath("$.errors.length()").value(1));
+        result.andExpect(jsonPath("$.errors.length()").value(2));
     }
 }
