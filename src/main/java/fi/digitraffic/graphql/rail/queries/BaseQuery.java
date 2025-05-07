@@ -113,7 +113,7 @@ public abstract class BaseQuery<T> {
     protected JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,
                                                final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            final Map<String, Object> properWhereMap = this.replaceOffsetsWithZonedDateTimes(whereAsMap);
+            final Map<String, Object> properWhereMap = replaceOffsetsWithZonedDateTimes(whereAsMap);
 
             final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
             return query.where(basicWhere.and(whereExpression));
@@ -122,11 +122,11 @@ public abstract class BaseQuery<T> {
         }
     }
 
-    private Map<String, Object> replaceOffsetsWithZonedDateTimes(final Map<String, Object> whereAsMap) {
+    public static Map<String, Object> replaceOffsetsWithZonedDateTimes(final Map<String, Object> whereAsMap) {
         for (final String key : whereAsMap.keySet()) {
             final Object value = whereAsMap.get(key);
             if (value instanceof Map) {
-                this.replaceOffsetsWithZonedDateTimes((Map<String, Object>) value);
+                replaceOffsetsWithZonedDateTimes((Map<String, Object>) value);
             } else if (value instanceof OffsetDateTime) {
                 whereAsMap.put(key, ((OffsetDateTime) value).toZonedDateTime());
             }

@@ -74,4 +74,47 @@ public class TimeTableRowFilterQueriesTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[1].trainLocations").doesNotExist());
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[2].trainLocations.length()").value(1));
     }
+
+    @Test
+    public void trainsByDepartureDateFilterOutRows() throws Exception {
+        factoryService.getTrainFactory().createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2024-01-01") {
+                        trainNumber
+                        version
+                        timeTableRows(where: {unknownDelay: {equals: true}}) {
+                            actualTime,
+                            station {
+                                shortCode
+                            }
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+    }
+
+    @Test
+    public void trainsByDepartureDateFilterWithTime() throws Exception {
+        factoryService.getTrainFactory().createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2024-01-01") {
+                        trainNumber
+                        version
+                        timeTableRows(where: {actualTime: {equals: "2024-01-01T12:30:00+02:00"}}) {
+                            actualTime,
+                            station {
+                                shortCode
+                            }
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+    }
+
 }

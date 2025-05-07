@@ -39,6 +39,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
 import org.springframework.beans.factory.annotation.Value;
 
+import static fi.digitraffic.graphql.rail.queries.BaseQuery.replaceOffsetsWithZonedDateTimes;
+
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     private static final ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
     private static final ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(10);
@@ -191,10 +193,13 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         };
     }
 
+    // TODO: is this needed? same as in BaseQuery?
     private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,
                                              final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
+            final Map<String, Object> properWhereMap = replaceOffsetsWithZonedDateTimes(whereAsMap);
+
+            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
             return query.where(basicWhere.and(whereExpression));
         } else {
             return query.where(basicWhere);

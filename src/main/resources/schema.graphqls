@@ -39,12 +39,12 @@ type Train {
     trainCategoryId : Int!
     operator : Operator!
     trainType : TrainType!
-    timeTableRows : [TimeTableRow!]!
-    trainLocations : [TrainLocation]
-    compositions : [Composition!]!
-    trainTrackingMessages : [TrainTrackingMessage!]!
-    routesetMessages: [RoutesetMessage!]!
-    passengerInformationMessages: [PassengerInformationMessage!]!
+    timeTableRows : [TimeTableRow]
+    trainLocations : [TrainLocation!]
+    compositions : [Composition!]
+    trainTrackingMessages : [TrainTrackingMessage!]
+    routesetMessages: [RoutesetMessage!]
+    passengerInformationMessages: [PassengerInformationMessage!]
 }
 
 type TrainType {
