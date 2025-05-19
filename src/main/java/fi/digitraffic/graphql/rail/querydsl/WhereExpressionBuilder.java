@@ -29,13 +29,6 @@ import jakarta.annotation.PostConstruct;
 
 @Service
 public class WhereExpressionBuilder {
-    private static final Map<String, Operator> stringToOperationMap = Map.of(
-            "greaterThan", Ops.GT,
-            "lessThan", Ops.LT,
-            "equals", Ops.EQ,
-            "unequals", Ops.NE
-    );
-
     private final Map<String, Enum> enumValues = new HashMap<>();
 
     @PostConstruct

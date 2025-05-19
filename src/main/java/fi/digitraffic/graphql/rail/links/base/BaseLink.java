@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.function.TriFunction;
 import org.dataloader.BatchLoaderWithContext;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
@@ -38,6 +39,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
 import org.springframework.beans.factory.annotation.Value;
+
+import static fi.digitraffic.graphql.rail.queries.BaseQuery.replaceOffsetsWithZonedDateTimes;
 
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     private static final ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
@@ -140,7 +143,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     }
 
     protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(
-            final BiFunction<List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
+            final TriFunction<List<KeyType>, List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
             final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
         return (keys, loaderContext) -> {
             final var batches = createBatches(keys, loaderContext.getKeyContextsList());
@@ -165,7 +168,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                             createOrderByQuery(queryAfterWhere, pathBuilder, batch.dfe.getArgument("orderBy"));
 
                     futures.add(sqlExecutor.submit(
-                            () -> childGroupFunction.apply(
+                            () -> childGroupFunction.apply(batch.keys,
                                     queryAfterOrderBy.fetch().stream()
                                     .map(BaseLink.this::createChildTOFromTuple)
                                     .toList()
@@ -191,10 +194,13 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         };
     }
 
+    // TODO: is this needed? same as in BaseQuery?
     private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,
                                              final Map<String, Object> whereAsMap) {
         if (whereAsMap != null) {
-            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, whereAsMap);
+            final Map<String, Object> properWhereMap = replaceOffsetsWithZonedDateTimes(whereAsMap);
+
+            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
             return query.where(basicWhere.and(whereExpression));
         } else {
             return query.where(basicWhere);

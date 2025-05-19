@@ -111,6 +111,25 @@ public class GraphQLProvider {
                 .build();
     }
 
+    private boolean isListType(final Type type) {
+        if(type instanceof final NonNullType nonNullType) {
+            return nonNullType.getType() instanceof ListType;
+        }
+
+        return type instanceof ListType;
+    }
+
+    private TypeName getChildType(final Type type) {
+        if(type instanceof final NonNullType nonNullType) {
+            return getChildType(nonNullType.getType());
+        }
+        if(type instanceof final ListType listType) {
+            return getChildType(listType.getType());
+        }
+
+        return (TypeName)type;
+    }
+
     private void addGenericArgumentsToCollections(final TypeDefinitionRegistry typeRegistry) {
         for (final Map.Entry<String, TypeDefinition> typeEntry : typeRegistry.types().entrySet()) {
             final TypeDefinition value = typeEntry.getValue();
@@ -118,8 +137,8 @@ public class GraphQLProvider {
 
                 final List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
                 for (final FieldDefinition fieldDefinition : objectTypeDefinition.getFieldDefinitions()) {
-                    if (fieldDefinition.getType() instanceof final ListType listType) {
-                        final TypeName childType = (TypeName) listType.getType();
+                    if(isListType(fieldDefinition.getType())) {
+                        final var childType = getChildType(fieldDefinition.getType());
                         if (childType.getName().equals("Float")) {
                             newFieldDefinitions.add(fieldDefinition);
                         } else {
@@ -165,8 +184,8 @@ public class GraphQLProvider {
 
                 final List<FieldDefinition> newFieldDefinitions = new ArrayList<>();
                 for (final FieldDefinition fieldDefinition : queryObjectTypeDefinition.getFieldDefinitions()) {
-                    if (fieldDefinition.getType() instanceof final ListType listType) {
-                        final TypeName namedType = (TypeName) listType.getType();
+                    if (isListType(fieldDefinition.getType())) {
+                        final TypeName namedType = getChildType(fieldDefinition.getType());
 
                         final List<InputValueDefinition> newInputValueDefinitions = new ArrayList<>(fieldDefinition.getInputValueDefinitions());
                         newInputValueDefinitions.add(InputValueDefinition.newInputValueDefinition().name("where")
@@ -208,8 +227,8 @@ public class GraphQLProvider {
         for (final ObjectTypeDefinition userType : userTypes) {
             final List<InputValueDefinition> inputValueDefinitions = new ArrayList<>();
             for (final FieldDefinition fieldDefinition : userType.getFieldDefinitions()) {
-                if (fieldDefinition.getType() instanceof ListType) {
-                    final String name = getTypeName(((ListType) fieldDefinition.getType()).getType()).get();
+                if(isListType(fieldDefinition.getType())) {
+                    final var name = getChildType(fieldDefinition.getType()).getName();
                     if (!name.equals("Float")) {
                         final String fieldName = fieldDefinition.getName();
                         final Type type = TypeName.newTypeName(name + "CollectionWhere").build();

@@ -1,12 +1,11 @@
 package fi.digitraffic.graphql.rail.links.base;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.dataloader.BatchLoaderWithContext;
 
 import com.querydsl.core.Tuple;
@@ -28,8 +27,11 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
 
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> doCreateLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
 
-        return createDataLoader((children, dataFetchingEnvironment) -> {
+        return createDataLoader((keys, children, dataFetchingEnvironment) -> {
                     final Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
+
+                    keys.forEach(key -> childrenGroupedBy.put(key, new ArrayList<>()));
+
                     for (final ChildTOType child1 : children) {
                         final KeyType parentId = createKeyFromChild(child1);
                         final List<ChildTOType> childTOs = childrenGroupedBy.computeIfAbsent(parentId, k -> new ArrayList<>());

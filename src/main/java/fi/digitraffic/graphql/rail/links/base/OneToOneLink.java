@@ -19,7 +19,7 @@ public abstract class OneToOneLink<KeyType, ParentTOType, ChildEntityType, Child
     }
 
     public BatchLoaderWithContext<KeyType, ChildTOType> doCreateLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
-        return createDataLoader((children, dataFetchingEnvironment) -> {
+        return createDataLoader((keys, children, dataFetchingEnvironment) -> {
                     final Map<KeyType, ChildTOType> childrenMap = new HashMap<>();
 
                     children.forEach(child -> childrenMap.put(createKeyFromChild(child), child));
