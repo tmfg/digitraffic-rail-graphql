@@ -7,24 +7,15 @@
 
     <!-- From spring-cloud-starter-aws-secrets-manager-config -->
     <!-- waiting for update (last updated Feb 02, 2023) -->
-    <suppress until="2025-06-01">
+    <suppress until="2025-09-01">
         <notes><![CDATA[file name: ion-java-1.0.2.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/software\.amazon\.ion/ion\-java@.*$</packageUrl>
         <!-- we're not using ion-java -->
         <cve>CVE-2024-21634</cve>
     </suppress>
 
-    <!-- Waiting Spring Boot update. Fixed in 3.4.2 -->
-    <suppress until="2025-03-15">
-        <notes><![CDATA[
-   file name: logback-core-1.5.11.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/ch\.qos\.logback/logback-core@.*$</packageUrl>
-        <vulnerabilityName>CVE-2024-12798</vulnerabilityName>
-    </suppress>
-
     <!-- From dice-fairlink -->
-    <suppress until="2025-06-01">
+    <suppress until="2025-09-01">
         <notes><![CDATA[file name: aws-java-sdk-rds-1.11.251.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.amazonaws/aws\-java\-sdk\-rds@.*$</packageUrl>
         <!-- We are not using S3 -->
@@ -32,7 +23,7 @@
     </suppress>
 
     <!-- From dice-fairlink -->
-    <suppress until="2025-06-01">
+    <suppress until="2025-09-01">
         <notes><![CDATA[file name: jmespath-java-1.11.251.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.amazonaws/jmespath\-java@.*$</packageUrl>
         <!-- We are not using S3 -->
@@ -41,13 +32,14 @@
 
 
     <!-- No updates available to querydsl-core. Latest version is from Jan 29, 2024 -->
-    <suppress until="2025-06-01">
+    <suppress until="2025-09-01">
         <notes><![CDATA[
    file name: querydsl-apt-5.1.0-jakarta.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.querydsl/querydsl-apt@.*$</packageUrl>
         <vulnerabilityName>CVE-2024-49203</vulnerabilityName>
     </suppress>
+
     <suppress>
         <notes><![CDATA[
    file name: querydsl-jpa-5.1.0-jakarta.jar
