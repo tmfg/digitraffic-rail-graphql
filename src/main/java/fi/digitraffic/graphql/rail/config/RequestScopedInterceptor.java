@@ -1,16 +1,20 @@
 package fi.digitraffic.graphql.rail.config;
 
-import fi.digitraffic.graphql.rail.links.base.BaseLink;
-import org.dataloader.*;
+import java.util.List;
+
+import org.dataloader.BatchLoaderWithContext;
+import org.dataloader.DataLoader;
+import org.dataloader.DataLoaderFactory;
+import org.dataloader.DataLoaderOptions;
+import org.dataloader.DataLoaderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlRequest;
 import org.springframework.graphql.server.WebGraphQlResponse;
-
-import reactor.core.publisher.Mono;
-import java.util.List;
-
 import org.springframework.stereotype.Component;
+
+import fi.digitraffic.graphql.rail.links.base.BaseLink;
+import reactor.core.publisher.Mono;
 
 /**
  * Creates a new DataLoaderRegistry for each request
@@ -21,8 +25,8 @@ public class RequestScopedInterceptor implements WebGraphQlInterceptor {
     @Autowired
     private List<BaseLink<?, ?, ?, ?, ?>> fetchers;
 
-    private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions();
-    private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false);
+    private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions().build();
+    private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false).build();
 
     @Override
     public Mono<WebGraphQlResponse> intercept(final WebGraphQlRequest request, final WebGraphQlInterceptor.Chain chain) {
