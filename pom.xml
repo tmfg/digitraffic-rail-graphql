@@ -35,28 +35,15 @@
         </dependency>
 
         <dependency>
-            <groupId>io.awspring.cloud</groupId>
-            <artifactId>spring-cloud-starter-aws-secrets-manager-config</artifactId>
-            <version>2.4.4</version>
+            <groupId>software.aws.rds</groupId>
+            <artifactId>aws-mysql-jdbc</artifactId>
+            <version>1.1.15</version>
         </dependency>
 
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>9.2.0</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>technology.dice.open</groupId>
-            <artifactId>dice-fairlink</artifactId>
-            <version>1.2.4</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>com.amazonaws.secretsmanager</groupId>
+            <artifactId>aws-secretsmanager-jdbc</artifactId>
+            <version>2.0.2</version>
         </dependency>
 
         <dependency>
