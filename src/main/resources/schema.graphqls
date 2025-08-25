@@ -60,8 +60,8 @@ type TrainCategory {
 }
 
 type TimeTableRow {
-    stationShortCode : String!
-    stationUICCode : Int!
+    stationShortCode : String
+    stationUICCode : Int
     countryCode : String!
     type : TimeTableRowType!
     trainStopping : Boolean!
@@ -80,7 +80,7 @@ type TimeTableRow {
     trainNumber : Int!
     departureDate : Date!
 
-    station : Station!
+    station : Station
     train: Train!
     causes : [Cause!]!
 }
