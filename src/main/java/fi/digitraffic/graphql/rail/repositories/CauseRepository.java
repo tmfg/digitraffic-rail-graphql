@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.Cause;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface CauseRepository extends JpaRepository<Cause, Long> {
 }

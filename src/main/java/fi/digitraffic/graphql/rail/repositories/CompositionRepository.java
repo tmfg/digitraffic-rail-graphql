@@ -8,6 +8,6 @@ import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface CompositionRepository extends JpaRepository<Composition, TrainId> {
 }

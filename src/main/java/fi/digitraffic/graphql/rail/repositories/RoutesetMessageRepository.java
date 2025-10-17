@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface RoutesetMessageRepository extends JpaRepository<RoutesetMessage, Long> {
 }

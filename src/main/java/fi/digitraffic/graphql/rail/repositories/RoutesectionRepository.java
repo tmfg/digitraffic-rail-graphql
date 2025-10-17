@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.Routesection;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface RoutesectionRepository extends JpaRepository<Routesection, Long> {
 }

@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.Station;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface StationRepository extends JpaRepository<Station, Long> {
 }

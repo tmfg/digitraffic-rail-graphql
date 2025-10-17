@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.ThirdCategoryCode;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface ThirdCategoryCodeRepository extends JpaRepository<ThirdCategoryCode, String> {
 }

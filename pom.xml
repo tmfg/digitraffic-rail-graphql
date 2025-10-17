@@ -28,6 +28,7 @@
             <version>1.20.0</version>
         </dependency>
 
+        <!--This is used to add support for bootstrap.properties file-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
@@ -35,15 +36,15 @@
         </dependency>
 
         <dependency>
-            <groupId>software.aws.rds</groupId>
-            <artifactId>aws-mysql-jdbc</artifactId>
-            <version>1.1.15</version>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
+            <version>3.4.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.amazonaws.secretsmanager</groupId>
-            <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>2.0.3</version>
+            <groupId>software.aws.rds</groupId>
+            <artifactId>aws-mysql-jdbc</artifactId>
+            <version>1.1.15</version>
         </dependency>
 
         <dependency>

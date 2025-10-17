@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.Operator;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface OperatorRepository extends JpaRepository<Operator, Long> {
 }

@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface TrainTrackingMessageRepository extends JpaRepository<TrainTrackingMessage, Long> {
 }

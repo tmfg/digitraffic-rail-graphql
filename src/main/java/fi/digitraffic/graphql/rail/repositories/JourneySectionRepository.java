@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.JourneySection;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface JourneySectionRepository extends JpaRepository<JourneySection, Long> {
 }

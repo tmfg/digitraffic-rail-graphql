@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface TrainLocationRepository extends JpaRepository<TrainLocation, Long> {
     @Query("select max(tl.id) " +
         "   from TrainLocation tl " +

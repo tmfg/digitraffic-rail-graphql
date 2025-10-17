@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.TrainCategory;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface TrainCategoryRepository extends JpaRepository<TrainCategory, Long> {
     @Cacheable("trainCategories")
     @Query("select t.id from TrainCategory  t where t.name in ?1")

@@ -11,7 +11,7 @@ import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface TrainRepository extends JpaRepository<Train, TrainId> {
     @Query(value = "select * from ((SELECT " +
         "    '1', t.departure_date, t.train_number, t.version" +

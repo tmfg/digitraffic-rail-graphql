@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import fi.digitraffic.graphql.rail.entities.DetailedCategoryCode;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface DetailedCategoryCodeRepository extends JpaRepository<DetailedCategoryCode, String> {
 }

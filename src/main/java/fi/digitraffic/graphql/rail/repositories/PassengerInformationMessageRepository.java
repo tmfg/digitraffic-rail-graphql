@@ -8,6 +8,6 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface PassengerInformationMessageRepository extends JpaRepository<PassengerInformationMessage, PassengerInformationMessageId> {
 }

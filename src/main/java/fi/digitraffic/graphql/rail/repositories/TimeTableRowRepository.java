@@ -8,6 +8,6 @@ import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public interface TimeTableRowRepository extends JpaRepository<TimeTableRow, TimeTableRowId> {
 }
