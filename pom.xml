@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.7</version>
         <relativePath/>
     </parent>
 
@@ -88,12 +88,14 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
+            <!-- FIXME DPO-3534 -->
             <version>8.1</version>
         </dependency>
         
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <version>1.5.20</version>
         </dependency>
 
         <dependency>
@@ -140,16 +142,19 @@
             <version>3.1.1</version>
         </dependency>
 
-        <!-- version 3.2.0 introduces problems at least with spring boot 3.4.x and hibernate 6.6.x-->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
+            <!-- FIXME version 3.2.0 introduces problems at least with spring boot 3.4.x and hibernate 6.6.x
+            <version>3.2.0</version> -->
             <version>3.1.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java-extended-scalars</artifactId>
+            <!-- FIXME DPO-3535
+            <version>24.0</version> -->
             <version>22.0</version>
         </dependency>
 
