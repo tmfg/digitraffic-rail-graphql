@@ -147,7 +147,7 @@ public class TrainsByRouteQuery extends BaseQuery<TrainTO> {
         );
 
         if (trainIds.isEmpty()) {
-            throw new CustomException(400, "Could not find any trains for the given parameters");
+            trainIds.add(new TrainId(-9999L, LocalDate.now()));
         }
 
         return TrainIdOptimizer.optimize(QTrain.train.id, trainIds);
