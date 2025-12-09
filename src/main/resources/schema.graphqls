@@ -3,6 +3,7 @@ type Query {
     trainsByDepartureDate(departureDate : Date!) : [Train!]!
     trainsByVersionGreaterThan(version : String!) : [Train!]!
     trainsByStationAndQuantity(station : String!, arrivedTrains : Int, arrivingTrains : Int,departedTrains : Int,departingTrains : Int, includeNonStopping : Boolean, trainCategories : [String]) : [Train!]!
+    trainsByRoute(departureStation: String!, arrivalStation: String!, departureDate: Date, startDate: DateTime, endDate: DateTime, limit: Int, includeNonStopping: Boolean): [Train!]!
     currentlyRunningTrains : [Train!]!
 
     latestTrainLocations : [TrainLocation!]!
