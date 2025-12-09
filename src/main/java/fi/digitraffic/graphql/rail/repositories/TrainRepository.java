@@ -140,10 +140,9 @@ public interface TrainRepository extends JpaRepository<Train, TrainId> {
                                     departureDateStart, departureDateEnd, includeNonStopping, limit)
             .stream()
             .map(row -> {
-                Long trainNumber = ((Number) row[0]).longValue();
-                LocalDate departureDate = ((java.sql.Date) row[1]).toLocalDate();
+                final Long trainNumber = ((Number) row[0]).longValue();
+                final LocalDate departureDate = ((java.sql.Date) row[1]).toLocalDate();
                 return new TrainId(trainNumber, departureDate);
-            })
-            .collect(Collectors.toList());
+            }).toList();
     }
 }

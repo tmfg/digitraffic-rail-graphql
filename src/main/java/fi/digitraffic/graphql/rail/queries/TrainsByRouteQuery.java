@@ -35,6 +35,7 @@ public class TrainsByRouteQuery extends BaseQuery<TrainTO> {
 
     private static final int MAX_ROUTE_SEARCH_RESULT_SIZE = 1000;
     private static final int DAYS_BETWEEN_LIMIT = 2;
+    private static final ZoneId DEFAULT_ZONE_ID = ZoneId.of("Europe/Helsinki");
 
     @Autowired
     private TrainRepository trainRepository;
@@ -71,8 +72,8 @@ public class TrainsByRouteQuery extends BaseQuery<TrainTO> {
         // GraphQL provides DateTime as OffsetDateTime, convert to ZonedDateTime
         final OffsetDateTime startDateOffset = env.getArgument("startDate");
         final OffsetDateTime endDateOffset = env.getArgument("endDate");
-        final ZonedDateTime startDate = startDateOffset != null ? startDateOffset.atZoneSameInstant(ZoneId.of("Europe/Helsinki")) : null;
-        final ZonedDateTime endDate = endDateOffset != null ? endDateOffset.atZoneSameInstant(ZoneId.of("Europe/Helsinki")) : null;
+        final ZonedDateTime startDate = startDateOffset != null ? startDateOffset.atZoneSameInstant(DEFAULT_ZONE_ID) : null;
+        final ZonedDateTime endDate = endDateOffset != null ? endDateOffset.atZoneSameInstant(DEFAULT_ZONE_ID) : null;
 
         final Integer limit = env.getArgument("limit");
         final Boolean includeNonStopping = env.getArgument("includeNonStopping");
@@ -99,14 +100,14 @@ public class TrainsByRouteQuery extends BaseQuery<TrainTO> {
 
         if (departureDate != null) {
             // Use departure_date parameter with wider range to catch late/early trains
-            actualTrainStart = departureDate.minusDays(1).atStartOfDay(ZoneId.of("Europe/Helsinki"));
-            actualTrainEnd = departureDate.plusDays(2).atStartOfDay(ZoneId.of("Europe/Helsinki"));
+            actualTrainStart = departureDate.minusDays(1).atStartOfDay(DEFAULT_ZONE_ID);
+            actualTrainEnd = departureDate.plusDays(2).atStartOfDay(DEFAULT_ZONE_ID);
             departureDateStart = departureDate;
             departureDateEnd = departureDate;
         } else {
             if (startDate == null && endDate == null) {
                 // Default: search from now to +24 hours
-                actualTrainStart = ZonedDateTime.now(ZoneId.of("Europe/Helsinki"));
+                actualTrainStart = ZonedDateTime.now(DEFAULT_ZONE_ID);
                 actualTrainEnd = actualTrainStart.plusHours(24);
             } else if (startDate != null && endDate == null) {
                 // Only start date provided
@@ -147,7 +148,10 @@ public class TrainsByRouteQuery extends BaseQuery<TrainTO> {
         );
 
         if (trainIds.isEmpty()) {
-            trainIds.add(new TrainId(-9999L, LocalDate.now()));
+            // Return a single dummy ID to ensure empty result (QueryDSL returns empty when list is empty)
+            final List<TrainId>  dummyTrainIds = new java.util.ArrayList<>();
+            dummyTrainIds.add(new TrainId(-9999L, LocalDate.now()));
+            return TrainIdOptimizer.optimize(QTrain.train.id, dummyTrainIds);
         }
 
         return TrainIdOptimizer.optimize(QTrain.train.id, trainIds);
