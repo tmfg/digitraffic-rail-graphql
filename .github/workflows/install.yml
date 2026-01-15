@@ -109,7 +109,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Upload SBOM
         run: |
-          aws s3 cp graphql-sbom.json s3://${{ secrets.SBOM_BUCKET }}/${{ fromJson(secrets.SBOM_PROJECT_KEYS)[github.event.inputs.env]['graphql'] }}/${{ github.run_id }}-${{ github.sha }}.json
+          aws s3 cp target/graphql-sbom.json s3://${{ secrets.SBOM_BUCKET }}/${{ fromJson(secrets.SBOM_PROJECT_KEYS)[github.event.inputs.env]['graphql'] }}/${{ github.run_id }}-${{ github.sha }}.json
       - name: Notify Slack
         if: failure()
         uses: 8398a7/action-slack@v3
