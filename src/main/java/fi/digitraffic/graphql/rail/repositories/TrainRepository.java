@@ -3,14 +3,12 @@ package fi.digitraffic.graphql.rail.repositories;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 
@@ -141,7 +139,7 @@ public interface TrainRepository extends JpaRepository<Train, TrainId> {
             .stream()
             .map(row -> {
                 final Long trainNumber = ((Number) row[0]).longValue();
-                final LocalDate departureDate = ((java.sql.Date) row[1]).toLocalDate();
+                final LocalDate departureDate = (LocalDate) row[1];
                 return new TrainId(trainNumber, departureDate);
             }).toList();
     }
