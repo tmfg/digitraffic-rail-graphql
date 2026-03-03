@@ -1,0 +1,75 @@
+package fi.digitraffic.graphql.rail.queries.jpql;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import fi.digitraffic.graphql.rail.entities.Station;
+import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
+import fi.digitraffic.graphql.rail.model.StationTO;
+import fi.digitraffic.graphql.rail.model.StationTypeTO;
+import graphql.schema.DataFetchingEnvironment;
+
+/**
+ * JPQL implementation of StationsQuery.
+ * This provides a simple query for testing the JPQL infrastructure.
+ */
+@Component
+public class StationsQueryJpql extends BaseQueryJpql<Station, StationTO> {
+
+    @Override
+    public String getQueryName() {
+        return "stationsJpql";
+    }
+
+    @Override
+    public Class<Station> getEntityClass() {
+        return Station.class;
+    }
+
+    @Override
+    public String getEntityAlias() {
+        return "s";
+    }
+
+    @Override
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                        final Map<String, Object> parameters) {
+        // Same as QueryDSL version: id.ne(-1L) - always true, just excludes impossible id
+        return alias + ".id <> -1";
+    }
+
+    @Override
+    public String getDefaultOrderBy(final String alias) {
+        return alias + ".name ASC";
+    }
+
+    @Override
+    public StationTO convertEntityToTO(final Station entity) {
+        return new StationTO(
+                entity.id.intValue(),
+                entity.passengerTraffic != null && entity.passengerTraffic,
+                entity.countryCode,
+                List.of(entity.longitude, entity.latitude),
+                entity.name,
+                entity.shortCode,
+                entity.uicCode,
+                parseStationType(entity.type),
+                null, // timeTableRows - populated by link
+                null  // stationMessages - populated by link
+        );
+    }
+
+    private StationTypeTO parseStationType(final StationTypeEnum type) {
+        if (type == null) {
+            return null;
+        }
+        return switch (type) {
+            case STATION -> StationTypeTO.STATION;
+            case STOPPING_POINT -> StationTypeTO.STOPPING_POINT;
+            case TURNOUT_IN_THE_OPEN_LINE -> StationTypeTO.TURNOUT_IN_THE_OPEN_LINE;
+        };
+    }
+}
+

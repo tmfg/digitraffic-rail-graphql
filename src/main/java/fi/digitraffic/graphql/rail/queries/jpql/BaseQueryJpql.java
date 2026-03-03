@@ -2,9 +2,9 @@ package fi.digitraffic.graphql.rail.queries.jpql;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,11 +62,10 @@ public abstract class BaseQueryJpql<E, T> {
      * Subclasses override this to add entity-specific base conditions.
      *
      * @param alias The entity alias
-     * @param parameters List to collect parameter values
-     * @param paramCounter Counter for positional parameters
+     * @param parameters Map to collect named parameter values
      * @return The base JPQL query string
      */
-    public String buildBaseQuery(final String alias, final List<Object> parameters, final AtomicInteger paramCounter) {
+    public String buildBaseQuery(final String alias, final Map<String, Object> parameters) {
         return "SELECT " + alias + " FROM " + getEntityClass().getSimpleName() + " " + alias;
     }
 
@@ -76,12 +75,11 @@ public abstract class BaseQueryJpql<E, T> {
      *
      * @param alias The entity alias
      * @param env The GraphQL data fetching environment
-     * @param parameters List to collect parameter values
-     * @param paramCounter Counter for positional parameters
+     * @param parameters Map to collect named parameter values
      * @return WHERE clause fragment (without "WHERE" keyword), or empty string
      */
     public abstract String buildBaseWhereClause(String alias, DataFetchingEnvironment env,
-                                                 List<Object> parameters, AtomicInteger paramCounter);
+                                                 Map<String, Object> parameters);
 
     /**
      * Converts an entity to its transfer object.
@@ -115,15 +113,14 @@ public abstract class BaseQueryJpql<E, T> {
      */
     protected List<T> executeQuery(final DataFetchingEnvironment env) {
         final String alias = getEntityAlias();
-        final List<Object> parameters = new ArrayList<>();
-        final AtomicInteger paramCounter = new AtomicInteger(1);
+        final Map<String, Object> parameters = new HashMap<>();
 
         // Build the query
         final StringBuilder jpql = new StringBuilder();
-        jpql.append(buildBaseQuery(alias, parameters, paramCounter));
+        jpql.append(buildBaseQuery(alias, parameters));
 
         // Build WHERE clause
-        final String whereClause = buildWhereClause(alias, env, parameters, paramCounter);
+        final String whereClause = buildWhereClause(alias, env, parameters);
         if (!whereClause.isEmpty()) {
             jpql.append(" WHERE ").append(whereClause);
         }
@@ -137,10 +134,8 @@ public abstract class BaseQueryJpql<E, T> {
         // Create and configure query
         final TypedQuery<E> query = entityManager.createQuery(jpql.toString(), getEntityClass());
 
-        // Set parameters
-        for (int i = 0; i < parameters.size(); i++) {
-            query.setParameter(i + 1, parameters.get(i));
-        }
+        // Set named parameters
+        parameters.forEach(query::setParameter);
 
         // Set pagination
         final Integer skip = env.getArgument("skip");
@@ -162,11 +157,11 @@ public abstract class BaseQueryJpql<E, T> {
      * Builds the complete WHERE clause combining base conditions and dynamic where argument.
      */
     protected String buildWhereClause(final String alias, final DataFetchingEnvironment env,
-                                      final List<Object> parameters, final AtomicInteger paramCounter) {
+                                      final Map<String, Object> parameters) {
         final List<String> conditions = new ArrayList<>();
 
         // Add base where conditions
-        final String baseWhere = buildBaseWhereClause(alias, env, parameters, paramCounter);
+        final String baseWhere = buildBaseWhereClause(alias, env, parameters);
         if (!baseWhere.isEmpty()) {
             conditions.add(baseWhere);
         }
@@ -175,9 +170,10 @@ public abstract class BaseQueryJpql<E, T> {
         final Map<String, Object> whereArgument = env.getArgument("where");
         if (whereArgument != null && !whereArgument.isEmpty()) {
             final Map<String, Object> convertedWhere = replaceOffsetsWithZonedDateTimes(whereArgument);
-            final String dynamicWhere = whereBuilder.build(alias, convertedWhere, parameters, paramCounter);
-            if (!dynamicWhere.isEmpty()) {
-                conditions.add(dynamicWhere);
+            final var result = whereBuilder.build(alias, convertedWhere);
+            if (!result.jpql().isEmpty()) {
+                conditions.add(result.jpql());
+                parameters.putAll(result.params());
             }
         }
 

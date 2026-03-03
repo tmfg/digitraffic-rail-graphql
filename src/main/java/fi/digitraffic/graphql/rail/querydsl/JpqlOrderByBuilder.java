@@ -4,13 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 /**
  * Builds JPQL ORDER BY clause strings from a list of order specifications.
  *
- * Example input: [{"trainNumber": "ASC"}, {"departureDate": "DESC"}]
- * Example output: "t.trainNumber ASC, t.departureDate DESC"
+ * Handles nested structures like:
+ * - Simple: [{"trainNumber": "ASCENDING"}] -> "alias.trainNumber ASC"
+ * - Nested: [{"trainType": {"name": "ASCENDING"}}] -> "alias.trainType.name ASC"
  */
 @Service
 public class JpqlOrderByBuilder {
@@ -29,25 +31,40 @@ public class JpqlOrderByBuilder {
 
         final List<String> orderClauses = new ArrayList<>();
 
-        for (final Map<String, Object> orderBy : orderByList) {
-            for (final Map.Entry<String, Object> entry : orderBy.entrySet()) {
-                final String field = entry.getKey();
-                final String direction = (String) entry.getValue();
-                final String path = buildPath(alias, field);
-                orderClauses.add(path + " " + direction);
-            }
+        for (final Map<String, Object> orderByMap : orderByList) {
+            final Pair<List<String>, String> pathAndDirection = extractPathAndDirection(orderByMap, new ArrayList<>());
+            final String path = alias + "." + String.join(".", pathAndDirection.getFirst());
+            final String direction = mapDirection(pathAndDirection.getSecond());
+            orderClauses.add(path + " " + direction);
         }
 
         return String.join(", ", orderClauses);
     }
 
     /**
-     * Builds a dot-notation path for nested fields.
-     * Handles cases like "id.version" -> "t.id.version"
+     * Recursively extracts the field path and direction from nested map structure.
+     * Example: {"trainType": {"name": "ASCENDING"}} -> (["trainType", "name"], "ASCENDING")
      */
-    private String buildPath(final String alias, final String field) {
-        // Field may already contain dots for nested paths
-        return alias + "." + field;
+    @SuppressWarnings("unchecked")
+    private Pair<List<String>, String> extractPathAndDirection(final Map<String, Object> map, final List<String> paths) {
+        final Map.Entry<String, Object> entry = map.entrySet().iterator().next();
+        final String key = entry.getKey();
+        final Object value = entry.getValue();
+
+        paths.add(key);
+
+        if (value instanceof final Map<?, ?> nestedMap) {
+            return extractPathAndDirection((Map<String, Object>) nestedMap, paths);
+        } else {
+            return Pair.of(paths, (String) value);
+        }
+    }
+
+    /**
+     * Maps GraphQL direction enum (ASCENDING/DESCENDING) to JPQL (ASC/DESC).
+     */
+    private String mapDirection(final String graphqlDirection) {
+        return "ASCENDING".equals(graphqlDirection) ? "ASC" : "DESC";
     }
 }
 

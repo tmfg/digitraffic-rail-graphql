@@ -16,6 +16,11 @@ type Query {
 
     stations: [Station!]!
 
+    """
+    JPQL implementation of stations query (for testing JPQL infrastructure)
+    """
+    stationsJpql: [Station!]!
+
     passengerInformationMessages: [PassengerInformationMessage!]!
     """
     If onlyGeneral is true, returns only general notices (notices not related to a train number). False by default.

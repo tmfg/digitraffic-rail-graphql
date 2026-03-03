@@ -65,6 +65,12 @@ public class GraphQLProvider {
     @Autowired
     private List<BaseQuery> rootFetchers;
 
+    @Autowired
+    private List<fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql> jpqlRootFetchers;
+
+    @Autowired
+    private List<fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql> jpqlLinks;
+
     private final Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
     private final Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
     private final Map<String, String> fieldNameWhereOverrides = Map.of("trainType", "TrainTypeWhere");
@@ -391,11 +397,23 @@ public class GraphQLProvider {
         for (final BaseQuery fetcher : rootFetchers) {
             query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
         }
+
+        // Register JPQL-based queries
+        for (final fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql<?, ?> fetcher : jpqlRootFetchers) {
+            query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
+        }
+
         builder.type(query);
 
         for (final BaseLink fetcher : this.fetchers) {
             builder.type(newTypeWiring(fetcher.getTypeName())
                     .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
+        }
+
+        // Register JPQL-based links
+        for (final fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql<?, ?, ?, ?, ?> link : this.jpqlLinks) {
+            builder.type(newTypeWiring(link.getTypeName())
+                    .dataFetcher(link.getFieldName(), link.createFetcher()));
         }
 
         return builder.build();

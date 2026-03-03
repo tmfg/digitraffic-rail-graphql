@@ -14,6 +14,7 @@ import org.springframework.graphql.server.WebGraphQlResponse;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
+import fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql;
 import reactor.core.publisher.Mono;
 
 /**
@@ -24,6 +25,9 @@ public class RequestScopedInterceptor implements WebGraphQlInterceptor {
 
     @Autowired
     private List<BaseLink<?, ?, ?, ?, ?>> fetchers;
+
+    @Autowired
+    private List<BaseLinkJpql<?, ?, ?, ?, ?>> jpqlLinks;
 
     private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions().build();
     private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false).build();
@@ -39,6 +43,15 @@ public class RequestScopedInterceptor implements WebGraphQlInterceptor {
                 final DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader, options);
                 dataLoaderRegistry.register(fetcher.createDataLoaderKey(), loader);
             }
+
+            // Register JPQL-based links
+            for (final var link : jpqlLinks) {
+                final BatchLoaderWithContext<?, ?> dataLoader = link.createLoader();
+                final DataLoaderOptions options = link.cachingEnabled() ? CACHING_ENABLED : CACHING_DISABLED;
+                final DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader, options);
+                dataLoaderRegistry.register(link.createDataLoaderKey(), loader);
+            }
+
             return builder
                     .dataLoaderRegistry(dataLoaderRegistry)
                     .build();
