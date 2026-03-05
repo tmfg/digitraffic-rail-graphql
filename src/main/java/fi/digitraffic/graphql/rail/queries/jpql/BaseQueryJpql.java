@@ -70,6 +70,14 @@ public abstract class BaseQueryJpql<E, T> {
     }
 
     /**
+     * Returns true if buildBaseQuery() already includes a WHERE clause.
+     * When true, executeQuery() will use AND instead of WHERE to append additional conditions.
+     */
+    public boolean baseQueryContainsWhere() {
+        return false;
+    }
+
+    /**
      * Builds the base WHERE clause conditions that are always applied.
      * Returns empty string if no base conditions.
      *
@@ -122,7 +130,11 @@ public abstract class BaseQueryJpql<E, T> {
         // Build WHERE clause
         final String whereClause = buildWhereClause(alias, env, parameters);
         if (!whereClause.isEmpty()) {
-            jpql.append(" WHERE ").append(whereClause);
+            if (baseQueryContainsWhere()) {
+                jpql.append(" AND ").append(whereClause);
+            } else {
+                jpql.append(" WHERE ").append(whereClause);
+            }
         }
 
         // Build ORDER BY clause

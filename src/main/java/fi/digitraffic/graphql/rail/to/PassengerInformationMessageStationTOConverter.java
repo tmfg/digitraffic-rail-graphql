@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 
+import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 
@@ -17,5 +18,18 @@ public class PassengerInformationMessageStationTOConverter {
                 null,
                 tuple.get(QPassengerInformationMessageStation.passengerInformationMessageStation.messageId),
                 tuple.get(QPassengerInformationMessageStation.passengerInformationMessageStation.messageVersion));
+    }
+
+    /**
+     * Converts a PassengerInformationMessageStation entity to PassengerInformationMessageStationTO.
+     * Used by JPQL-based links.
+     */
+    public PassengerInformationMessageStationTO convertEntity(final PassengerInformationMessageStation entity) {
+        return new PassengerInformationMessageStationTO(
+                entity.stationShortCode,
+                null,
+                null,
+                entity.messageId,
+                entity.messageVersion);
     }
 }

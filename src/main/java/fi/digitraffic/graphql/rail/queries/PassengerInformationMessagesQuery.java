@@ -28,7 +28,8 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import jakarta.persistence.QueryTimeoutException;
 
-@Component
+// @Component — replaced by PassengerInformationMessagesQuery in queries.jpql package.
+// Retained only for static utility methods used by TrainToPassengerInformationMessagesLink.
 public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInformationMessageTO> {
 
     @Autowired

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 
+import fi.digitraffic.graphql.rail.entities.PassengerInformationVideo;
 import fi.digitraffic.graphql.rail.entities.QPassengerInformationVideo;
 import fi.digitraffic.graphql.rail.model.DayOfWeekTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationTextContentTO;
@@ -28,6 +29,26 @@ public class PassengerInformationVideoTOConverter {
                                 .map(DayOfWeekTO::valueOf).toList()),
                 tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageId),
                 tuple.get(QPassengerInformationVideo.passengerInformationVideo.messageVersion)
+        );
+    }
+
+    /**
+     * Converts a PassengerInformationVideo entity to PassengerInformationVideoTO.
+     * Used by JPQL-based links.
+     */
+    public PassengerInformationVideoTO convertEntity(final PassengerInformationVideo entity) {
+        return new PassengerInformationVideoTO(
+                new PassengerInformationTextContentTO(entity.textFi, entity.textSv, entity.textEn),
+                new PassengerInformationVideoDeliveryRulesTO(
+                        entity.deliveryType,
+                        entity.startDateTime,
+                        entity.endDateTime,
+                        entity.startTime,
+                        entity.endTime,
+                        entity.weekDays != null ? entity.weekDays.stream()
+                                .map(DayOfWeekTO::valueOf).toList() : java.util.List.of()),
+                entity.messageId,
+                entity.messageVersion
         );
     }
 }

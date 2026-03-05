@@ -1,13 +1,11 @@
 package fi.digitraffic.graphql.rail.queries.criteria;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
@@ -19,29 +17,12 @@ import graphql.schema.DataFetchingEnvironment;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
-import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
 
-/**
- * Criteria API implementation of PassengerInformationMessagesQuery.
- *
- * Pros:
- * - Type-safe at compile time (when using metamodel)
- * - Refactoring-friendly
- * - IDE auto-completion support
- *
- * Cons:
- * - Very verbose code
- * - Harder to read and understand the actual query
- * - Complex queries become deeply nested
- * - More lines of code for the same functionality
- */
 @Component
 public class PassengerInformationMessagesQueryCriteria {
 
@@ -59,9 +40,9 @@ public class PassengerInformationMessagesQueryCriteria {
     }
 
     public DataFetcher<List<PassengerInformationMessageTO>> createFetcher() {
-        return dataFetchingEnvironment -> {
+        return env -> {
             try {
-                return executeQuery(dataFetchingEnvironment);
+                return executeQuery(env);
             } catch (final QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
             }
@@ -69,105 +50,70 @@ public class PassengerInformationMessagesQueryCriteria {
     }
 
     private List<PassengerInformationMessageTO> executeQuery(final DataFetchingEnvironment env) {
-        final ZonedDateTime now = ZonedDateTime.now();
-        final Map<String, Object> whereArgument = env.getArgument("where");
-        final List<Map<String, Object>> orderByArgument = env.getArgument("orderBy");
+        final var cb = entityManager.getCriteriaBuilder();
+        final var cq = cb.createQuery(PassengerInformationMessage.class);
+        final var root = cq.from(PassengerInformationMessage.class);
+        final var now = ZonedDateTime.now();
+
+        cq.where(cb.and(
+                maxVersionPredicate(cq, cb, root),
+                cb.isNull(root.get("deleted")),
+                cb.lessThan(root.get("startValidity"), now),
+                cb.greaterThan(root.get("endValidity"), now),
+                dynamicWhere(env.getArgument("where"), root, cq, cb)
+        ));
+        cq.distinct(true);
+        applyOrderBy(env.getArgument("orderBy"), root, cq, cb);
+
+        final var query = entityManager.createQuery(cq);
         final Integer skip = env.getArgument("skip");
         final Integer take = env.getArgument("take");
+        if (skip != null) query.setFirstResult(skip);
+        query.setMaxResults(take != null ? Math.min(take, maxResults) : maxResults);
 
-        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        final CriteriaQuery<PassengerInformationMessage> cq = cb.createQuery(PassengerInformationMessage.class);
-        final Root<PassengerInformationMessage> root = cq.from(PassengerInformationMessage.class);
-
-        // Build the main predicate
-        final List<Predicate> predicates = new ArrayList<>();
-
-        // Correlated subquery: get max version for each message ID
-        // JPA Criteria API doesn't directly support tuple IN subquery, so we use a correlated subquery approach
-        final Subquery<Integer> maxVersionForIdSubquery = cq.subquery(Integer.class);
-        final Root<PassengerInformationMessage> maxVersionRoot = maxVersionForIdSubquery.from(PassengerInformationMessage.class);
-        maxVersionForIdSubquery.select(cb.max(maxVersionRoot.get("id").get("version")));
-        maxVersionForIdSubquery.where(cb.equal(maxVersionRoot.get("id").get("id"), root.get("id").get("id")));
-
-        predicates.add(cb.equal(root.get("id").get("version"), maxVersionForIdSubquery));
-
-        // Validity conditions
-        predicates.add(cb.isNull(root.get("deleted")));
-        predicates.add(cb.lessThan(root.get("startValidity"), now));
-        predicates.add(cb.greaterThan(root.get("endValidity"), now));
-
-        // Dynamic where clause - use existing CriteriaWhereBuilder which returns Specification
-        if (whereArgument != null && !whereArgument.isEmpty()) {
-            final Specification<PassengerInformationMessage> spec = whereBuilder.build(whereArgument);
-            final Predicate dynamicPredicate = spec.toPredicate(root, cq, cb);
-            if (dynamicPredicate != null) {
-                predicates.add(dynamicPredicate);
-            }
-        }
-
-        cq.where(predicates.toArray(new Predicate[0]));
-        cq.distinct(true);
-
-        // Order by
-        if (orderByArgument != null && !orderByArgument.isEmpty()) {
-            final List<Order> orders = new ArrayList<>();
-            for (final Map<String, Object> orderBy : orderByArgument) {
-                for (final Map.Entry<String, Object> entry : orderBy.entrySet()) {
-                    final String field = entry.getKey();
-                    final String direction = (String) entry.getValue();
-                    final Path<?> path = navigateToPath(root, field);
-                    if ("DESC".equalsIgnoreCase(direction)) {
-                        orders.add(cb.desc(path));
-                    } else {
-                        orders.add(cb.asc(path));
-                    }
-                }
-            }
-            cq.orderBy(orders);
-        } else {
-            cq.orderBy(cb.asc(root.get("creationDateTime")));
-        }
-
-        final TypedQuery<PassengerInformationMessage> query = entityManager.createQuery(cq);
-
-        // Pagination
-        if (skip != null) {
-            query.setFirstResult(skip);
-        }
-        final int limit = take != null ? Math.min(take, maxResults) : maxResults;
-        query.setMaxResults(limit);
-
-        return query.getResultList().stream()
-                .map(this::convertToTO)
-                .toList();
+        return query.getResultList().stream().map(this::convertToTO).toList();
     }
 
-    /**
-     * Navigate to a nested path (e.g., "id.version" -> root.get("id").get("version"))
-     */
-    private Path<?> navigateToPath(final Root<?> root, final String fieldPath) {
-        final String[] parts = fieldPath.split("\\.");
-        Path<?> path = root;
-        for (final String part : parts) {
-            path = path.get(part);
+    private Predicate maxVersionPredicate(final CriteriaQuery<?> cq, final CriteriaBuilder cb,
+                                          final Root<PassengerInformationMessage> root) {
+        final var sub = cq.subquery(Integer.class);
+        final var subRoot = sub.from(PassengerInformationMessage.class);
+        sub.select(cb.max(subRoot.get("id").get("version")))
+           .where(cb.equal(subRoot.get("id").get("id"), root.get("id").get("id")));
+        return cb.equal(root.get("id").get("version"), sub);
+    }
+
+    private Predicate dynamicWhere(final Map<String, Object> where, final Root<PassengerInformationMessage> root,
+                                   final CriteriaQuery<PassengerInformationMessage> cq, final CriteriaBuilder cb) {
+        if (where == null || where.isEmpty()) return cb.conjunction();
+        return whereBuilder.<PassengerInformationMessage>build(where).toPredicate(root, cq, cb);
+    }
+
+    private void applyOrderBy(final List<Map<String, Object>> orderBy, final Root<?> root,
+                              final CriteriaQuery<?> cq, final CriteriaBuilder cb) {
+        if (orderBy == null || orderBy.isEmpty()) {
+            cq.orderBy(cb.asc(root.get("creationDateTime")));
+            return;
         }
+        cq.orderBy(orderBy.stream()
+                .flatMap(m -> m.entrySet().stream())
+                .map(e -> "DESC".equalsIgnoreCase((String) e.getValue())
+                        ? cb.desc(toPath(root, e.getKey()))
+                        : cb.asc(toPath(root, e.getKey())))
+                .toList());
+    }
+
+    private Path<?> toPath(final Path<?> root, final String field) {
+        Path<?> path = root;
+        for (final String part : field.split("\\.")) path = path.get(part);
         return path;
     }
 
-    private PassengerInformationMessageTO convertToTO(final PassengerInformationMessage entity) {
+    private PassengerInformationMessageTO convertToTO(final PassengerInformationMessage e) {
         return new PassengerInformationMessageTO(
-                entity.id.id,
-                entity.id.version,
-                entity.creationDateTime,
-                entity.startValidity,
-                entity.endValidity,
-                entity.trainDepartureDate,
-                entity.trainNumber != null ? entity.trainNumber.intValue() : null,
-                null, // train - populated by link
-                null, // messageStations - populated by link
-                null, // audio - populated by link
-                null  // video - populated by link
-        );
+                e.id.id, e.id.version, e.creationDateTime, e.startValidity, e.endValidity,
+                e.trainDepartureDate, e.trainNumber != null ? e.trainNumber.intValue() : null,
+                null, null, null, null);
     }
 }
 

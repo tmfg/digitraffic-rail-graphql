@@ -15,14 +15,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 /**
- * Integration test for TimeTableRowToStationLinkJpql.
+ * Integration test for TimeTableRowToStationLink.
  * Tests that the JPQL link correctly fetches stations.
  */
 @SpringBootTest
-public class TimeTableRowToStationLinkJpqlTest extends BaseWebMVCTest {
+public class TimeTableRowToStationLinkTest extends BaseWebMVCTest {
 
     @Autowired
-    private TimeTableRowToStationLinkJpql link;
+    private TimeTableRowToStationLink link;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -88,7 +88,7 @@ public class TimeTableRowToStationLinkJpqlTest extends BaseWebMVCTest {
 
     @Test
     public void testLinkTypeName() {
-        assertEquals("TimeTableRowJpql", link.getTypeName());
+        assertEquals("TimeTableRow", link.getTypeName());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class TimeTableRowToStationLinkJpqlTest extends BaseWebMVCTest {
 
     @Test
     public void testDataLoaderKey() {
-        assertEquals("TimeTableRowJpql.station", link.createDataLoaderKey());
+        assertEquals("TimeTableRow.station", link.createDataLoaderKey());
     }
 }
 

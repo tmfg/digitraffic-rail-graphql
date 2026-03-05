@@ -7,31 +7,31 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 
 /**
- * Integration test for StationsQueryJpql.
+ * Integration test for StationsQuery.
  * Verifies that the JPQL implementation works correctly through the GraphQL API.
  */
-public class StationsJpqlQueryTest extends BaseWebMVCTest {
+public class StationsQueryTest extends BaseWebMVCTest {
 
     @Nested
     class BasicQueries {
 
         @Test
-        public void testBasicStationsJpqlQuery() throws Exception {
+        public void testBasicStationsQuery() throws Exception {
             factoryService.getStationFactory().create("HKI", 1, "FI");
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql { shortCode, name, countryCode }}");
+            final ResultActions result = query("{ stations { shortCode, name, countryCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(3));
+            result.andExpect(jsonPath("$.data.stations.length()").value(3));
         }
 
         @Test
         public void testEmptyResultSet() throws Exception {
             // No stations created
-            final ResultActions result = query("{ stationsJpql { shortCode }}");
+            final ResultActions result = query("{ stations { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(0));
+            result.andExpect(jsonPath("$.data.stations.length()").value(0));
         }
     }
 
@@ -44,11 +44,11 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("STO", 3, "SE");
 
-            final ResultActions result = query("{ stationsJpql(where: { countryCode: { equals: \"FI\" }}) { shortCode, countryCode }}");
+            final ResultActions result = query("{ stations(where: { countryCode: { equals: \"FI\" }}) { shortCode, countryCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].countryCode").value("FI"));
-            result.andExpect(jsonPath("$.data.stationsJpql[1].countryCode").value("FI"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations[0].countryCode").value("FI"));
+            result.andExpect(jsonPath("$.data.stations[1].countryCode").value("FI"));
         }
 
         @Test
@@ -57,9 +57,9 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().createWithPassengerTraffic("TPE", 2, "FI", true);
             factoryService.getStationFactory().createWithPassengerTraffic("XXX", 3, "FI", false);
 
-            final ResultActions result = query("{ stationsJpql(where: { passengerTraffic: { equals: true }}) { shortCode, passengerTraffic }}");
+            final ResultActions result = query("{ stations(where: { passengerTraffic: { equals: true }}) { shortCode, passengerTraffic }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
         }
 
         @Test
@@ -67,10 +67,10 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("HKI", 1, "FI");
             factoryService.getStationFactory().create("TPE", 2, "FI");
 
-            final ResultActions result = query("{ stationsJpql(where: { uicCode: { equals: 1 }}) { shortCode, uicCode }}");
+            final ResultActions result = query("{ stations(where: { uicCode: { equals: 1 }}) { shortCode, uicCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(1));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("HKI"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(1));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("HKI"));
         }
     }
 
@@ -83,11 +83,11 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("STO", 3, "SE");
 
-            final ResultActions result = query("{ stationsJpql(where: { countryCode: { unequals: \"FI\" }}) { shortCode, countryCode }}");
+            final ResultActions result = query("{ stations(where: { countryCode: { unequals: \"FI\" }}) { shortCode, countryCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(1));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("STO"));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].countryCode").value("SE"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(1));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("STO"));
+            result.andExpect(jsonPath("$.data.stations[0].countryCode").value("SE"));
         }
 
         @Test
@@ -95,10 +95,10 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().createWithPassengerTraffic("HKI", 1, "FI", true);
             factoryService.getStationFactory().createWithPassengerTraffic("XXX", 2, "FI", false);
 
-            final ResultActions result = query("{ stationsJpql(where: { passengerTraffic: { unequals: true }}) { shortCode }}");
+            final ResultActions result = query("{ stations(where: { passengerTraffic: { unequals: true }}) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(1));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("XXX"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(1));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("XXX"));
         }
     }
 
@@ -111,9 +111,9 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql(where: { uicCode: { greaterThan: 1 }}) { shortCode, uicCode }}");
+            final ResultActions result = query("{ stations(where: { uicCode: { greaterThan: 1 }}) { shortCode, uicCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
         }
 
         @Test
@@ -122,9 +122,9 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql(where: { uicCode: { lessThan: 3 }}) { shortCode, uicCode }}");
+            final ResultActions result = query("{ stations(where: { uicCode: { lessThan: 3 }}) { shortCode, uicCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
         }
     }
 
@@ -137,10 +137,10 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().createWithPassengerTraffic("TPE", 2, "FI", false);
             factoryService.getStationFactory().createWithPassengerTraffic("STO", 3, "SE", true);
 
-            final ResultActions result = query("{ stationsJpql(where: { and: [{ countryCode: { equals: \"FI\" }}, { passengerTraffic: { equals: true }}]}) { shortCode }}");
+            final ResultActions result = query("{ stations(where: { and: [{ countryCode: { equals: \"FI\" }}, { passengerTraffic: { equals: true }}]}) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(1));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("HKI"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(1));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("HKI"));
         }
 
         @Test
@@ -149,9 +149,9 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("STO", 3, "SE");
 
-            final ResultActions result = query("{ stationsJpql(where: { or: [{ shortCode: { equals: \"HKI\" }}, { shortCode: { equals: \"STO\" }}]}) { shortCode }}");
+            final ResultActions result = query("{ stations(where: { or: [{ shortCode: { equals: \"HKI\" }}, { shortCode: { equals: \"STO\" }}]}) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
         }
 
         @Test
@@ -162,9 +162,9 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().createWithPassengerTraffic("OSL", 4, "NO", true);
 
             // Find stations that: (are in FI OR SE) AND have passenger traffic
-            final ResultActions result = query("{ stationsJpql(where: { and: [{ passengerTraffic: { equals: true }}, { or: [{ countryCode: { equals: \"FI\" }}, { countryCode: { equals: \"SE\" }}]}]}) { shortCode }}");
+            final ResultActions result = query("{ stations(where: { and: [{ passengerTraffic: { equals: true }}, { or: [{ countryCode: { equals: \"FI\" }}, { countryCode: { equals: \"SE\" }}]}]}) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
         }
 
         @Test
@@ -177,10 +177,10 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             // countryCode != FI AND passengerTraffic = false → should return only STO
             // But if only first condition processed: would return STO
             // If OR instead of AND: would return TPE and STO
-            final ResultActions result = query("{ stationsJpql(where: { countryCode: { unequals: \"FI\" }, passengerTraffic: { equals: false }}) { shortCode }}");
+            final ResultActions result = query("{ stations(where: { countryCode: { unequals: \"FI\" }, passengerTraffic: { equals: false }}) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(1));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("STO"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(1));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("STO"));
         }
     }
 
@@ -193,11 +193,11 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("HKI", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql(orderBy: [{ name: ASCENDING }]) { shortCode, name }}");
+            final ResultActions result = query("{ stations(orderBy: [{ name: ASCENDING }]) { shortCode, name }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql[0].name").value("HKI"));
-            result.andExpect(jsonPath("$.data.stationsJpql[1].name").value("TKU"));
-            result.andExpect(jsonPath("$.data.stationsJpql[2].name").value("TPE"));
+            result.andExpect(jsonPath("$.data.stations[0].name").value("HKI"));
+            result.andExpect(jsonPath("$.data.stations[1].name").value("TKU"));
+            result.andExpect(jsonPath("$.data.stations[2].name").value("TPE"));
         }
 
         @Test
@@ -206,11 +206,11 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql(orderBy: [{ name: DESCENDING }]) { shortCode, name }}");
+            final ResultActions result = query("{ stations(orderBy: [{ name: DESCENDING }]) { shortCode, name }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql[0].name").value("TPE"));
-            result.andExpect(jsonPath("$.data.stationsJpql[1].name").value("TKU"));
-            result.andExpect(jsonPath("$.data.stationsJpql[2].name").value("HKI"));
+            result.andExpect(jsonPath("$.data.stations[0].name").value("TPE"));
+            result.andExpect(jsonPath("$.data.stations[1].name").value("TKU"));
+            result.andExpect(jsonPath("$.data.stations[2].name").value("HKI"));
         }
 
         @Test
@@ -219,12 +219,12 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("STO", 3, "SE");
 
-            final ResultActions result = query("{ stationsJpql(orderBy: [{ countryCode: ASCENDING }, { name: DESCENDING }]) { shortCode, countryCode }}");
+            final ResultActions result = query("{ stations(orderBy: [{ countryCode: ASCENDING }, { name: DESCENDING }]) { shortCode, countryCode }}");
 
             // FI first (ascending), then within FI: TPE before HKI (descending name)
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("TPE"));
-            result.andExpect(jsonPath("$.data.stationsJpql[1].shortCode").value("HKI"));
-            result.andExpect(jsonPath("$.data.stationsJpql[2].shortCode").value("STO"));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("TPE"));
+            result.andExpect(jsonPath("$.data.stations[1].shortCode").value("HKI"));
+            result.andExpect(jsonPath("$.data.stations[2].shortCode").value("STO"));
         }
     }
 
@@ -237,10 +237,10 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql(orderBy: [{ name: ASCENDING }], skip: 1) { shortCode }}");
+            final ResultActions result = query("{ stations(orderBy: [{ name: ASCENDING }], skip: 1) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("TKU"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("TKU"));
         }
 
         @Test
@@ -249,9 +249,9 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TPE", 2, "FI");
             factoryService.getStationFactory().create("TKU", 3, "FI");
 
-            final ResultActions result = query("{ stationsJpql(orderBy: [{ name: ASCENDING }], take: 2) { shortCode }}");
+            final ResultActions result = query("{ stations(orderBy: [{ name: ASCENDING }], take: 2) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
         }
 
         @Test
@@ -261,20 +261,20 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().create("TKU", 3, "FI");
             factoryService.getStationFactory().create("OUL", 4, "FI");
 
-            final ResultActions result = query("{ stationsJpql(orderBy: [{ name: ASCENDING }], skip: 1, take: 2) { shortCode }}");
+            final ResultActions result = query("{ stations(orderBy: [{ name: ASCENDING }], skip: 1, take: 2) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(2));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("OUL"));
-            result.andExpect(jsonPath("$.data.stationsJpql[1].shortCode").value("TKU"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(2));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("OUL"));
+            result.andExpect(jsonPath("$.data.stations[1].shortCode").value("TKU"));
         }
 
         @Test
         public void testSkipBeyondResults() throws Exception {
             factoryService.getStationFactory().create("HKI", 1, "FI");
 
-            final ResultActions result = query("{ stationsJpql(skip: 10) { shortCode }}");
+            final ResultActions result = query("{ stations(skip: 10) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(0));
+            result.andExpect(jsonPath("$.data.stations.length()").value(0));
         }
     }
 
@@ -288,10 +288,10 @@ public class StationsJpqlQueryTest extends BaseWebMVCTest {
             factoryService.getStationFactory().createWithPassengerTraffic("TKU", 3, "FI", true);
             factoryService.getStationFactory().createWithPassengerTraffic("XXX", 4, "FI", false);
 
-            final ResultActions result = query("{ stationsJpql(where: { passengerTraffic: { equals: true }}, orderBy: [{ name: ASCENDING }], skip: 1, take: 1) { shortCode }}");
+            final ResultActions result = query("{ stations(where: { passengerTraffic: { equals: true }}, orderBy: [{ name: ASCENDING }], skip: 1, take: 1) { shortCode }}");
 
-            result.andExpect(jsonPath("$.data.stationsJpql.length()").value(1));
-            result.andExpect(jsonPath("$.data.stationsJpql[0].shortCode").value("TKU"));
+            result.andExpect(jsonPath("$.data.stations.length()").value(1));
+            result.andExpect(jsonPath("$.data.stations[0].shortCode").value("TKU"));
         }
     }
 }

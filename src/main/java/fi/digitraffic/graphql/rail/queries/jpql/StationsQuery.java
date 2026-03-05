@@ -16,11 +16,11 @@ import graphql.schema.DataFetchingEnvironment;
  * This provides a simple query for testing the JPQL infrastructure.
  */
 @Component
-public class StationsQueryJpql extends BaseQueryJpql<Station, StationTO> {
+public class StationsQuery extends BaseQueryJpql<Station, StationTO> {
 
     @Override
     public String getQueryName() {
-        return "stationsJpql";
+        return "stations";
     }
 
     @Override

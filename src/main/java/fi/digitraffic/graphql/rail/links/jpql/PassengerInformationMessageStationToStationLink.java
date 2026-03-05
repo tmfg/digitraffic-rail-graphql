@@ -7,23 +7,23 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
+import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
-import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
 /**
- * JPQL implementation of TimeTableRowToStationLink.
- * Links TimeTableRow to its Station.
+ * JPQL implementation: PassengerInformationMessageStation → station (OneToOne).
  */
 @Component
-public class TimeTableRowToStationLinkJpql extends OneToOneLinkJpql<String, TimeTableRowTO, Station, StationTO> {
+public class PassengerInformationMessageStationToStationLink
+        extends OneToOneLinkJpql<String, PassengerInformationMessageStationTO, Station, StationTO> {
 
     @Autowired
     private StationTOConverter stationTOConverter;
 
     @Override
     public String getTypeName() {
-        return "TimeTableRowJpql";
+        return "PassengerInformationMessageStation";
     }
 
     @Override
@@ -32,13 +32,13 @@ public class TimeTableRowToStationLinkJpql extends OneToOneLinkJpql<String, Time
     }
 
     @Override
-    public String createKeyFromParent(final TimeTableRowTO timeTableRowTO) {
-        return timeTableRowTO.getStationShortCode();
+    public String createKeyFromParent(final PassengerInformationMessageStationTO parent) {
+        return parent.getStationShortCode();
     }
 
     @Override
-    public String createKeyFromChild(final StationTO stationTO) {
-        return stationTO.getShortCode();
+    public String createKeyFromChild(final StationTO child) {
+        return child.getShortCode();
     }
 
     @Override
@@ -54,11 +54,6 @@ public class TimeTableRowToStationLinkJpql extends OneToOneLinkJpql<String, Time
     @Override
     public String createWhereClause(final List<String> keys) {
         return "e.shortCode IN :keys";
-    }
-
-    @Override
-    public String getDefaultOrderBy() {
-        return "e.name ASC";
     }
 }
 
