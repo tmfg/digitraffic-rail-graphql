@@ -72,6 +72,7 @@ public class JpqlWhereBuilder {
                     if (!(value instanceof final Map<?, ?> nested) || nested.isEmpty()) {
                         throw new AbortExecutionException("Invalid expression: " + key);
                     }
+                    JpqlSafeIdentifier.validate(key);
                     yield buildInternal(path + "." + key, (Map<String, Object>) nested, ctx);
                 }
             };

@@ -51,6 +51,7 @@ public class JpqlOrderByBuilder {
         final String key = entry.getKey();
         final Object value = entry.getValue();
 
+        JpqlSafeIdentifier.validate(key);
         paths.add(key);
 
         if (value instanceof final Map<?, ?> nestedMap) {

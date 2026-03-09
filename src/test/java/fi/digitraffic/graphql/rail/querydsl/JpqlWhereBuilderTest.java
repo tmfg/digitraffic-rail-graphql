@@ -373,6 +373,70 @@ class JpqlWhereBuilderTest {
     }
 
     @Nested
+    class InjectionPrevention {
+
+        @Test
+        void rejectsFieldNameWithSpace() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("field name", Map.of("equals", 1))));
+        }
+
+        @Test
+        void rejectsFieldNameWithSemicolon() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("a; DROP TABLE", Map.of("equals", 1))));
+        }
+
+        @Test
+        void rejectsFieldNameWithParentheses() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("func()", Map.of("equals", 1))));
+        }
+
+        @Test
+        void rejectsFieldNameWithDot() {
+            // Dots are used internally for path building, but individual keys must not contain them
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("a.b", Map.of("equals", 1))));
+        }
+
+        @Test
+        void rejectsFieldNameStartingWithDigit() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("1field", Map.of("equals", 1))));
+        }
+
+        @Test
+        void rejectsFieldNameWithJpqlKeywordInjection() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("x OR 1=1 --", Map.of("equals", 1))));
+        }
+
+        @Test
+        void acceptsValidFieldNames() {
+            // camelCase
+            final var result1 = builder.build("e", Map.of("trainNumber", Map.of("equals", 1)));
+            assertTrue(result1.jpql().contains("e.trainNumber"));
+
+            // with underscore
+            final var result2 = builder.build("e", Map.of("train_number", Map.of("equals", 1)));
+            assertTrue(result2.jpql().contains("e.train_number"));
+
+            // starting with underscore
+            final var result3 = builder.build("e", Map.of("_field", Map.of("equals", 1)));
+            assertTrue(result3.jpql().contains("e._field"));
+        }
+
+        @Test
+        void rejectsNestedFieldNameWithInjection() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of(
+                            "station", Map.of(
+                                    "name; DELETE FROM", Map.of("equals", "x")))));
+        }
+    }
+
+    @Nested
     class WithEnumConverter {
 
         @Test
