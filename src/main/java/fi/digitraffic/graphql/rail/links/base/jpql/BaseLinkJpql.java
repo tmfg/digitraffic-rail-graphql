@@ -14,7 +14,6 @@ import org.dataloader.DataLoaderRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
@@ -26,7 +25,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
@@ -42,17 +40,20 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
 
     private static final Logger log = LoggerFactory.getLogger(BaseLinkJpql.class);
 
-    @Value("${digitraffic.batch-load-size:500}")
-    private Integer BATCH_LOAD_SIZE;
-
-    @Autowired
-    protected JpqlWhereBuilder jpqlWhereBuilder;
-
-    @Autowired
-    protected JpqlOrderByBuilder jpqlOrderByBuilder;
+    private final int batchLoadSize;
+    protected final JpqlWhereBuilder jpqlWhereBuilder;
+    protected final JpqlOrderByBuilder jpqlOrderByBuilder;
 
     @PersistenceContext
     protected EntityManager entityManager;
+
+    protected BaseLinkJpql(final JpqlWhereBuilder jpqlWhereBuilder,
+                           final JpqlOrderByBuilder jpqlOrderByBuilder,
+                           @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize) {
+        this.jpqlWhereBuilder = jpqlWhereBuilder;
+        this.jpqlOrderByBuilder = jpqlOrderByBuilder;
+        this.batchLoadSize = batchLoadSize;
+    }
 
     public boolean cachingEnabled() {
         return true;
@@ -105,10 +106,6 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
         return null;
     }
 
-    @PostConstruct
-    public void setup() {
-        // No setup needed for JPQL - EntityManager is injected
-    }
 
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
@@ -146,7 +143,7 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
 
         // then partition the list with required size
         if (!other.isEmpty()) {
-            final List<List<KeyType>> partitions = Lists.partition(other.get(0).keys, BATCH_LOAD_SIZE);
+            final List<List<KeyType>> partitions = Lists.partition(other.get(0).keys, batchLoadSize);
             batches.addAll(partitions.stream().map(p -> new LoaderBatch<>(p, other.get(0).dfe)).toList());
         }
 

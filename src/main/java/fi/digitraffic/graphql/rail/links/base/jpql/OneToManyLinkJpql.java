@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.dataloader.BatchLoaderWithContext;
+import org.springframework.beans.factory.annotation.Value;
 
+import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
@@ -15,6 +18,12 @@ import graphql.schema.DataFetchingEnvironment;
  */
 public abstract class OneToManyLinkJpql<KeyType, ParentTOType, ChildEntityType, ChildTOType>
         extends BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, ChildTOType, List<ChildTOType>> {
+
+    protected OneToManyLinkJpql(final JpqlWhereBuilder jpqlWhereBuilder,
+                                final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+    }
 
     @Override
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {

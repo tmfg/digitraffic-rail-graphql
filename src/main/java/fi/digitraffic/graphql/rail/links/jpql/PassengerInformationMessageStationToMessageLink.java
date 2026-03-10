@@ -2,7 +2,7 @@ package fi.digitraffic.graphql.rail.links.jpql;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
@@ -10,6 +10,8 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
+import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
 
 /**
@@ -19,8 +21,15 @@ import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
 public class PassengerInformationMessageStationToMessageLink
         extends OneToOneLinkJpql<PassengerInformationMessageId, PassengerInformationMessageStationTO, PassengerInformationMessage, PassengerInformationMessageTO> {
 
-    @Autowired
-    private PassengerInformationMessageTOConverter messageTOConverter;
+    private final PassengerInformationMessageTOConverter messageTOConverter;
+
+    public PassengerInformationMessageStationToMessageLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                                           final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                                           @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                                           final PassengerInformationMessageTOConverter messageTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.messageTOConverter = messageTOConverter;
+    }
 
     @Override
     public String getTypeName() {

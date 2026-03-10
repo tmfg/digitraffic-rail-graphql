@@ -2,7 +2,7 @@ package fi.digitraffic.graphql.rail.links.jpql;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
@@ -10,6 +10,8 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationVideo;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
+import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationVideoTOConverter;
 
 /**
@@ -19,8 +21,15 @@ import fi.digitraffic.graphql.rail.to.PassengerInformationVideoTOConverter;
 public class PassengerInformationMessageToVideoLink
         extends OneToOneLinkJpql<PassengerInformationMessageId, PassengerInformationMessageTO, PassengerInformationVideo, PassengerInformationVideoTO> {
 
-    @Autowired
-    private PassengerInformationVideoTOConverter videoTOConverter;
+    private final PassengerInformationVideoTOConverter videoTOConverter;
+
+    public PassengerInformationMessageToVideoLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                                  final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                                  @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                                  final PassengerInformationVideoTOConverter videoTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.videoTOConverter = videoTOConverter;
+    }
 
     @Override
     public String getTypeName() {

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
@@ -31,14 +30,17 @@ public abstract class BaseQueryJpql<E, T> {
     @PersistenceContext
     protected EntityManager entityManager;
 
-    @Autowired
-    private JpqlWhereBuilder whereBuilder;
+    private final JpqlWhereBuilder whereBuilder;
+    private final JpqlOrderByBuilder orderByBuilder;
+    protected final int maxResults;
 
-    @Autowired
-    private JpqlOrderByBuilder orderByBuilder;
-
-    @Value("${digitraffic.max-returned-rows}")
-    protected Integer maxResults;
+    protected BaseQueryJpql(final JpqlWhereBuilder whereBuilder,
+                            final JpqlOrderByBuilder orderByBuilder,
+                            @Value("${digitraffic.max-returned-rows}") final int maxResults) {
+        this.whereBuilder = whereBuilder;
+        this.orderByBuilder = orderByBuilder;
+        this.maxResults = maxResults;
+    }
 
     /**
      * @return The GraphQL query name (e.g., "trains", "passengerInformationMessages")

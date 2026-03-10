@@ -2,13 +2,15 @@ package fi.digitraffic.graphql.rail.links.jpql;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
+import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
 /**
@@ -18,8 +20,15 @@ import fi.digitraffic.graphql.rail.to.StationTOConverter;
 public class PassengerInformationMessageStationToStationLink
         extends OneToOneLinkJpql<String, PassengerInformationMessageStationTO, Station, StationTO> {
 
-    @Autowired
-    private StationTOConverter stationTOConverter;
+    private final StationTOConverter stationTOConverter;
+
+    public PassengerInformationMessageStationToStationLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                                           final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                                           @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                                           final StationTOConverter stationTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.stationTOConverter = stationTOConverter;
+    }
 
     @Override
     public String getTypeName() {

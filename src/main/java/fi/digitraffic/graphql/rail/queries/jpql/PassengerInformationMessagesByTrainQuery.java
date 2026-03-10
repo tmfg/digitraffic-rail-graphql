@@ -3,8 +3,11 @@ package fi.digitraffic.graphql.rail.queries.jpql;
 import java.time.LocalDate;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
@@ -13,6 +16,12 @@ import graphql.schema.DataFetchingEnvironment;
  */
 @Component
 public class PassengerInformationMessagesByTrainQuery extends PassengerInformationMessagesQuery {
+
+    public PassengerInformationMessagesByTrainQuery(final JpqlWhereBuilder whereBuilder,
+                                                    final JpqlOrderByBuilder orderByBuilder,
+                                                    @Value("${digitraffic.max-returned-rows}") final int maxResults) {
+        super(whereBuilder, orderByBuilder, maxResults);
+    }
 
     @Override
     public String getQueryName() {
