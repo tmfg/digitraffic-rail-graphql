@@ -47,12 +47,12 @@ public class TimeTableRowToStationLinkTest extends BaseWebMVCTest {
     public void testWhereClauseGeneration() {
         final String whereClause = link.createWhereClause(List.of("HKI", "TPE"));
 
-        assertEquals("e.shortCode IN :keys", whereClause);
+        assertEquals(link.getEntityAlias() + ".shortCode IN :keys", whereClause);
     }
 
     @Test
     public void testDefaultOrderBy() {
-        assertEquals("e.name ASC", link.getDefaultOrderBy());
+        assertEquals(link.getEntityAlias() + ".name ASC", link.getDefaultOrderBy());
     }
 
     @Test

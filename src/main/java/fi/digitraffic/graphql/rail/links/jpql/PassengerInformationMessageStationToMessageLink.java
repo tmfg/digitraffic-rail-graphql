@@ -63,7 +63,7 @@ public class PassengerInformationMessageStationToMessageLink
 
     @Override
     public String createWhereClause(final List<PassengerInformationMessageId> keys) {
-        return "e.id IN :keys";
+        return getEntityAlias() + ".id IN :keys";
     }
 }
 

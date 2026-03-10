@@ -71,9 +71,10 @@ public class StationToPassengerInformationMessageStationLink
         return PassengerInformationMessageStation.class;
     }
 
+
     @Override
     public String createWhereClause(final List<String> keys) {
-        return "e.stationShortCode IN :keys";
+        return getEntityAlias() + ".stationShortCode IN :keys";
     }
 
     /**
@@ -86,29 +87,29 @@ public class StationToPassengerInformationMessageStationLink
             final Map<String, Object> whereMap,
             final List<Map<String, Object>> orderByList) {
 
-        final String alias = "e";
+        final String alias = getEntityAlias();
         final ZonedDateTime now = ZonedDateTime.now();
 
         // Build JPQL with JOIN to PassengerInformationMessage for validity check
         final StringBuilder jpql = new StringBuilder();
         jpql.append("""
-            SELECT DISTINCT e FROM PassengerInformationMessageStation e
+            SELECT DISTINCT %s FROM PassengerInformationMessageStation %s
             LEFT JOIN PassengerInformationMessage msg
-            ON msg.id.id = e.messageId AND msg.id.version = e.messageVersion
-            WHERE (e.messageId, e.messageVersion) IN (
+            ON msg.id.id = %s.messageId AND msg.id.version = %s.messageVersion
+            WHERE (%s.messageId, %s.messageVersion) IN (
                 SELECT ms2.messageId, MAX(ms2.messageVersion)
                 FROM PassengerInformationMessageStation ms2
                 GROUP BY ms2.messageId
             )
             AND msg.deleted IS NULL
             AND msg.startValidity <= :now
-            AND msg.endValidity > :now""");
+            AND msg.endValidity > :now""".formatted(alias, alias, alias, alias, alias, alias));
 
         final Map<String, Object> params = new HashMap<>();
         params.put("now", now);
 
         // Add key-based where clause
-        jpql.append(" AND e.stationShortCode IN :keys");
+        jpql.append(" AND %s.stationShortCode IN :keys".formatted(alias));
         params.put("keys", keys);
 
         // Add user-provided where clause

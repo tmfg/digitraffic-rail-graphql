@@ -38,10 +38,6 @@ public class PassengerInformationMessagesQuery extends BaseQueryJpql<PassengerIn
         return PassengerInformationMessage.class;
     }
 
-    @Override
-    public String getEntityAlias() {
-        return "m";
-    }
 
     @Override
     public String buildBaseQuery(final String alias, final Map<String, Object> parameters) {

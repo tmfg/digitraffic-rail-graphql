@@ -66,7 +66,7 @@ public class PassengerInformationMessageToAudioLink
 
     @Override
     public String createWhereClause(final List<PassengerInformationMessageId> keys) {
-        return "e.message.id IN :keys";
+        return getEntityAlias() + ".message.id IN :keys";
     }
 }
 

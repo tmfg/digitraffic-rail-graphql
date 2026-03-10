@@ -62,7 +62,7 @@ public class PassengerInformationMessageStationToStationLink
 
     @Override
     public String createWhereClause(final List<String> keys) {
-        return "e.shortCode IN :keys";
+        return getEntityAlias() + ".shortCode IN :keys";
     }
 }
 

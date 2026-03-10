@@ -62,12 +62,12 @@ public class TimeTableRowToStationLink extends OneToOneLinkJpql<String, TimeTabl
 
     @Override
     public String createWhereClause(final List<String> keys) {
-        return "e.shortCode IN :keys";
+        return getEntityAlias() + ".shortCode IN :keys";
     }
 
     @Override
     public String getDefaultOrderBy() {
-        return "e.name ASC";
+        return getEntityAlias() + ".name ASC";
     }
 }
 

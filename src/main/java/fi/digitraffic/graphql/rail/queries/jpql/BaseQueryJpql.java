@@ -42,6 +42,7 @@ public abstract class BaseQueryJpql<E, T> {
         this.maxResults = maxResults;
     }
 
+
     /**
      * @return The GraphQL query name (e.g., "trains", "passengerInformationMessages")
      */
@@ -53,10 +54,10 @@ public abstract class BaseQueryJpql<E, T> {
     public abstract Class<E> getEntityClass();
 
     /**
-     * @return The JPQL entity alias (e.g., "t" for "SELECT t FROM Train t")
+     * @return The JPQL entity alias (e.g., "e" for "SELECT e FROM Station e")
      */
     public String getEntityAlias() {
-        return getEntityClass().getSimpleName().substring(0, 1).toLowerCase();
+        return "e";
     }
 
     /**

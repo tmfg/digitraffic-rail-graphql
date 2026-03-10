@@ -37,10 +37,6 @@ public class StationsQuery extends BaseQueryJpql<Station, StationTO> {
         return Station.class;
     }
 
-    @Override
-    public String getEntityAlias() {
-        return "s";
-    }
 
     @Override
     public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
