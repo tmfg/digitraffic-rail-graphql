@@ -2,6 +2,7 @@ package fi.digitraffic.graphql.rail.querydsl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +61,22 @@ class JpqlOrderByBuilderTest {
         @Test
         void emptyListReturnsEmpty() {
             assertEquals("", builder.build("e", List.of()));
+        }
+
+        @Test
+        void emptyMapInListIsSkipped() {
+            final var result = builder.build("e", List.of(Map.of()));
+            assertEquals("", result);
+        }
+
+        @Test
+        void emptyMapAmongValidEntriesIsSkipped() {
+            final List<Map<String, Object>> orderByList = new ArrayList<>();
+            orderByList.add(Map.of("trainNumber", "ASCENDING"));
+            orderByList.add(Map.of());
+            orderByList.add(Map.of("departureDate", "DESCENDING"));
+            final var result = builder.build("e", orderByList);
+            assertEquals("e.trainNumber ASC, e.departureDate DESC", result);
         }
 
         @Test

@@ -239,9 +239,9 @@ class JpqlWhereBuilderTest {
             assertTrue(result.jpql().contains("e.field1 = :p"));
             assertTrue(result.jpql().contains("e.field2 = :p"));
             assertTrue(result.jpql().contains("e.field3 = :p"));
-            // Count AND occurrences - should be 2 for 3 conditions
-            final long andCount = result.jpql().chars().filter(ch -> ch == 'A').count();
-            assertTrue(andCount >= 2, "Should have at least 2 ANDs for 3 conditions");
+            // Split on " AND " to verify 3 conditions joined by 2 ANDs
+            final String[] parts = result.jpql().split(" AND ");
+            assertEquals(3, parts.length, "Should have 3 conditions joined by 2 ANDs");
             assertEquals(3, result.params().size());
         }
 
@@ -320,6 +320,35 @@ class JpqlWhereBuilderTest {
             assertEquals(60.0, result.params().get("p1"));
             assertEquals(25.0, result.params().get("p2"));
             assertEquals(61.0, result.params().get("p3"));
+        }
+
+        @Test
+        void insideWithNullCoordsThrows() {
+            final var where = new HashMap<String, Object>();
+            where.put("location", new HashMap<>(Map.of("inside", "placeholder")));
+            // Replace with null via a mutable map
+            ((Map<String, Object>) where.get("location")).put("inside", null);
+
+            assertThrows(AbortExecutionException.class, () -> builder.build("e", where));
+        }
+
+        @Test
+        void insideWithEmptyListThrows() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("location", Map.of("inside", List.of()))));
+        }
+
+        @Test
+        void insideWithTooFewCoordsThrows() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("location", Map.of("inside", List.of(24.0, 60.0)))));
+        }
+
+        @Test
+        void insideWithTooManyCoordsThrows() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", Map.of("location", Map.of(
+                            "inside", List.of(24.0, 60.0, 25.0, 61.0, 26.0, 62.0)))));
         }
     }
 

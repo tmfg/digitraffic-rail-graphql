@@ -56,20 +56,23 @@ import graphql.schema.idl.TypeRuntimeWiring;
 public class GraphQLProvider {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private DigitrafficConfig digitrafficConfig;
+    private final DigitrafficConfig digitrafficConfig;
+    private final List<BaseLink> fetchers;
+    private final List<BaseQuery> rootFetchers;
+    private final List<fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql> jpqlRootFetchers;
+    private final List<fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql> jpqlLinks;
 
-    @Autowired
-    private List<BaseLink> fetchers;
-
-    @Autowired
-    private List<BaseQuery> rootFetchers;
-
-    @Autowired
-    private List<fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql> jpqlRootFetchers;
-
-    @Autowired
-    private List<fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql> jpqlLinks;
+    public GraphQLProvider(final DigitrafficConfig digitrafficConfig,
+                           final List<BaseLink> fetchers,
+                           final List<BaseQuery> rootFetchers,
+                           final List<fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql> jpqlRootFetchers,
+                           final List<fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql> jpqlLinks) {
+        this.digitrafficConfig = digitrafficConfig;
+        this.fetchers = fetchers;
+        this.rootFetchers = rootFetchers;
+        this.jpqlRootFetchers = jpqlRootFetchers;
+        this.jpqlLinks = jpqlLinks;
+    }
 
     private final Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
     private final Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");

@@ -54,7 +54,7 @@ public class StationsQuery extends BaseQueryJpql<Station, StationTO> {
     public StationTO convertEntityToTO(final Station entity) {
         return new StationTO(
                 entity.id.intValue(),
-                entity.passengerTraffic != null && entity.passengerTraffic,
+                entity.passengerTraffic,
                 entity.countryCode,
                 List.of(entity.longitude, entity.latitude),
                 entity.name,

@@ -32,6 +32,9 @@ public class JpqlOrderByBuilder {
         final List<String> orderClauses = new ArrayList<>();
 
         for (final Map<String, Object> orderByMap : orderByList) {
+            if (orderByMap == null || orderByMap.isEmpty()) {
+                continue;
+            }
             final Pair<List<String>, String> pathAndDirection = extractPathAndDirection(orderByMap, new ArrayList<>());
             final String path = alias + "." + String.join(".", pathAndDirection.getFirst());
             final String direction = mapDirection(pathAndDirection.getSecond());

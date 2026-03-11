@@ -166,8 +166,8 @@ public class PassengerInformationMessageLinksIntegrationTest extends BaseWebMVCT
                 """);
 
         result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(1));
-        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio").doesNotExist());
-        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video").doesNotExist());
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio").isEmpty());
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video").isEmpty());
     }
 }
 

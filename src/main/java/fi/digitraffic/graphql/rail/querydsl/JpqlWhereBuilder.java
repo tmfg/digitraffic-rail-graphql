@@ -135,6 +135,11 @@ public class JpqlWhereBuilder {
     }
 
     private String inside(final String path, final List<Double> coords, final BuildContext ctx) {
+        if (coords == null || coords.size() != 4) {
+            throw new AbortExecutionException(
+                    "'inside' requires exactly 4 coordinates [xMin, yMin, xMax, yMax], got "
+                            + (coords == null ? "null" : coords.size()));
+        }
         final String[] p = {ctx.nextParam(), ctx.nextParam(), ctx.nextParam(), ctx.nextParam()};
         for (int i = 0; i < 4; i++) {
             ctx.params.put(p[i], coords.get(i));
