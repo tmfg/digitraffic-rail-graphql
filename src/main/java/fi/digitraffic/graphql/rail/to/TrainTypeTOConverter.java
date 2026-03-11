@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import fi.digitraffic.graphql.rail.entities.QTrainType;
+import fi.digitraffic.graphql.rail.entities.TrainType;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
 
 @Component
@@ -15,6 +16,19 @@ public class TrainTypeTOConverter extends BaseConverter<TrainTypeTO> {
                 tuple.get(QTrainType.trainType.name),
                 tuple.get(QTrainType.trainType.trainCategoryId).intValue()
                 , null
+        );
+    }
+
+    /**
+     * Converts a TrainType entity to TrainTypeTO.
+     * Used by JPQL-based queries and links.
+     */
+    public TrainTypeTO convertEntity(final TrainType entity) {
+        return new TrainTypeTO(
+                entity.id.intValue(),
+                entity.name,
+                entity.trainCategoryId.intValue(),
+                null
         );
     }
 }

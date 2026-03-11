@@ -10,6 +10,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import fi.digitraffic.graphql.rail.entities.Operator;
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.Train;
@@ -80,6 +81,14 @@ public class TrainFactory {
         entityManager.merge(trainType);
 
         final String operatorShortCode = "test";
+
+        final Operator operator = new Operator();
+        operator.id = 1L;
+        operator.shortCode = operatorShortCode;
+        operator.operatorUicCode = operatorShortCode.hashCode();
+        operator.name = "test";
+        entityManager.merge(operator);
+
         final String commuterLineID = "Z";
         final boolean runningCurrently = true;
         final boolean cancelled = false;

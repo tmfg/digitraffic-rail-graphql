@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,8 +29,13 @@ public abstract class BaseWebMVCTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @AfterEach()
-    protected void setup() {
+    @BeforeEach
+    protected void cleanBefore() {
+        factoryService.deleteAll();
+    }
+
+    @AfterEach
+    protected void cleanAfter() {
         factoryService.deleteAll();
     }
 

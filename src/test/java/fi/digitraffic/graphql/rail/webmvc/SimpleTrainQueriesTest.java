@@ -12,7 +12,6 @@ import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -38,7 +37,6 @@ public class SimpleTrainQueriesTest extends BaseWebMVCTest {
     }
 
     @Test
-    @Disabled
     public void oneToOneJoinShouldWork() throws Exception {
         trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
 

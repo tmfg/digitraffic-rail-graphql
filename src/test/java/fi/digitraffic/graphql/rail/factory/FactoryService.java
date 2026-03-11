@@ -35,13 +35,24 @@ public class FactoryService {
 
     @Transactional
     public void deleteAll() {
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=0").executeUpdate();
+
         entityManager.createQuery("DELETE FROM Station").executeUpdate();
         entityManager.createQuery("DELETE FROM TimeTableRow").executeUpdate();
         entityManager.createQuery("DELETE FROM Train").executeUpdate();
         entityManager.createQuery("DELETE FROM TrainTrackingMessage").executeUpdate();
         entityManager.createQuery("DELETE FROM TrainLocation").executeUpdate();
         entityManager.createQuery("DELETE FROM Cause").executeUpdate();
+        entityManager.createQuery("DELETE FROM PassengerInformationMessageStation").executeUpdate();
+        entityManager.createQuery("DELETE FROM PassengerInformationAudio").executeUpdate();
+        entityManager.createQuery("DELETE FROM PassengerInformationVideo").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationMessage").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM operator_train_number").executeUpdate();
+        entityManager.createQuery("DELETE FROM Operator").executeUpdate();
+        entityManager.createQuery("DELETE FROM TrainType").executeUpdate();
+        entityManager.createQuery("DELETE FROM TrainCategory").executeUpdate();
+
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS=1").executeUpdate();
     }
 
     public StationFactory getStationFactory() {
