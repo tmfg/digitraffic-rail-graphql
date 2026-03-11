@@ -280,8 +280,8 @@ class JpqlWhereBuilderTest {
                                     "station", Map.of(
                                             "shortCode", Map.of("equals", "HKI"))))));
 
-            // Contains uses path traversal (implicit join), same as QueryDSL's forCollectionAny
-            assertEquals("e.timeTableRows.station.shortCode = :p0", result.jpql());
+            // Contains generates an EXISTS subquery for collection filtering
+            assertEquals("EXISTS (SELECT sub0 FROM e.timeTableRows sub0 WHERE sub0.station.shortCode = :p0)", result.jpql());
             assertEquals("HKI", result.params().get("p0"));
         }
 
@@ -295,12 +295,13 @@ class JpqlWhereBuilderTest {
                                             Map.of("type", Map.of("equals", "DEPARTURE"))
                                     )))));
 
-            // Should generate path traversal with AND
-            assertTrue(result.jpql().contains("e.timeTableRows.station.shortCode = :p0"));
-            assertTrue(result.jpql().contains("e.timeTableRows.type = :p1"));
+            // Should generate EXISTS subquery with AND
+            assertTrue(result.jpql().contains("EXISTS (SELECT sub0 FROM e.timeTableRows sub0 WHERE"));
+            assertTrue(result.jpql().contains("sub0.station.shortCode = :p0"));
+            assertTrue(result.jpql().contains("sub0.type = :p1"));
             assertTrue(result.jpql().contains(" AND "));
             assertEquals(2, result.params().size());
-        }
+    }
     }
 
     @Nested
@@ -454,6 +455,23 @@ class JpqlWhereBuilderTest {
             // starting with underscore
             final var result3 = builder.build("e", Map.of("_field", Map.of("equals", 1)));
             assertTrue(result3.jpql().contains("e._field"));
+        }
+
+        @Test
+        void containsNestedInContains() {
+            final var result = builder.build("e", Map.of(
+                    "timeTableRows", Map.of(
+                            "contains", Map.of(
+                                    "causes", Map.of(
+                                            "contains", Map.of(
+                                                    "categoryCodeOid", Map.of("equals", "B")))))));
+
+            // Outer: sub0 (aliasCounter 0), inner: sub1 (aliasCounter 1), param: p0 (paramCounter 0)
+            assertTrue(result.jpql().contains("EXISTS (SELECT sub0 FROM e.timeTableRows sub0 WHERE"));
+            assertTrue(result.jpql().contains("EXISTS (SELECT sub1 FROM sub0.causes sub1 WHERE"));
+            assertTrue(result.jpql().contains("sub1.categoryCodeOid = :p0"));
+            assertEquals("B", result.params().get("p0"));
+            assertEquals(1, result.params().size());
         }
 
         @Test

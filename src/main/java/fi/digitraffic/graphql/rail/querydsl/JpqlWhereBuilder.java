@@ -46,8 +46,10 @@ public class JpqlWhereBuilder {
 
     private static class BuildContext {
         final Map<String, Object> params = new HashMap<>();
-        int counter = 0;
-        String nextParam() { return "p" + counter++; }
+        int paramCounter = 0;
+        int aliasCounter = 0;
+        String nextParam() { return "p" + paramCounter++; }
+        String nextSubqueryAlias() { return "sub" + aliasCounter++; }
     }
 
     @SuppressWarnings("unchecked")
@@ -120,18 +122,20 @@ public class JpqlWhereBuilder {
     /**
      * Handles 'contains' operator for collection filtering.
      *
-     * Note: This generates a simple path traversal that relies on JPA implicit joins.
+     * Generates an EXISTS subquery to check if any element in the collection matches.
      * Input: path = "e.timeTableRows", condition = {station: {type: {equals: "STATION"}}}
-     * Output: "e.timeTableRows.station.type = :p0" (relies on implicit join)
+     * Output: "EXISTS (SELECT sub0 FROM e.timeTableRows sub0 WHERE sub0.station.type = :p0)"
      *
-     * This matches QueryDSL's forCollectionAny behavior which also uses implicit joins
-     * to match "any element in the collection".
+     * This replaces QueryDSL's forCollectionAny behavior. Hibernate 6+ does not allow
+     * implicit joins through plural (collection) paths, so an explicit subquery is required.
      */
     private String contains(final String path, final Map<String, Object> condition, final BuildContext ctx) {
-        // QueryDSL's forCollectionAny creates a path that matches "any" element in collection.
-        // In JPQL, navigating through a collection path (e.g., e.timeTableRows.station.type)
-        // implicitly creates a join and matches if ANY element satisfies the condition.
-        return buildInternal(path, condition, ctx);
+        final String subAlias = ctx.nextSubqueryAlias();
+        final String innerCondition = buildInternal(subAlias, condition, ctx);
+        if (innerCondition.isEmpty()) {
+            return "";
+        }
+        return "EXISTS (SELECT " + subAlias + " FROM " + path + " " + subAlias + " WHERE " + innerCondition + ")";
     }
 
     private String inside(final String path, final List<Double> coords, final BuildContext ctx) {

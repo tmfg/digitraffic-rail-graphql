@@ -30,6 +30,28 @@ public class TrainTOConverter extends BaseConverter<TrainTO> {
         );
     }
 
+    /**
+     * Converts a Train entity to TrainTO.
+     * Used by JPQL-based queries and links.
+     */
+    public TrainTO convertEntity(final Train entity) {
+        return new TrainTO(
+                entity.cancelled,
+                entity.commuterLineid,
+                entity.deleted,
+                entity.id.departureDate,
+                entity.operatorShortCode,
+                entity.runningCurrently,
+                entity.timetableAcceptanceDate,
+                convert(entity.timetableType),
+                entity.id.trainNumber.intValue(),
+                nullableString(entity.version),
+                nullableInt(entity.trainTypeId),
+                nullableInt(entity.trainCategoryId),
+                null, null, null, null, null, null, null, null
+        );
+    }
+
     public TimetableTypeTO convert(final Train.TimetableType timetableType) {
         if (timetableType == null) {
             return null;

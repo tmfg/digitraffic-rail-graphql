@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+//@Component // Replaced by JPQL implementation in queries/jpql/TrainsByVersionGreaterThanQuery.java
 public class TrainsByVersionGreaterThanQuery extends BaseQuery<TrainTO> {
     @Autowired
     private TrainTOConverter trainTOConverter;

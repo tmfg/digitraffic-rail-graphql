@@ -16,7 +16,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+//@Component // Replaced by JPQL implementation in queries/jpql/TrainsByDepartureDateQuery.java
 public class TrainsByDepartureDateQuery extends BaseQuery<TrainTO> {
     @Autowired
     private TrainTOConverter trainTOConverter;
