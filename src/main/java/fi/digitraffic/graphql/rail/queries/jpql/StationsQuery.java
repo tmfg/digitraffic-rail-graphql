@@ -14,10 +14,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
-/**
- * JPQL implementation of StationsQuery.
- * This provides a simple query for testing the JPQL infrastructure.
- */
 @Component
 public class StationsQuery extends BaseQueryJpql<Station, StationTO> {
 

@@ -31,8 +31,7 @@ import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.TypedQuery;
 
 /**
- * JPQL-based implementation of BaseLink.
- * Replaces QueryDSL with native JPQL queries.
+ * Base class for JPQL-based graph-edge resolvers (links).
  */
 public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     private static final ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
@@ -85,17 +84,19 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
     }
 
     /**
-     * Creates JPQL WHERE clause fragment for filtering by keys.
-     * Example: "e.shortCode IN :keys"
+     * Builds the key-based WHERE clause and its named parameters.
+     * <p>
+     * For simple single-column keys use {@link #simpleInClause(String, List)}:
+     * <pre>
+     *     return simpleInClause("e.shortCode IN :keys", keys);
+     * </pre>
+     * For composite keys (e.g. {@link fi.digitraffic.graphql.rail.entities.TrainId}) delegate to
+     * {@link TrainIdJpqlWhereClause#build}.
      */
-    public abstract String createWhereClause(final List<KeyType> keys);
+    protected abstract KeyWhereClause buildKeyWhereClause(final List<KeyType> keys);
 
-    /**
-     * Returns the parameter name used in the WHERE clause for keys.
-     * Default is "keys".
-     */
-    public String getKeysParameterName() {
-        return "keys";
+    protected static <T> KeyWhereClause simpleInClause(final String jpql, final List<T> keys) {
+        return new KeyWhereClause(jpql, Map.of("keys", keys));
     }
 
     /**
@@ -218,10 +219,10 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
         final List<String> whereClauses = new ArrayList<>();
 
         // Add key-based where clause
-        final String keyWhereClause = createWhereClause(keys);
-        if (keyWhereClause != null && !keyWhereClause.isEmpty()) {
-            whereClauses.add(keyWhereClause);
-            params.put(getKeysParameterName(), keys);
+        final KeyWhereClause keyWhere = buildKeyWhereClause(keys);
+        if (!keyWhere.jpql().isEmpty()) {
+            whereClauses.add(keyWhere.jpql());
+            params.putAll(keyWhere.params());
         }
 
         // Add user-provided where clause
@@ -273,4 +274,3 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
         return whereAsMap;
     }
 }
-

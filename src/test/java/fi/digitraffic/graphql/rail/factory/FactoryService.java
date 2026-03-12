@@ -31,6 +31,12 @@ public class FactoryService {
     private CauseFactory causeFactory;
 
     @Autowired
+    private CompositionFactory compositionFactory;
+
+    @Autowired
+    private JourneySectionFactory journeySectionFactory;
+
+    @Autowired
     private PassengerInformationMessageFactory passengerInformationMessageFactory;
 
     @Transactional
@@ -43,6 +49,8 @@ public class FactoryService {
         entityManager.createQuery("DELETE FROM TrainTrackingMessage").executeUpdate();
         entityManager.createQuery("DELETE FROM TrainLocation").executeUpdate();
         entityManager.createQuery("DELETE FROM Cause").executeUpdate();
+        entityManager.createQuery("DELETE FROM JourneySection").executeUpdate();
+        entityManager.createQuery("DELETE FROM Composition").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationMessageStation").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationAudio").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationVideo").executeUpdate();
@@ -77,6 +85,14 @@ public class FactoryService {
 
     public CauseFactory getCauseFactory() {
         return causeFactory;
+    }
+
+    public CompositionFactory getCompositionFactory() {
+        return compositionFactory;
+    }
+
+    public JourneySectionFactory getJourneySectionFactory() {
+        return journeySectionFactory;
     }
 
     public PassengerInformationMessageFactory getPassengerInformationMessageFactory() {

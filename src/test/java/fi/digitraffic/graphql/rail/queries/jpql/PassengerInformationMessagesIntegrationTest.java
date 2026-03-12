@@ -19,8 +19,7 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 
 /**
- * Integration tests for the JPQL PassengerInformationMessages query and its links.
- * Tests via full GraphQL HTTP requests, same pattern as existing QueryDSL tests.
+ * Integration tests for the passengerInformationMessages query and its links.
  */
 public class PassengerInformationMessagesIntegrationTest extends BaseWebMVCTest {
 

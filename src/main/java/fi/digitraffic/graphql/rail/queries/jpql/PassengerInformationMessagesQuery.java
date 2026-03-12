@@ -13,11 +13,8 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
- * JPQL implementation of PassengerInformationMessagesQuery.
- * Replaces the QueryDSL version with identical functionality.
- *
- * Base query selects only the latest version of each message,
- * and buildBaseWhereClause filters to active, non-deleted messages.
+ * Selects only the latest version of each PassengerInformationMessage,
+ * filtered to active, non-deleted messages.
  */
 @Component
 public class PassengerInformationMessagesQuery extends BaseQueryJpql<PassengerInformationMessage, PassengerInformationMessageTO> {

@@ -10,7 +10,7 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 
 /**
- * JPQL-based implementation of OneToOneLink.
+ * One-to-one graph-edge resolver.
  * For relationships where each parent has exactly one child (e.g., TimeTableRow → Station).
  */
 public abstract class OneToOneLinkJpql<KeyType, ParentTOType, ChildEntityType, ChildTOType>

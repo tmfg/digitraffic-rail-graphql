@@ -9,14 +9,11 @@ import fi.digitraffic.graphql.rail.entities.TrainType;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTypeTOConverter;
 
-/**
- * JPQL implementation of TrainToTrainTypeLink.
- * Links Train to its TrainType via trainTypeId.
- */
 @Component
 public class TrainToTrainTypeLink extends OneToOneLinkJpql<Long, TrainTO, TrainType, TrainTypeTO> {
 
@@ -61,8 +58,8 @@ public class TrainToTrainTypeLink extends OneToOneLinkJpql<Long, TrainTO, TrainT
     }
 
     @Override
-    public String createWhereClause(final List<Long> keys) {
-        return getEntityAlias() + ".id IN :keys";
+    protected KeyWhereClause buildKeyWhereClause(final List<Long> keys) {
+        return simpleInClause(getEntityAlias() + ".id IN :keys", keys);
     }
 
     @Override
@@ -70,4 +67,3 @@ public class TrainToTrainTypeLink extends OneToOneLinkJpql<Long, TrainTO, TrainT
         return getEntityAlias() + ".name ASC";
     }
 }
-

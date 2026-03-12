@@ -14,10 +14,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-/**
- * JPQL implementation of TrainQuery.
- * Fetches a single train by trainNumber + departureDate (composite key).
- */
 @Component
 public class TrainQuery extends BaseQueryJpql<Train, TrainTO> {
 

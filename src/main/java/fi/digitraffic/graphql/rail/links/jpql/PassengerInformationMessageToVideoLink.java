@@ -10,13 +10,11 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationVideo;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationVideoTO;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationVideoTOConverter;
 
-/**
- * JPQL implementation: PassengerInformationMessage → video (OneToOne).
- */
 @Component
 public class PassengerInformationMessageToVideoLink
         extends OneToOneLinkJpql<PassengerInformationMessageId, PassengerInformationMessageTO, PassengerInformationVideo, PassengerInformationVideoTO> {
@@ -65,8 +63,7 @@ public class PassengerInformationMessageToVideoLink
     }
 
     @Override
-    public String createWhereClause(final List<PassengerInformationMessageId> keys) {
-        return getEntityAlias() + ".message.id IN :keys";
+    protected KeyWhereClause buildKeyWhereClause(final List<PassengerInformationMessageId> keys) {
+        return simpleInClause(getEntityAlias() + ".message.id IN :keys", keys);
     }
 }
-

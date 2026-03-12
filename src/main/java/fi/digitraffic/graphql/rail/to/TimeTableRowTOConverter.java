@@ -37,6 +37,36 @@ public class TimeTableRowTOConverter extends BaseConverter<TimeTableRowTO> {
                 null);
     }
 
+    /**
+     * Converts a TimeTableRow entity to TimeTableRowTO.
+     * Used by JPQL-based queries and links.
+     */
+    public TimeTableRowTO convertEntity(final TimeTableRow entity) {
+        return new TimeTableRowTO(
+                entity.stationShortCode,
+                entity.stationUICCode,
+                entity.countryCode,
+                convertTimeTableRowType(entity.type),
+                entity.trainStopping,
+                entity.commercialStop,
+                entity.commercialTrack,
+                entity.cancelled,
+                entity.scheduledTime,
+                entity.actualTime,
+                nullableInt(entity.differenceInMinutes),
+                entity.liveEstimateTime,
+                convertEstimateSource(entity.estimateSource),
+                entity.unknownDelay,
+                entity.stopSector,
+                entity.id.attapId.intValue(),
+                entity.id.trainNumber.intValue(),
+                entity.id.departureDate,
+                null,
+                null,
+                null
+        );
+    }
+
     private EstimateSourceTypeTO convertEstimateSource(final TimeTableRow.EstimateSourceEnum estimateSourceEnum) {
         if (estimateSourceEnum == null) {
             return null;

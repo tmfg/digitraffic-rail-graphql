@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 /**
  * Integration test for StationsQuery.
- * Verifies that the JPQL implementation works correctly through the GraphQL API.
+ * Integration tests for the stations query.
  */
 public class StationsQueryTest extends BaseWebMVCTest {
 

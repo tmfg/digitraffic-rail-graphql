@@ -12,10 +12,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
-/**
- * JPQL implementation of PassengerInformationMessagesByStationQuery.
- * Filters messages by station short code and optionally by message type.
- */
 @Component
 public class PassengerInformationMessagesByStationQuery extends PassengerInformationMessagesQuery {
 

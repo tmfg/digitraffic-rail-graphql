@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 
 /**
- * Integration tests for the JPQL PassengerInformationMessagesByTrain query.
+ * Integration tests for the passengerInformationMessagesByTrain query.
  */
 public class PassengerInformationMessagesByTrainIntegrationTest extends BaseWebMVCTest {
 
@@ -135,4 +135,3 @@ public class PassengerInformationMessagesByTrainIntegrationTest extends BaseWebM
         result.andExpect(jsonPath("$.data.passengerInformationMessagesByTrain[0].id").value("1"));
     }
 }
-

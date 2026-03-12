@@ -9,14 +9,11 @@ import fi.digitraffic.graphql.rail.entities.Operator;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.OperatorTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.OperatorTOConverter;
 
-/**
- * JPQL implementation of TrainToOperatorLink.
- * Links Train to its Operator via operatorShortCode.
- */
 @Component
 public class TrainToOperatorLink extends OneToOneLinkJpql<String, TrainTO, Operator, OperatorTO> {
 
@@ -61,8 +58,8 @@ public class TrainToOperatorLink extends OneToOneLinkJpql<String, TrainTO, Opera
     }
 
     @Override
-    public String createWhereClause(final List<String> keys) {
-        return getEntityAlias() + ".shortCode IN :keys";
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".shortCode IN :keys", keys);
     }
 
     @Override
@@ -70,4 +67,3 @@ public class TrainToOperatorLink extends OneToOneLinkJpql<String, TrainTO, Opera
         return getEntityAlias() + ".shortCode ASC";
     }
 }
-

@@ -13,7 +13,7 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
 /**
- * JPQL-based implementation of OneToManyLink.
+ * One-to-many graph-edge resolver.
  * For relationships where each parent has multiple children (e.g., Train → TimeTableRows).
  */
 public abstract class OneToManyLinkJpql<KeyType, ParentTOType, ChildEntityType, ChildTOType>

@@ -12,10 +12,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-/**
- * JPQL implementation of TrainsByVersionGreaterThanQuery.
- * Fetches trains with version greater than the given value, capped at 2000 results.
- */
 @Component
 public class TrainsByVersionGreaterThanQuery extends BaseQueryJpql<Train, TrainTO> {
 

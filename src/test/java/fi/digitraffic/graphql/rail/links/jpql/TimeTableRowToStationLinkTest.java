@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import fi.digitraffic.graphql.rail.entities.Station;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 import jakarta.persistence.EntityManager;
@@ -45,9 +46,11 @@ public class TimeTableRowToStationLinkTest extends BaseWebMVCTest {
 
     @Test
     public void testWhereClauseGeneration() {
-        final String whereClause = link.createWhereClause(List.of("HKI", "TPE"));
+        final var keys = List.of("HKI", "TPE");
+        final var result = link.buildKeyWhereClause(keys);
 
-        assertEquals(link.getEntityAlias() + ".shortCode IN :keys", whereClause);
+        assertEquals(link.getEntityAlias() + ".shortCode IN :keys", result.jpql());
+        assertEquals(keys, result.params().get("keys"));
     }
 
     @Test
@@ -101,5 +104,3 @@ public class TimeTableRowToStationLinkTest extends BaseWebMVCTest {
         assertEquals("TimeTableRow.station", link.createDataLoaderKey());
     }
 }
-
-

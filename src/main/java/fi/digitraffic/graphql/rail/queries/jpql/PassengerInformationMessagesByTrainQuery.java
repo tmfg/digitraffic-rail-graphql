@@ -10,10 +10,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
-/**
- * JPQL implementation of PassengerInformationMessagesByTrainQuery.
- * Filters messages by train number and departure date.
- */
 @Component
 public class PassengerInformationMessagesByTrainQuery extends PassengerInformationMessagesQuery {
 

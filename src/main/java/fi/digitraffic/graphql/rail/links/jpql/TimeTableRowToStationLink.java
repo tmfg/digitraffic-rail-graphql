@@ -9,14 +9,11 @@ import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
-/**
- * JPQL implementation of TimeTableRowToStationLink.
- * Links TimeTableRow to its Station.
- */
 @Component
 public class TimeTableRowToStationLink extends OneToOneLinkJpql<String, TimeTableRowTO, Station, StationTO> {
 
@@ -61,8 +58,8 @@ public class TimeTableRowToStationLink extends OneToOneLinkJpql<String, TimeTabl
     }
 
     @Override
-    public String createWhereClause(final List<String> keys) {
-        return getEntityAlias() + ".shortCode IN :keys";
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".shortCode IN :keys", keys);
     }
 
     @Override
@@ -70,4 +67,3 @@ public class TimeTableRowToStationLink extends OneToOneLinkJpql<String, TimeTabl
         return getEntityAlias() + ".name ASC";
     }
 }
-

@@ -10,13 +10,11 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageId;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToOneLinkJpql;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
 
-/**
- * JPQL implementation: PassengerInformationMessageStation → message (OneToOne).
- */
 @Component
 public class PassengerInformationMessageStationToMessageLink
         extends OneToOneLinkJpql<PassengerInformationMessageId, PassengerInformationMessageStationTO, PassengerInformationMessage, PassengerInformationMessageTO> {
@@ -62,8 +60,7 @@ public class PassengerInformationMessageStationToMessageLink
     }
 
     @Override
-    public String createWhereClause(final List<PassengerInformationMessageId> keys) {
-        return getEntityAlias() + ".id IN :keys";
+    protected KeyWhereClause buildKeyWhereClause(final List<PassengerInformationMessageId> keys) {
+        return simpleInClause(getEntityAlias() + ".id IN :keys", keys);
     }
 }
-

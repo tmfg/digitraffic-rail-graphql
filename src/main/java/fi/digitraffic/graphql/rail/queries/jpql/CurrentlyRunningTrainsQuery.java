@@ -15,10 +15,6 @@ import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-/**
- * JPQL implementation of CurrrentlyRunningTrainsQuery.
- * Fetches trains that are currently running (departureDate = today or yesterday, runningCurrently = true).
- */
 @Component
 public class CurrentlyRunningTrainsQuery extends BaseQueryJpql<Train, TrainTO> {
 

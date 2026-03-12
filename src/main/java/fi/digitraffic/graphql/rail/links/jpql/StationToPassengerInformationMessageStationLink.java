@@ -12,17 +12,15 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessageStation;
 import fi.digitraffic.graphql.rail.links.base.jpql.OneToManyLinkJpql;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageStationTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
+import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
 import fi.digitraffic.graphql.rail.querydsl.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.querydsl.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageStationTOConverter;
 import jakarta.persistence.TypedQuery;
 
 /**
- * JPQL implementation: Station → stationMessages (OneToMany).
- *
- * This is a complex link that requires a JOIN with PassengerInformationMessage
- * to filter by max version and message validity conditions.
- * Mirrors the QueryDSL StationToPassengerInformationMessageStationLink.
+ * Links Station to stationMessages with a JOIN on PassengerInformationMessage
+ * to filter by max version and message validity.
  */
 @Component
 public class StationToPassengerInformationMessageStationLink
@@ -73,13 +71,12 @@ public class StationToPassengerInformationMessageStationLink
 
 
     @Override
-    public String createWhereClause(final List<String> keys) {
-        return getEntityAlias() + ".stationShortCode IN :keys";
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".stationShortCode IN :keys", keys);
     }
 
     /**
-     * Override to use a custom query with JOIN for max version + validity filtering.
-     * This replicates getPassengerInformationMessageStationBaseQuery from the QueryDSL version.
+     * Override executeQuery to use a JOIN for max version and validity filtering.
      */
     @Override
     protected List<PassengerInformationMessageStation> executeQuery(
@@ -137,4 +134,3 @@ public class StationToPassengerInformationMessageStationLink
         return query.getResultList();
     }
 }
-
