@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
+import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 
 @Component
@@ -17,6 +18,19 @@ public class RoutesetMessageTOConverter extends BaseConverter<RoutesetMessageTO>
                 tuple.get(QRoutesetMessage.routesetMessage.trainId.virtualDepartureDate),
                 tuple.get(QRoutesetMessage.routesetMessage.routeType),
                 tuple.get(QRoutesetMessage.routesetMessage.clientSystem),
+                null, null
+        );
+    }
+
+    public RoutesetMessageTO convertEntity(final RoutesetMessage entity) {
+        return new RoutesetMessageTO(
+                entity.id.intValue(),
+                entity.version.toString(),
+                entity.messageTime,
+                entity.trainId.trainNumber,
+                entity.trainId.virtualDepartureDate,
+                entity.routeType,
+                entity.clientSystem,
                 null, null
         );
     }

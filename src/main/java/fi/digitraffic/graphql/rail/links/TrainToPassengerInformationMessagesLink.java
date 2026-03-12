@@ -8,7 +8,7 @@ import java.util.function.Function;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.dataloader.BatchLoaderWithContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+// import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
@@ -26,7 +26,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
 
-@Component
+// @Component -- replaced by links/jpql/TrainToPassengerInformationMessagesLink
 public class TrainToPassengerInformationMessagesLink extends
         OneToManyLink<TrainId, TrainTO, PassengerInformationMessage, PassengerInformationMessageTO> {
     @Autowired

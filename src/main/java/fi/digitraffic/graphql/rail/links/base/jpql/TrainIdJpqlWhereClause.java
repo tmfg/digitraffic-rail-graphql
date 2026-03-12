@@ -8,32 +8,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 
 /**
- * Builds an optimised JPQL WHERE clause for a list of composite {@link TrainId} keys.
+ * Builds an optimised JPQL WHERE clause for composite train-id keys.
  *
- * <p>Rather than emitting one predicate per key, the keys are grouped by departure date
+ * Rather than emitting one predicate per key, the keys are grouped by departure date
  * so that the resulting SQL can use an IN-list for the train numbers within each date:
  * <pre>
  * (e.departureDate = :dd0 AND e.trainNumber IN :tn0) OR
  * (e.departureDate = :dd1 AND e.trainNumber IN :tn1)
  * </pre>
- *
- *
  */
 public final class TrainIdJpqlWhereClause {
 
     private TrainIdJpqlWhereClause() {}
 
     /**
-     * Builds the WHERE clause and its named parameters.
-     *
-     * @param alias      the JPQL entity alias (e.g. {@code "e"})
-     * @param dateField  the field path for departure date relative to the alias (e.g. {@code "departureDate"} or {@code "id.departureDate"})
-     * @param numberField the field path for train number relative to the alias (e.g. {@code "trainNumber"} or {@code "id.trainNumber"})
-     * @param keys       the list of {@link TrainId} values to match
-     * @return a record containing the JPQL fragment and named parameter map
+     * Builds the WHERE clause for {@link TrainId} keys (Long train number, departureDate).
      */
     public static KeyWhereClause build(
             final String alias,
@@ -46,11 +39,38 @@ public final class TrainIdJpqlWhereClause {
             byDate.computeIfAbsent(key.departureDate, d -> new HashSet<>()).add(key.trainNumber);
         }
 
+        return buildClauses(alias, dateField, numberField, byDate);
+    }
+
+    /**
+     * Builds the WHERE clause for {@link StringVirtualDepartureDateTrainId} keys
+     * (String train number, virtualDepartureDate).
+     */
+    public static KeyWhereClause buildForVirtualDepartureDate(
+            final String alias,
+            final String dateField,
+            final String numberField,
+            final List<StringVirtualDepartureDateTrainId> keys) {
+
+        final Map<LocalDate, Set<String>> byDate = new HashMap<>();
+        for (final StringVirtualDepartureDateTrainId key : keys) {
+            byDate.computeIfAbsent(key.virtualDepartureDate, d -> new HashSet<>()).add(key.trainNumber);
+        }
+
+        return buildClauses(alias, dateField, numberField, byDate);
+    }
+
+    private static <T> KeyWhereClause buildClauses(
+            final String alias,
+            final String dateField,
+            final String numberField,
+            final Map<LocalDate, Set<T>> byDate) {
+
         final Map<String, Object> params = new HashMap<>();
         final List<String> clauses = new ArrayList<>();
 
         int idx = 0;
-        for (final Map.Entry<LocalDate, Set<Long>> entry : byDate.entrySet()) {
+        for (final Map.Entry<LocalDate, Set<T>> entry : byDate.entrySet()) {
             final String dateParam = "dd" + idx;
             final String numberParam = "tn" + idx;
             idx++;
@@ -64,7 +84,6 @@ public final class TrainIdJpqlWhereClause {
                     alias, numberField, numberParam));
         }
 
-        final String jpql = String.join(" OR ", clauses);
-        return new KeyWhereClause(jpql, params);
+        return new KeyWhereClause(String.join(" OR ", clauses), params);
     }
 }

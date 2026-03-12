@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 
-@Component
+// @Component -- replaced by links/jpql/TrainToRoutesetMessagesLink
 public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, RoutesetMessage, RoutesetMessageTO> {
     @Autowired
     private RoutesetMessageTOConverter routesetMessageTOConverter;

@@ -36,15 +36,24 @@ public class PassengerInformationMessagesQuery extends BaseQueryJpql<PassengerIn
     }
 
 
+    /** JPQL fragment that restricts to the latest version of each message (no WHERE keyword). */
+    public static String latestVersionSubquery(final String alias) {
+        return "(%s.id.id, %s.id.version) IN (SELECT m2.id.id, MAX(m2.id.version) FROM PassengerInformationMessage m2 GROUP BY m2.id.id)"
+                .formatted(alias, alias);
+    }
+
+    /** JPQL fragment for active, non-deleted messages within the validity window (no WHERE keyword). */
+    public static String activeMessageCondition(final String alias) {
+        return "%s.deleted IS NULL AND %s.startValidity <= :now AND %s.endValidity > :now"
+                .formatted(alias, alias, alias);
+    }
+
     @Override
     public String buildBaseQuery(final String alias, final Map<String, Object> parameters) {
         return """
             SELECT DISTINCT %s FROM PassengerInformationMessage %s
-            WHERE (%s.id.id, %s.id.version) IN (
-                SELECT m2.id.id, MAX(m2.id.version)
-                FROM PassengerInformationMessage m2
-                GROUP BY m2.id.id
-            )""".formatted(alias, alias, alias, alias);
+            WHERE %s
+            """.formatted(alias, alias, latestVersionSubquery(alias));
     }
 
     @Override
@@ -55,11 +64,8 @@ public class PassengerInformationMessagesQuery extends BaseQueryJpql<PassengerIn
     @Override
     public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
                                         final Map<String, Object> parameters) {
-        final ZonedDateTime now = ZonedDateTime.now();
-        parameters.put("now", now);
-
-        return "%s.deleted IS NULL AND %s.startValidity <= :now AND %s.endValidity > :now"
-                .formatted(alias, alias, alias);
+        parameters.put("now", ZonedDateTime.now());
+        return activeMessageCondition(alias);
     }
 
     @Override

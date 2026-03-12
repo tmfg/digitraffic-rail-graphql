@@ -107,6 +107,15 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
         return null;
     }
 
+    /**
+     * Builds fixed WHERE conditions that are always applied regardless of key or user filters.
+     * Override to add entity-specific base conditions (e.g. active-only, latest-version).
+     * Returns {@link KeyWhereClause#EMPTY} by default (no extra conditions).
+     */
+    protected KeyWhereClause buildBaseWhereClause() {
+        return KeyWhereClause.EMPTY;
+    }
+
 
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
@@ -217,6 +226,13 @@ public abstract class BaseLinkJpql<KeyType, ParentTOType, ChildEntityType, Child
         // Build WHERE clause
         final var params = new java.util.HashMap<String, Object>();
         final List<String> whereClauses = new ArrayList<>();
+
+        // Add base (fixed) where clause
+        final KeyWhereClause baseWhere = buildBaseWhereClause();
+        if (!baseWhere.jpql().isEmpty()) {
+            whereClauses.add(baseWhere.jpql());
+            params.putAll(baseWhere.params());
+        }
 
         // Add key-based where clause
         final KeyWhereClause keyWhere = buildKeyWhereClause(keys);
