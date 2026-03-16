@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.model.TrackSectionTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrackRangeTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/TrackSectionToTrackRangesLink
 public class TrackSectionToTrackRangesLink extends OneToManyLink<Long, TrackSectionTO, TrackRange, TrackRangeTO> {
     @Autowired
     private TrackRangeTOConverter trackRangeTOConverter;

@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/StationsToTimeTableRowsLink
 public class StationsToTimeTableRowsLink extends OneToManyLink<String, StationTO, TimeTableRow, TimeTableRowTO> {
     @Autowired
     private TimeTableRowTOConverter timeTableRowTOConverter;

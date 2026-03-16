@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+// @Component – replaced by queries/jpql/LatestTrainLocationsQuery
 public class LatestTrainLocationsQuery extends BaseQuery<TrainLocationTO> {
 
     @Autowired

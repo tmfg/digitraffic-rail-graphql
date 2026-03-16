@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import fi.digitraffic.graphql.rail.entities.QTrainCategory;
+import fi.digitraffic.graphql.rail.entities.TrainCategory;
 import fi.digitraffic.graphql.rail.model.TrainCategoryTO;
 
 @Component
@@ -13,6 +14,13 @@ public class TrainCategoryTOConverter extends BaseConverter<TrainCategoryTO> {
         return new TrainCategoryTO(
                 tuple.get(QTrainCategory.trainCategory.id).intValue(),
                 tuple.get(QTrainCategory.trainCategory.name)
+        );
+    }
+
+    public TrainCategoryTO convertEntity(final TrainCategory entity) {
+        return new TrainCategoryTO(
+                entity.id.intValue(),
+                entity.name
         );
     }
 }

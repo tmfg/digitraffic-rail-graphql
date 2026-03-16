@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 
-@Component
+// @Component – replaced by links/jpql/TrainTrackingMessageToPreviousStationLink
 public class TrainTrackingMessageToPreviousStationLink extends TrainTrackingMessageToNextStationLink {
     @Override
     public String getFieldName() {

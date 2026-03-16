@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.CompositionTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+// @Component – replaced by queries/jpql/CompositionsGreaterThanVersionQuery
 public class CompositionsGreaterThanVersionQuery extends BaseQuery<CompositionTO> {
     @Autowired
     private CompositionTOConverter compositionTOConverter;

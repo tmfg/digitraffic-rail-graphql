@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+// @Component – replaced by queries/jpql/TrainTrackingMessagesByVersionGreaterThanQuery
 public class TrainTrackingMessagesByVersionGreaterThanQuery extends BaseQuery<TrainTrackingMessageTO> {
     @Autowired
     private TrainTrackingTOConverter trainTrackingTOConverter;

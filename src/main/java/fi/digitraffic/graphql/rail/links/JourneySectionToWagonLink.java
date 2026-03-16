@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.model.WagonTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.WagonTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/JourneySectionToWagonLink
 public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectionTO, Wagon, WagonTO> {
     @Autowired
     private WagonTOConverter wagonTOConverter;

@@ -3,6 +3,7 @@ package fi.digitraffic.graphql.rail.to;
 import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
+import fi.digitraffic.graphql.rail.entities.Locomotive;
 import fi.digitraffic.graphql.rail.entities.QLocomotive;
 import fi.digitraffic.graphql.rail.model.LocomotiveTO;
 
@@ -16,6 +17,17 @@ public class LocomotiveTOConverter extends BaseConverter<LocomotiveTO> {
                 tuple.get(QLocomotive.locomotive.powerTypeAbbreviation),
                 tuple.get(QLocomotive.locomotive.journeysectionId).intValue(),
                 tuple.get(QLocomotive.locomotive.vehicleNumber)
+        );
+    }
+
+    public LocomotiveTO convertEntity(final Locomotive entity) {
+        return new LocomotiveTO(
+                entity.id.intValue(),
+                entity.location,
+                entity.locomotiveType,
+                entity.powerTypeAbbreviation,
+                entity.journeysectionId.intValue(),
+                entity.vehicleNumber
         );
     }
 }

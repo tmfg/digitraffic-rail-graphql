@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.core.Tuple;
 import fi.digitraffic.graphql.rail.entities.QWagon;
+import fi.digitraffic.graphql.rail.entities.Wagon;
 import fi.digitraffic.graphql.rail.model.WagonTO;
 
 @Component
@@ -25,6 +26,25 @@ public class WagonTOConverter extends BaseConverter<WagonTO> {
                 tuple.get(QWagon.wagon.video),
                 tuple.get(QWagon.wagon.wagonType),
                 tuple.get(QWagon.wagon.vehicleNumber)
+        );
+    }
+
+    public WagonTO convertEntity(final Wagon entity) {
+        return new WagonTO(
+                entity.id.intValue(),
+                entity.length,
+                entity.location,
+                entity.salesNumber,
+                entity.journeysectionId.intValue(),
+                entity.catering,
+                entity.disabled,
+                entity.luggage,
+                entity.pet,
+                entity.playground,
+                entity.smoking,
+                entity.video,
+                entity.wagonType,
+                entity.vehicleNumber
         );
     }
 }

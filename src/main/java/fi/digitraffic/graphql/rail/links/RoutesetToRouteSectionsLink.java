@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.RoutesectionTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/RoutesetToRouteSectionsLink
 public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMessageTO, Routesection, RoutesectionTO> {
     @Autowired
     private RoutesectionTOConverter routesectionTOConverter;

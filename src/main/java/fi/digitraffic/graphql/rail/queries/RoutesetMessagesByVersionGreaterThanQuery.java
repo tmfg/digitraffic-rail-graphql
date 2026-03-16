@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+// @Component – replaced by queries/jpql/RoutesetMessagesByVersionGreaterThanQuery
 public class RoutesetMessagesByVersionGreaterThanQuery extends BaseQuery<RoutesetMessageTO> {
 
     @Autowired

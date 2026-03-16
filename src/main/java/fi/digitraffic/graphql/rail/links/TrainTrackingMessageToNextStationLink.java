@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/TrainTrackingMessageToNextStationLink
 public class TrainTrackingMessageToNextStationLink extends OneToOneLink<String, TrainTrackingMessageTO, Station, StationTO> {
     @Autowired
     private StationTOConverter stationTOConverter;

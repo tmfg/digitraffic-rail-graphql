@@ -26,7 +26,7 @@ import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-@Component
+// @Component – replaced by queries/jpql/TrainByStationAndQuantityQuery
 public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     @Autowired
     private TrainRepository trainRepository;

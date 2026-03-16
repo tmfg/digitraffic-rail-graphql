@@ -17,7 +17,7 @@ import fi.digitraffic.graphql.rail.model.TrainTypeTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.TrainCategoryTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/TrainTypeToTrainCategoryLink
 public class TrainTypeToTrainCategoryLink extends OneToOneLink<Long, TrainTypeTO, TrainCategory, TrainCategoryTO> {
     @Autowired
     private TrainCategoryTOConverter trainCategoryTOConverter;
