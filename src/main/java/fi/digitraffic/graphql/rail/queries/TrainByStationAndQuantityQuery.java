@@ -2,7 +2,6 @@ package fi.digitraffic.graphql.rail.queries;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +13,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
+
 import fi.digitraffic.graphql.rail.config.graphql.CustomException;
 import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
@@ -24,6 +24,7 @@ import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
+
 import graphql.schema.DataFetchingEnvironment;
 
 @Component
@@ -114,7 +115,7 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
 
     private List<TrainId> extractNewerTrainIds(final long version, final List<Object[]> liveTrains) {
         return liveTrains.stream().filter(train -> ((Long) train[3]) > version).map(tuple -> {
-            final LocalDate departureDate = ((Date) tuple[1]).toLocalDate();
+            final LocalDate departureDate = (LocalDate) tuple[1];
             final Long trainNumber = (Long) tuple[2];
             return new TrainId(trainNumber, departureDate);
         }).collect(Collectors.toList());

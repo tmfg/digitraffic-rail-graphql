@@ -7,7 +7,8 @@
 !/versions-maven-plugin-rules.xml
 
 !common/
-!common/**
+!common/config/repo/settings.default.json
+!common/scripts/git-submodule-extra.mjs
 
 !src/
 !src/**/
