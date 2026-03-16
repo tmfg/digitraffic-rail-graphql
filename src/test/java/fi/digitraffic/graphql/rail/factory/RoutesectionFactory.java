@@ -28,5 +28,18 @@ public class RoutesectionFactory {
                 .executeUpdate();
         return id;
     }
-}
 
+    @Transactional
+    public long createWithNullCommercialTrackId(final long routesetId, final String stationCode, final String sectionId) {
+        final long id = idSequence++;
+        entityManager.createNativeQuery(
+                "INSERT INTO routesection (id, routeset_id, station_code, section_id, commercial_track_id, section_order) VALUES (?, ?, ?, ?, NULL, ?)")
+                .setParameter(1, id)
+                .setParameter(2, routesetId)
+                .setParameter(3, stationCode)
+                .setParameter(4, sectionId)
+                .setParameter(5, 1)
+                .executeUpdate();
+        return id;
+    }
+}
