@@ -18,10 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
 
-import fi.digitraffic.graphql.rail.links.base.CountingKeyMap;
-import fi.digitraffic.graphql.rail.links.base.MdcAwareThreadPoolExecutor;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;

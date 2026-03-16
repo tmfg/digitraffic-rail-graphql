@@ -6,8 +6,8 @@ import java.util.Map;
 import org.dataloader.BatchLoaderWithContext;
 import org.springframework.beans.factory.annotation.Value;
 
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 
 /**
  * One-to-one graph-edge resolver.

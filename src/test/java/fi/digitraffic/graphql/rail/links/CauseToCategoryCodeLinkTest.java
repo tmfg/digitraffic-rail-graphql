@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 
-public class TimeTableRowToCausesLinkTest extends BaseWebMVCTest {
+public class CauseToCategoryCodeLinkTest extends BaseWebMVCTest {
 
     @Test
     public void linkShouldWork() throws Exception {
@@ -22,13 +22,17 @@ public class TimeTableRowToCausesLinkTest extends BaseWebMVCTest {
                     trainsByDepartureDate(departureDate: "2024-06-01") {
                         timeTableRows {
                             causes {
-                                __typename
+                                categoryCode {
+                                    code
+                                    name
+                                }
                             }
                         }
                     }
                 }""");
 
-        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].causes.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].causes[0].categoryCode.code").value("A"));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].causes[0].categoryCode.name").value("C"));
     }
 }
 

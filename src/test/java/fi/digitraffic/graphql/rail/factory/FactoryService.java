@@ -40,6 +40,15 @@ public class FactoryService {
     private WagonFactory wagonFactory;
 
     @Autowired
+    private LocomotiveFactory locomotiveFactory;
+
+    @Autowired
+    private TrackSectionFactory trackSectionFactory;
+
+    @Autowired
+    private RoutesectionFactory routesectionFactory;
+
+    @Autowired
     private RoutesetMessageFactory routesetMessageFactory;
 
     @Autowired
@@ -61,6 +70,9 @@ public class FactoryService {
         entityManager.createQuery("DELETE FROM JourneySection").executeUpdate();
         entityManager.createQuery("DELETE FROM Composition").executeUpdate();
         entityManager.createQuery("DELETE FROM RoutesetMessage").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM routesection").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM track_range").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM track_section").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationMessageStation").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationAudio").executeUpdate();
         entityManager.createQuery("DELETE FROM PassengerInformationVideo").executeUpdate();
@@ -107,6 +119,18 @@ public class FactoryService {
 
     public WagonFactory getWagonFactory() {
         return wagonFactory;
+    }
+
+    public LocomotiveFactory getLocomotiveFactory() {
+        return locomotiveFactory;
+    }
+
+    public TrackSectionFactory getTrackSectionFactory() {
+        return trackSectionFactory;
+    }
+
+    public RoutesectionFactory getRoutesectionFactory() {
+        return routesectionFactory;
     }
 
     public RoutesetMessageFactory getRoutesetMessageFactory() {

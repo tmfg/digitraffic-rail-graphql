@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.queries.jpql;
+package fi.digitraffic.graphql.rail.queries;
 
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.HKI;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.TPE;

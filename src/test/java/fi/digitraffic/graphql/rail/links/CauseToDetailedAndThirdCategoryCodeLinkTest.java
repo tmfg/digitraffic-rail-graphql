@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.links.jpql;
+package fi.digitraffic.graphql.rail.links;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -10,10 +10,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 
-public class CauseToCategoryCodeLinkTest extends BaseWebMVCTest {
+public class CauseToDetailedAndThirdCategoryCodeLinkTest extends BaseWebMVCTest {
 
     @Test
-    public void linkShouldWork() throws Exception {
+    public void detailedCategoryCodeLinkShouldWork() throws Exception {
         final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(1L, LocalDate.of(2024, 6, 1)));
         factoryService.getCauseFactory().create(train.getSecond().get(0));
 
@@ -22,7 +22,11 @@ public class CauseToCategoryCodeLinkTest extends BaseWebMVCTest {
                     trainsByDepartureDate(departureDate: "2024-06-01") {
                         timeTableRows {
                             causes {
-                                categoryCode {
+                                detailedCategoryCode {
+                                    code
+                                    name
+                                }
+                                thirdCategoryCode {
                                     code
                                     name
                                 }
@@ -31,8 +35,8 @@ public class CauseToCategoryCodeLinkTest extends BaseWebMVCTest {
                     }
                 }""");
 
-        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].causes[0].categoryCode.code").value("A"));
-        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].causes[0].categoryCode.name").value("C"));
+        // Causes with no detailedCategoryCodeOid return null — just verify no errors
+        result.andExpect(jsonPath("$.errors").doesNotExist());
     }
 }
 

@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.queries.jpql;
+package fi.digitraffic.graphql.rail.queries;
 
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.dateFormat;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessage;

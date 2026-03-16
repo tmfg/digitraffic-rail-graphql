@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import graphql.execution.AbortExecutionException;
 
 /**

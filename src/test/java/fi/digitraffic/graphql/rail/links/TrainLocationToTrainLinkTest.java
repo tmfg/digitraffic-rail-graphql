@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.links.jpql;
+package fi.digitraffic.graphql.rail.links;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
