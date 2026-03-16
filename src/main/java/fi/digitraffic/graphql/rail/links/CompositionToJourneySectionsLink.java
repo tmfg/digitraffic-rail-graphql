@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.JourneySectionTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/CompositionToJourneySectionsLink
 public class CompositionToJourneySectionsLink extends OneToManyLink<TrainId, CompositionTO, JourneySection, JourneySectionTO> {
     @Autowired
     private JourneySectionTOConverter journeySectionTOConverter;

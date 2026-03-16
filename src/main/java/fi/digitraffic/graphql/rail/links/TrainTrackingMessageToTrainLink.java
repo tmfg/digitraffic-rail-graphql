@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/TrainTrackingMessageToTrainLink
 public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, TrainTrackingMessageTO, Train, TrainTO> {
     @Autowired
     private TrainTOConverter trainTOConverter;
