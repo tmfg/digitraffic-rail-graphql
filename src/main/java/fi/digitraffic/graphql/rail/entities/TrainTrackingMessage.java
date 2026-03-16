@@ -43,7 +43,7 @@ public class TrainTrackingMessage {
     public TrainTrackingMessageTypeEnum type;
 
     @Column(updatable = false, insertable = false)
-    public Long trainNumber;
+    public String trainNumber;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -21,7 +21,7 @@ public class TrackRange {
     public Integer startMetres;
     public Integer endMetres;
 
-    @Column(name = "track_section_id")
+    @Column(name = "track_section_id", insertable = false, updatable = false)
     public Long trackSectionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
