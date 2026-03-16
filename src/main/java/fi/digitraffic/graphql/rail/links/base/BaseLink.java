@@ -64,6 +64,11 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         return this.getTypeName() + "." + this.getFieldName();
     }
 
+    /**
+     * Creates the lookup key from the parent TO.
+     * Return {@code null} if no lookup should be performed (e.g. the parent has no FK value set).
+     * The fetcher will return {@code null} for the child field in that case.
+     */
     public abstract KeyType createKeyFromParent(final ParentTOType parent);
 
     public abstract KeyType createKeyFromChild(final ChildTOType child);
@@ -118,11 +123,16 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
             final ParentTOType parent = dataFetchingEnvironment.getSource();
+            final KeyType key = createKeyFromParent(parent);
+
+            if (key == null) {
+                return CompletableFuture.completedFuture(null);
+            }
 
             final DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getDataLoaderRegistry();
             final DataLoader<KeyType, ChildFieldType> dataloader = dataLoaderRegistry.getDataLoader(getTypeName() + "." + getFieldName());
 
-            return dataloader.load(createKeyFromParent(parent), dataFetchingEnvironment);
+            return dataloader.load(key, dataFetchingEnvironment);
         };
     }
 

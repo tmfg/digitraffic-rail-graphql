@@ -9,6 +9,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -61,19 +62,12 @@ public class Train {
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
-    private Set<TrainLocation> trainLocations;
-
-    @OneToMany(mappedBy = "train",
-               fetch = FetchType.LAZY)
-    private Set<Composition> compositions;
+    private Set<PassengerInformationMessage> passengerInformationMessages;
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
     private Set<TrainTrackingMessage> trainTrackingMessages;
 
-    @OneToMany(mappedBy = "train",
-               fetch = FetchType.LAZY)
-    private Set<RoutesetMessage> routesetMessages;
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)

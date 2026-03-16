@@ -10,33 +10,33 @@ import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
+import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 
 @Component
-public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, TrainTrackingMessageTO, Train, TrainTO> {
+public class RoutesetMessageToTrainLink extends OneToOneLink<TrainId, RoutesetMessageTO, Train, TrainTO> {
 
     private final TrainTOConverter trainTOConverter;
 
-    public TrainTrackingMessageToTrainLink(final JpqlWhereBuilder jpqlWhereBuilder,
-                                           final JpqlOrderByBuilder jpqlOrderByBuilder,
-                                           @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
-                                           final TrainTOConverter trainTOConverter) {
+    public RoutesetMessageToTrainLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                      final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                      @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                      final TrainTOConverter trainTOConverter) {
         super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
         this.trainTOConverter = trainTOConverter;
     }
 
     @Override
-    public String getTypeName() { return "TrainTrackingMessage"; }
+    public String getTypeName() { return "RoutesetMessage"; }
 
     @Override
     public String getFieldName() { return "train"; }
 
     @Override
-    public TrainId createKeyFromParent(final TrainTrackingMessageTO msg) {
+    public TrainId createKeyFromParent(final RoutesetMessageTO msg) {
         try {
             return new TrainId(Long.parseLong(msg.getTrainNumber()), msg.getDepartureDate());
         } catch (final NumberFormatException e) {
@@ -62,4 +62,5 @@ public class TrainTrackingMessageToTrainLink extends OneToOneLink<TrainId, Train
         return TrainIdWhereClause.build(getEntityAlias(), "id.departureDate", "id.trainNumber", keys);
     }
 }
+
 

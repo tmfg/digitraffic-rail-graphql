@@ -74,6 +74,51 @@ public class TrainTrackingMessageToStationLinksTest extends BaseWebMVCTest {
     }
 
     @Test
+    public void duplicateTrackSectionCodeShouldNotCauseInternalError() throws Exception {
+        // Reproduces: HibernateException: More than one row with the given identifier was found
+        // In production, multiple TrackSection rows can share the same trackSectionCode.
+        // The @ManyToOne on TrainTrackingMessage uses referencedColumnName = "trackSectionCode"
+        // which triggers Hibernate's unique-key loader and throws when it finds > 1 row.
+        final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(5L, DATE)).getFirst();
+        factoryService.getStationFactory().create("TEST99", 99, "FI");
+        // Create two TrackSection rows with the same trackSectionCode (mirrors production data)
+        factoryService.getTrackSectionFactory().create("TEST99", "DUPLICATE_CODE");
+        factoryService.getTrackSectionFactory().create("TEST99", "DUPLICATE_CODE");
+        // TrainTrackingMessageFactory sets track_section = "TEST_UNIQUE", so override via a
+        // dedicated message that references the duplicate code
+        factoryService.getTrainTrackingMessageFactory().createWithTrackSection(train, "DUPLICATE_CODE");
+
+        final ResultActions result = this.query("""
+                {
+                    trainTrackingMessagesByVersionGreaterThan(version: "0") {
+                        trackSection { trackSectionCode }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").doesNotExist());
+    }
+
+    @Test
+    public void nonNumericTrainNumberShouldReturnNullTrain() throws Exception {
+        // Reproduces the pattern where trainNumber is e.g. "F29657" (non-numeric).
+        // createKeyFromParent returns null, BaseLink.createFetcher short-circuits to null
+        // without hitting the DataLoader, so no NumberFormatException is thrown.
+        final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(6L, DATE)).getFirst();
+        factoryService.getStationFactory().create("TEST99", 99, "FI");
+        factoryService.getTrainTrackingMessageFactory().createWithNonNumericTrainNumber(train, "F29657");
+
+        final ResultActions result = this.query("""
+                {
+                    trainTrackingMessagesByVersionGreaterThan(version: "0") {
+                        train { trainNumber }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").doesNotExist());
+        result.andExpect(jsonPath("$.data.trainTrackingMessagesByVersionGreaterThan[0].train").isEmpty());
+    }
+
+    @Test
     public void trackSectionLinkReturnsNullWhenNoMatchingTrackSection() throws Exception {
         final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(3L, DATE)).getFirst();
         factoryService.getStationFactory().create("TEST99", 99, "FI");

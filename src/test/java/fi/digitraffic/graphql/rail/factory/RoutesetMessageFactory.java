@@ -1,11 +1,14 @@
 package fi.digitraffic.graphql.rail.factory;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
 import fi.digitraffic.graphql.rail.entities.Train;
@@ -16,6 +19,9 @@ public class RoutesetMessageFactory {
 
     @Autowired
     private RoutesetMessageRepository routesetMessageRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private long idSequence = 1L;
 
@@ -31,5 +37,21 @@ public class RoutesetMessageFactory {
         message.clientSystem = "test";
         message.messageId = String.valueOf(message.id);
         return routesetMessageRepository.save(message);
+    }
+
+    @Transactional
+    public long createWithStringTrainNumber(final String trainNumber, final LocalDate departureDate) {
+        final long id = idSequence++;
+        entityManager.createNativeQuery(
+                "INSERT INTO routeset (id, version, message_time, train_number, departure_date, route_type, client_system, message_id) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)")
+                .setParameter(1, id)
+                .setParameter(2, 1L)
+                .setParameter(3, trainNumber)
+                .setParameter(4, departureDate)
+                .setParameter(5, "A")
+                .setParameter(6, "test")
+                .setParameter(7, String.valueOf(id))
+                .executeUpdate();
+        return id;
     }
 }
