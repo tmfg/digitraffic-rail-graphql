@@ -1,24 +1,34 @@
 package fi.digitraffic.graphql.rail.links;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
+import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
-// @Component – replaced by links/jpql/JourneySectionToEndTimeTableRowLink
+@Component
 public class JourneySectionToEndTimeTableRowLink extends JourneySectionToStartTimeTableRowLink {
 
-    @Override
-    public String getFieldName() {
-        return "endTimeTableRow";
+    public JourneySectionToEndTimeTableRowLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                               final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                               @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                               final TimeTableRowTOConverter timeTableRowTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize, timeTableRowTOConverter);
     }
+
+    @Override
+    public String getFieldName() { return "endTimeTableRow"; }
 
     @Override
     public TimeTableRowId createKeyFromParent(final JourneySectionTO journeySectionTO) {
-        Integer endTimeTableRowId = journeySectionTO.getEndTimeTableRowId();
-        if (endTimeTableRowId == null) {
-            endTimeTableRowId = -1;
+        Integer endId = journeySectionTO.getEndTimeTableRowId();
+        if (endId == null) {
+            endId = -1;
         }
-        return new TimeTableRowId(endTimeTableRowId, journeySectionTO.getDepartureDate(), journeySectionTO.getTrainNumber());
+        return new TimeTableRowId(endId, journeySectionTO.getDepartureDate(), journeySectionTO.getTrainNumber());
     }
 }
+

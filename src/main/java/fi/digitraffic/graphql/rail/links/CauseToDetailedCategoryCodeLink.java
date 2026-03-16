@@ -3,40 +3,40 @@ package fi.digitraffic.graphql.rail.links;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.DetailedCategoryCode;
-import fi.digitraffic.graphql.rail.entities.QDetailedCategoryCode;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.DetailedCategoryCodeTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.DetailedCategoryCodeTOConverter;
 
-// @Component – replaced by links/jpql/CauseToDetailedCategoryCodeLink
+@Component
 public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
-    @Autowired
-    private DetailedCategoryCodeTOConverter detailedCategoryCodeTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "Cause";
+    private final DetailedCategoryCodeTOConverter detailedCategoryCodeTOConverter;
+
+    public CauseToDetailedCategoryCodeLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                           final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                           @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                           final DetailedCategoryCodeTOConverter detailedCategoryCodeTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.detailedCategoryCodeTOConverter = detailedCategoryCodeTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "detailedCategoryCode";
-    }
+    public String getTypeName() { return "Cause"; }
+
+    @Override
+    public String getFieldName() { return "detailedCategoryCode"; }
 
     @Override
     public String createKeyFromParent(final CauseTO causeTO) {
-        final String detailedCategoryCodeId = causeTO.getDetailedCategoryCodeOid();
-        return Objects.requireNonNullElse(detailedCategoryCodeId, "-");
+        return Objects.requireNonNullElse(causeTO.getDetailedCategoryCodeOid(), "-");
     }
 
     @Override
@@ -45,27 +45,16 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseT
     }
 
     @Override
-    public DetailedCategoryCodeTO createChildTOFromTuple(final Tuple tuple) {
-        return detailedCategoryCodeTOConverter.convert(tuple);
+    public DetailedCategoryCodeTO createChildTOFromEntity(final DetailedCategoryCode entity) {
+        return detailedCategoryCodeTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return DetailedCategoryCode.class;
-    }
+    public Class<DetailedCategoryCode> getEntityClass() { return DetailedCategoryCode.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.DETAILED_CATEGORY_CODE;
-    }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QDetailedCategoryCode.detailedCategoryCode;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<String> keys) {
-        return QDetailedCategoryCode.detailedCategoryCode.oid.in(keys);
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".oid IN :keys", keys);
     }
 }
+

@@ -1,26 +1,31 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
-import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-//@Component // Replaced by JPQL implementation in queries/jpql/TrainsByVersionGreaterThanQuery.java
-public class TrainsByVersionGreaterThanQuery extends BaseQuery<TrainTO> {
-    @Autowired
-    private TrainTOConverter trainTOConverter;
+@Component
+public class TrainsByVersionGreaterThanQuery extends BaseQuery<Train, TrainTO> {
+
+    private static final int MAX_LIMIT = 2000;
+
+    private final TrainTOConverter trainTOConverter;
+
+    public TrainsByVersionGreaterThanQuery(final JpqlWhereBuilder whereBuilder,
+                                           final JpqlOrderByBuilder orderByBuilder,
+                                           @Value("${digitraffic.max-returned-rows}") final int maxResults,
+                                           final TrainTOConverter trainTOConverter) {
+        super(whereBuilder, orderByBuilder, Math.min(maxResults, MAX_LIMIT));
+        this.trainTOConverter = trainTOConverter;
+    }
 
     @Override
     public String getQueryName() {
@@ -28,38 +33,27 @@ public class TrainsByVersionGreaterThanQuery extends BaseQuery<TrainTO> {
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Train> getEntityClass() {
         return Train.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN;
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                        final Map<String, Object> parameters) {
+        final Long version = Long.parseLong(env.getArgument("version"));
+        parameters.put("version", version);
+
+        return alias + ".version > :version";
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrain.train;
+    public String getDefaultOrderBy(final String alias) {
+        return alias + ".version ASC";
     }
 
     @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
-        return QTrain.train.version.gt(version);
-    }
-
-    @Override
-    protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
-        return super.createLimitQuery(query, Math.min((limitArgument != null ? (int) limitArgument : MAX_RESULTS), 2000));
-    }
-
-    @Override
-    public TrainTO convertEntityToTO(Tuple tuple) {
-        return trainTOConverter.convert(tuple);
-    }
-
-    @Override
-    public OrderSpecifier createDefaultOrder() {
-        return new OrderSpecifier(Order.ASC, QTrain.train.version);
+    public TrainTO convertEntityToTO(final Train entity) {
+        return trainTOConverter.convertEntity(entity);
     }
 }
+

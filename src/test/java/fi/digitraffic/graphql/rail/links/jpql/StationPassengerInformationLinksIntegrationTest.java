@@ -19,13 +19,6 @@ import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 import jakarta.transaction.Transactional;
 
-/**
- * Integration tests for Station ↔ PassengerInformationMessageStation links.
- * Tests Station.stationMessages, MessageStation.station, and MessageStation.message.
- *
- * Uses the stations query endpoint since these links are shared between
- * the original and JPQL query implementations.
- */
 public class StationPassengerInformationLinksIntegrationTest extends BaseWebMVCTest {
 
     @Autowired

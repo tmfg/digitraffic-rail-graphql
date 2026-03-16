@@ -57,21 +57,15 @@ public class GraphQLProvider {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final DigitrafficConfig digitrafficConfig;
-    private final List<BaseLink> fetchers;
-    private final List<BaseQuery> rootFetchers;
-    private final List<fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql> jpqlRootFetchers;
-    private final List<fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql> jpqlLinks;
+    private final List<BaseQuery<?, ?>> rootFetchers;
+    private final List<BaseLink<?, ?, ?, ?, ?>> links;
 
     public GraphQLProvider(final DigitrafficConfig digitrafficConfig,
-                           final List<BaseLink> fetchers,
-                           final List<BaseQuery> rootFetchers,
-                           final List<fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql> jpqlRootFetchers,
-                           final List<fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql> jpqlLinks) {
+                           final List<BaseQuery<?, ?>> rootFetchers,
+                           final List<BaseLink<?, ?, ?, ?, ?>> links) {
         this.digitrafficConfig = digitrafficConfig;
-        this.fetchers = fetchers;
         this.rootFetchers = rootFetchers;
-        this.jpqlRootFetchers = jpqlRootFetchers;
-        this.jpqlLinks = jpqlLinks;
+        this.links = links;
     }
 
     private final Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
@@ -397,24 +391,13 @@ public class GraphQLProvider {
                 .scalar(ExtendedScalars.Date)
                 .scalar(ExtendedScalars.DateTime);
 
-        for (final BaseQuery fetcher : rootFetchers) {
-            query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
-        }
-
-        // Register JPQL-based queries
-        for (final fi.digitraffic.graphql.rail.queries.jpql.BaseQueryJpql<?, ?> fetcher : jpqlRootFetchers) {
+        for (final BaseQuery<?, ?> fetcher : rootFetchers) {
             query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
         }
 
         builder.type(query);
 
-        for (final BaseLink fetcher : this.fetchers) {
-            builder.type(newTypeWiring(fetcher.getTypeName())
-                    .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
-        }
-
-        // Register JPQL-based links
-        for (final fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql<?, ?, ?, ?, ?> link : this.jpqlLinks) {
+        for (final BaseLink<?, ?, ?, ?, ?> link : this.links) {
             builder.type(newTypeWiring(link.getTypeName())
                     .dataFetcher(link.getFieldName(), link.createFetcher()));
         }

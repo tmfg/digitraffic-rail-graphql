@@ -1,58 +1,28 @@
 package fi.digitraffic.graphql.rail.queries;
 
 import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
-import graphql.execution.AbortExecutionException;
-import graphql.schema.DataFetcher;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
-import jakarta.persistence.QueryTimeoutException;
 
-// @Component — replaced by PassengerInformationMessagesQuery in queries.jpql package.
-// Retained only for static utility methods used by TrainToPassengerInformationMessagesLink.
-public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInformationMessageTO> {
+/**
+ * Selects only the latest version of each PassengerInformationMessage,
+ * filtered to active, non-deleted messages.
+ */
+@Component
+public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInformationMessage, PassengerInformationMessageTO> {
 
-    @Autowired
-    private PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;
-
-    public static BooleanExpression getMessageValidityConditions() {
-        return QPassengerInformationMessage.passengerInformationMessage.deleted.isNull()
-                .and(QPassengerInformationMessage.passengerInformationMessage.startValidity.before(ZonedDateTime.now())
-                        .and(QPassengerInformationMessage.passengerInformationMessage.endValidity.after(ZonedDateTime.now())));
-    }
-
-    public static JPAQuery<Tuple> getPassengerInformationBaseQuery(final JPAQueryFactory jpaQueryFactory, final EntityPath entityTable) {
-        final JPAQuery<Tuple> maxVersions = jpaQueryFactory.select(
-                        QPassengerInformationMessage.passengerInformationMessage.id.id,
-                        QPassengerInformationMessage.passengerInformationMessage.id.version.max())
-                .from(QPassengerInformationMessage.passengerInformationMessage)
-                .groupBy(QPassengerInformationMessage.passengerInformationMessage.id.id);
-
-        return jpaQueryFactory.selectDistinct(AllFields.PASSENGER_INFORMATION_MESSAGE)
-                .from(entityTable)
-                .where(Expressions.list(QPassengerInformationMessage.passengerInformationMessage.id.id,
-                                QPassengerInformationMessage.passengerInformationMessage.id.version).in(maxVersions)
-                        .and(getMessageValidityConditions()));
+    public PassengerInformationMessagesQuery(final JpqlWhereBuilder whereBuilder,
+                                             final JpqlOrderByBuilder orderByBuilder,
+                                             @Value("${digitraffic.max-returned-rows}") final int maxResults) {
+        super(whereBuilder, orderByBuilder, maxResults);
     }
 
     @Override
@@ -61,62 +31,62 @@ public class PassengerInformationMessagesQuery extends BaseQuery<PassengerInform
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<PassengerInformationMessage> getEntityClass() {
         return PassengerInformationMessage.class;
     }
 
-    @Override
-    public Expression[] getFields() {
-        return AllFields.PASSENGER_INFORMATION_MESSAGE;
+
+    /** JPQL fragment that restricts to the latest version of each message (no WHERE keyword). */
+    public static String latestVersionSubquery(final String alias) {
+        return "(%s.id.id, %s.id.version) IN (SELECT m2.id.id, MAX(m2.id.version) FROM PassengerInformationMessage m2 GROUP BY m2.id.id)"
+                .formatted(alias, alias);
+    }
+
+    /** JPQL fragment for active, non-deleted messages within the validity window (no WHERE keyword). */
+    public static String activeMessageCondition(final String alias) {
+        return "%s.deleted IS NULL AND %s.startValidity <= :now AND %s.endValidity > :now"
+                .formatted(alias, alias, alias);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QPassengerInformationMessage.passengerInformationMessage;
+    public String buildBaseQuery(final String alias, final Map<String, Object> parameters) {
+        return """
+            SELECT DISTINCT %s FROM PassengerInformationMessage %s
+            WHERE %s
+            """.formatted(alias, alias, latestVersionSubquery(alias));
     }
 
     @Override
-    public BooleanExpression createWhereFromArguments(final DataFetchingEnvironment dataFetchingEnvironment) {
-        return QPassengerInformationMessage.passengerInformationMessage.startValidity.before(ZonedDateTime.now())
-                .and(QPassengerInformationMessage.passengerInformationMessage.endValidity.after(ZonedDateTime.now()));
+    public boolean baseQueryContainsWhere() {
+        return true;
     }
 
     @Override
-    public PassengerInformationMessageTO convertEntityToTO(final Tuple tuple) {
-        return passengerInformationMessageTOConverter.convert(tuple);
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                        final Map<String, Object> parameters) {
+        parameters.put("now", ZonedDateTime.now());
+        return activeMessageCondition(alias);
     }
 
     @Override
-    public OrderSpecifier createDefaultOrder() {
-        return new OrderSpecifier(Order.ASC, QPassengerInformationMessage.passengerInformationMessage.creationDateTime);
+    public String getDefaultOrderBy(final String alias) {
+        return alias + ".creationDateTime ASC";
     }
 
     @Override
-    public DataFetcher<List<PassengerInformationMessageTO>> createFetcher() {
-
-        return dataFetchingEnvironment -> {
-            final Class entityClass = getEntityClass();
-            final PathBuilder<PassengerInformationMessageTO> pathBuilder = new PathBuilder<>(entityClass,
-                    entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
-
-            final BooleanExpression basicWhere = createWhereFromArguments(dataFetchingEnvironment);
-
-            final JPAQuery<Tuple> queryAfterFrom = getPassengerInformationBaseQuery(super.queryFactory, getEntityTable());
-
-            final JPAQuery<Tuple> queryAfterWhere =
-                    createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, dataFetchingEnvironment.getArgument("where"));
-            final JPAQuery<Tuple> queryAfterOrderBy =
-                    createOrderByQuery(queryAfterWhere, pathBuilder, dataFetchingEnvironment.getArgument("orderBy"));
-            final JPAQuery<Tuple> queryAfterOffset = createOffsetQuery(queryAfterOrderBy, dataFetchingEnvironment.getArgument("skip"));
-            final JPAQuery<Tuple> queryAfterLimit = createLimitQuery(queryAfterOffset, dataFetchingEnvironment.getArgument("take"));
-
-            try {
-                final List<Tuple> rows = queryAfterLimit.fetch();
-                return rows.stream().map(this::convertEntityToTO).toList();
-            } catch (final QueryTimeoutException e) {
-                throw new AbortExecutionException(e);
-            }
-        };
-
+    public PassengerInformationMessageTO convertEntityToTO(final PassengerInformationMessage entity) {
+        return new PassengerInformationMessageTO(
+                entity.id.id,
+                entity.id.version,
+                entity.creationDateTime,
+                entity.startValidity,
+                entity.endValidity,
+                entity.trainDepartureDate,
+                entity.trainNumber != null ? entity.trainNumber.intValue() : null,
+                null, // train - populated by link
+                null, // messageStations - populated by link
+                null, // audio - populated by link
+                null  // video - populated by link
+        );
     }
 }

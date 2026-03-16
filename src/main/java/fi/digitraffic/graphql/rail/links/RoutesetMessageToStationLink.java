@@ -2,68 +2,58 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QStation;
 import fi.digitraffic.graphql.rail.entities.Station;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.RoutesectionTO;
 import fi.digitraffic.graphql.rail.model.StationTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.StationTOConverter;
 
-// @Component – replaced by links/jpql/RoutesetMessageToStationLink
+@Component
 public class RoutesetMessageToStationLink extends OneToOneLink<String, RoutesectionTO, Station, StationTO> {
-    @Autowired
-    private StationTOConverter stationTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "Routesection";
+    private final StationTOConverter stationTOConverter;
+
+    public RoutesetMessageToStationLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                        final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                        @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                        final StationTOConverter stationTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.stationTOConverter = stationTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "station";
+    public String getTypeName() { return "Routesection"; }
+
+    @Override
+    public String getFieldName() { return "station"; }
+
+    @Override
+    public String createKeyFromParent(final RoutesectionTO routesectionTO) {
+        return routesectionTO.getStationCode();
     }
 
     @Override
-    public String createKeyFromParent(RoutesectionTO routesetMessageTO) {
-        return routesetMessageTO.getStationCode();
-    }
-
-    @Override
-    public String createKeyFromChild(StationTO stationTO) {
+    public String createKeyFromChild(final StationTO stationTO) {
         return stationTO.getShortCode();
     }
 
     @Override
-    public StationTO createChildTOFromTuple(Tuple tuple) {
-        return stationTOConverter.convert(tuple);
+    public StationTO createChildTOFromEntity(final Station entity) {
+        return stationTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return Station.class;
-    }
+    public Class<Station> getEntityClass() { return Station.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.STATION;
-    }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QStation.station;
-    }
-
-    @Override
-    public BooleanExpression createWhere(List<String> keys) {
-        return QStation.station.shortCode.in(keys);
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".shortCode IN :keys", keys);
     }
 }
+

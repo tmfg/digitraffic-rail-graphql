@@ -2,69 +2,58 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.CategoryCode;
-import fi.digitraffic.graphql.rail.entities.QCategoryCode;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.CategoryCodeTO;
 import fi.digitraffic.graphql.rail.model.CauseTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.CategoryCodeTOConverter;
 
-// @Component – replaced by links/jpql/CauseToCategoryCodeLink
+@Component
 public class CauseToCategoryCodeLink extends OneToOneLink<String, CauseTO, CategoryCode, CategoryCodeTO> {
-    @Autowired
-    private CategoryCodeTOConverter categoryCodeTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "Cause";
+    private final CategoryCodeTOConverter categoryCodeTOConverter;
+
+    public CauseToCategoryCodeLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                   final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                   @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                   final CategoryCodeTOConverter categoryCodeTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.categoryCodeTOConverter = categoryCodeTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "categoryCode";
-    }
+    public String getTypeName() { return "Cause"; }
 
     @Override
-    public String createKeyFromParent(CauseTO causeTO) {
+    public String getFieldName() { return "categoryCode"; }
+
+    @Override
+    public String createKeyFromParent(final CauseTO causeTO) {
         return causeTO.getCategoryCodeOid();
     }
 
     @Override
-    public String createKeyFromChild(CategoryCodeTO categoryCodeTO) {
+    public String createKeyFromChild(final CategoryCodeTO categoryCodeTO) {
         return categoryCodeTO.getOid();
     }
 
     @Override
-    public CategoryCodeTO createChildTOFromTuple(Tuple tuple) {
-        return categoryCodeTOConverter.convert(tuple);
+    public CategoryCodeTO createChildTOFromEntity(final CategoryCode entity) {
+        return categoryCodeTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return CategoryCode.class;
-    }
+    public Class<CategoryCode> getEntityClass() { return CategoryCode.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.CATEGORY_CODE;
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".oid IN :keys", keys);
     }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QCategoryCode.categoryCode;
-    }
-
-    @Override
-    public BooleanExpression createWhere(List<String> keys) {
-        return QCategoryCode.categoryCode.oid.in(keys);
-    }
-
 }
+

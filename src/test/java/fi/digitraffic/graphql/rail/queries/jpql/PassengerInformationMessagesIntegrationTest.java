@@ -18,9 +18,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 
-/**
- * Integration tests for the passengerInformationMessages query and its links.
- */
 public class PassengerInformationMessagesIntegrationTest extends BaseWebMVCTest {
 
     @Autowired

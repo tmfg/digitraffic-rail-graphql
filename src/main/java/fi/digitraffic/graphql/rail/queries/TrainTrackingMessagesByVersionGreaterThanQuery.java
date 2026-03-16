@@ -1,26 +1,31 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
-import fi.digitraffic.graphql.rail.entities.QTrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-// @Component – replaced by queries/jpql/TrainTrackingMessagesByVersionGreaterThanQuery
-public class TrainTrackingMessagesByVersionGreaterThanQuery extends BaseQuery<TrainTrackingMessageTO> {
-    @Autowired
-    private TrainTrackingTOConverter trainTrackingTOConverter;
+@Component
+public class TrainTrackingMessagesByVersionGreaterThanQuery extends BaseQuery<TrainTrackingMessage, TrainTrackingMessageTO> {
+
+    private static final int MAX_LIMIT = 2000;
+
+    private final TrainTrackingTOConverter trainTrackingTOConverter;
+
+    public TrainTrackingMessagesByVersionGreaterThanQuery(final JpqlWhereBuilder whereBuilder,
+                                                          final JpqlOrderByBuilder orderByBuilder,
+                                                          @Value("${digitraffic.max-returned-rows}") final int maxResults,
+                                                          final TrainTrackingTOConverter trainTrackingTOConverter) {
+        super(whereBuilder, orderByBuilder, Math.min(maxResults, MAX_LIMIT));
+        this.trainTrackingTOConverter = trainTrackingTOConverter;
+    }
 
     @Override
     public String getQueryName() {
@@ -28,38 +33,26 @@ public class TrainTrackingMessagesByVersionGreaterThanQuery extends BaseQuery<Tr
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<TrainTrackingMessage> getEntityClass() {
         return TrainTrackingMessage.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_TRACKING_MESSAGE;
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                       final Map<String, Object> parameters) {
+        final Long version = Long.parseLong(env.getArgument("version"));
+        parameters.put("version", version);
+        return alias + ".version > :version";
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrainTrackingMessage.trainTrackingMessage;
+    public String getDefaultOrderBy(final String alias) {
+        return alias + ".version ASC";
     }
 
     @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
-        return QTrainTrackingMessage.trainTrackingMessage.version.gt(version);
-    }
-
-    @Override
-    protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
-        return super.createLimitQuery(query, Math.min((limitArgument != null ? (int) limitArgument : MAX_RESULTS), 2000));
-    }
-
-    @Override
-    public TrainTrackingMessageTO convertEntityToTO(Tuple tuple) {
-        return trainTrackingTOConverter.convert(tuple);
-    }
-
-    @Override
-    public OrderSpecifier createDefaultOrder() {
-        return new OrderSpecifier(Order.ASC, QTrainTrackingMessage.trainTrackingMessage.version);
+    public TrainTrackingMessageTO convertEntityToTO(final TrainTrackingMessage entity) {
+        return trainTrackingTOConverter.convertEntity(entity);
     }
 }
+

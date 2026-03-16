@@ -1,4 +1,4 @@
-# GraphlQL implementation for rata.digitraffic.fi
+# GraphQL implementation for rata.digitraffic.fi
 
 # Build and test:
 
@@ -13,11 +13,11 @@ $ mvn spring-boot:run
 ```
 
 GraphiQL, an in-browser IDE for exploring GraphQL, is embedded through `graphiql-spring-boot-starter`
-and available at `http://localhost:8081/graphiql`.
+and available at `http://localhost:8083/graphiql`.
 
 Sample query to be run:
 
-```
+```graphql
 {
   train(trainNumber: 51, departureDate: "2020-06-29") {
     cancelled
@@ -46,50 +46,60 @@ Sample query to be run:
     }
   }
 }
-
 ```
 
 # Architecture:
 
-* config
-    * Spring Boot config, GraphQL instruments etc
-* entities
-    * Classes modeling rows returned from database
-* links
-    * Logic implementing "links" in GraphQL graph
-* queries
-    * Logic implementing GraphQL queries
-* querydsl
-    * Logic for creating querydsl queries
-* to
-    * Logic for converting entities to GraphQL objects (=TOs)
+* `config` — Spring Boot config, GraphQL wiring, instruments etc.
+* `entities` — Hibernate `@Entity` classes mapping database tables
+* `links` — Graph-edge resolvers: fetch related entities for a parent TO (DataLoader pattern)
+* `queries` — Root-level GraphQL query fetchers
+* `query` — Utilities for building WHERE and ORDER BY clauses from GraphQL arguments
+* `to` — Converters from Hibernate entities to generated GraphQL TOs
 
-# How to add GraphlQL stuff
+GraphQL TOs are **code-generated** from `schema.graphqls` at compile time into `target/generated-sources/` — do not edit them manually.
+
+# How to add GraphQL stuff
 
 ## Query
 
-...
+1. Add the new field to `schema.graphqls`
+1. Run `mvn compile` to regenerate the GraphQL TOs
+1. Create (or reuse) a Hibernate `@Entity` for the data
+1. Create a `*TOConverter` with a `convertEntity(Entity)` method (e.g. `TrainTOConverter`)
+1. Create a query class in `queries/` extending `BaseQuery<Entity, TO>`:
+   - implement `getQueryName()` — must match the field name in the schema
+   - implement `getEntityClass()`
+   - implement `buildBaseWhereClause()` — add fixed conditions and bind GraphQL arguments as named parameters
+   - implement `convertEntityToTO()`
+   - annotate with `@Component`
+1. Write an integration test extending `BaseWebMVCTest`
+
+See `TrainsByDepartureDateQuery` for a simple example.
 
 ## Link
 
-Basic workflow
+A link resolves a field on an existing type (e.g. `TimeTableRow.station`).
 
-1. Modify schema.graphqls to include your new data
-1. Create Hibernate entity
-1. Generate QueryDSL and GraphQL DTOs with `mvn compile`
-1. Add Hibernate fields to `AllFields`
-1. Create Hibernate -> GraphQL DTO converter (example `TrackSectionTOConverter`)
-1. Create GraphQL link (example `TrainTrackingMessageToTrackSectionLink`)
-1. Done
+1. Add the new field to the parent type in `schema.graphqls`
+1. Run `mvn compile` to regenerate the GraphQL TOs
+1. Create (or reuse) a Hibernate `@Entity` and `*TOConverter` for the child type
+1. Create a link class in `links/` extending `OneToOneLink` or `OneToManyLink`:
+   - implement `getTypeName()` / `getFieldName()` — must match the parent type and field name in the schema
+   - implement `getEntityClass()`
+   - implement `createKeyFromParent()` / `createKeyFromChild()` — used for DataLoader batching
+   - implement `buildKeyWhereClause()` — JPQL fragment filtering children by their parent keys (e.g. `"e.shortCode IN :keys"`)
+   - implement `createChildTOFromEntity()`
+   - annotate with `@Component`
+1. Write an integration test extending `BaseWebMVCTest`
 
-See `0271e6a9926dfb1be99f08632f7f35f5ba654ffe` for an example
+See `TimeTableRowToStationLink` for a one-to-one example and `TrainToTimeTableRowLink` for a one-to-many example.
 
 ## Updating schema.svg
 
 The [schema visualization](src/main/resources/static/schema.svg) has been generated
 with [http://nathanrandal.com/graphql-visualizer/](http://nathanrandal.com/graphql-visualizer/) using
-the
-below introspection query:
+the below introspection query:
 
 ```graphql
 query IntrospectionQuery {
@@ -167,7 +177,3 @@ fragment TypeRef on __Type {
     }
 }
 ```
-
-
-
-

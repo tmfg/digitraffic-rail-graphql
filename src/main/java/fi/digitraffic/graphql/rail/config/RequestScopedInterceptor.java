@@ -14,7 +14,6 @@ import org.springframework.graphql.server.WebGraphQlResponse;
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.links.base.BaseLink;
-import fi.digitraffic.graphql.rail.links.base.jpql.BaseLinkJpql;
 import reactor.core.publisher.Mono;
 
 /**
@@ -23,11 +22,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class RequestScopedInterceptor implements WebGraphQlInterceptor {
 
-    @Autowired(required = false)
-    private List<BaseLink<?, ?, ?, ?, ?>> fetchers = List.of();
-
     @Autowired
-    private List<BaseLinkJpql<?, ?, ?, ?, ?>> jpqlLinks;
+    private List<BaseLink<?, ?, ?, ?, ?>> links;
 
     private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions().build();
     private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false).build();
@@ -37,15 +33,7 @@ public class RequestScopedInterceptor implements WebGraphQlInterceptor {
         request.configureExecutionInput((executionInput, builder) -> {
             final DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
-            for (final var fetcher : fetchers) {
-                final BatchLoaderWithContext<?, ?> dataLoader = fetcher.createLoader();
-                final DataLoaderOptions options = fetcher.cachingEnabled() ? CACHING_ENABLED : CACHING_DISABLED;
-                final DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader, options);
-                dataLoaderRegistry.register(fetcher.createDataLoaderKey(), loader);
-            }
-
-            // Register JPQL-based links
-            for (final var link : jpqlLinks) {
+            for (final var link : links) {
                 final BatchLoaderWithContext<?, ?> dataLoader = link.createLoader();
                 final DataLoaderOptions options = link.cachingEnabled() ? CACHING_ENABLED : CACHING_DISABLED;
                 final DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader, options);

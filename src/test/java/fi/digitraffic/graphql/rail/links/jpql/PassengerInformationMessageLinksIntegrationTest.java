@@ -18,11 +18,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 
-/**
- * Integration tests for links from PassengerInformationMessage
- * to messageStations, audio, video, and train.
- * Tests via full GraphQL HTTP requests through the JPQL query endpoints.
- */
 public class PassengerInformationMessageLinksIntegrationTest extends BaseWebMVCTest {
 
     @Autowired

@@ -3,30 +3,34 @@ package fi.digitraffic.graphql.rail.queries;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTrainLocation;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-// @Component – replaced by queries/jpql/LatestTrainLocationsQuery
-public class LatestTrainLocationsQuery extends BaseQuery<TrainLocationTO> {
+@Component
+public class LatestTrainLocationsQuery extends BaseQuery<TrainLocation, TrainLocationTO> {
 
-    @Autowired
-    private TrainLocationRepository trainLocationRepository;
+    private final TrainLocationRepository trainLocationRepository;
+    private final TrainLocationTOConverter trainLocationTOConverter;
 
-    @Autowired
-    private TrainLocationTOConverter trainLocationTOConverter;
+    public LatestTrainLocationsQuery(final JpqlWhereBuilder whereBuilder,
+                                     final JpqlOrderByBuilder orderByBuilder,
+                                     @Value("${digitraffic.max-returned-rows}") final int maxResults,
+                                     final TrainLocationRepository trainLocationRepository,
+                                     final TrainLocationTOConverter trainLocationTOConverter) {
+        super(whereBuilder, orderByBuilder, maxResults);
+        this.trainLocationRepository = trainLocationRepository;
+        this.trainLocationTOConverter = trainLocationTOConverter;
+    }
 
     @Override
     public String getQueryName() {
@@ -34,28 +38,27 @@ public class LatestTrainLocationsQuery extends BaseQuery<TrainLocationTO> {
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<TrainLocation> getEntityClass() {
         return TrainLocation.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_LOCATION;
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                       final Map<String, Object> parameters) {
+        final List<Long> ids = trainLocationRepository.findLatest(
+                ZonedDateTime.now(ZoneId.of("Europe/Helsinki")).minusMinutes(15));
+
+        if (ids.isEmpty()) {
+            return "1 = 0";
+        }
+
+        parameters.put("ids", ids);
+        return alias + ".id IN :ids";
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrainLocation.trainLocation;
-    }
-
-    @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        List<Long> ids = trainLocationRepository.findLatest(ZonedDateTime.now(ZoneId.of("Europe/Helsinki")).minusMinutes(15));
-        return QTrainLocation.trainLocation.id.in(ids);
-    }
-
-    @Override
-    public TrainLocationTO convertEntityToTO(Tuple tuple) {
-        return trainLocationTOConverter.convert(tuple);
+    public TrainLocationTO convertEntityToTO(final TrainLocation entity) {
+        return trainLocationTOConverter.convertEntity(entity);
     }
 }
+

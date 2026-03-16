@@ -1,36 +1,37 @@
 package fi.digitraffic.graphql.rail.links;
 
-import static fi.digitraffic.graphql.rail.queries.PassengerInformationMessagesQuery.getPassengerInformationBaseQuery;
-
+import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Map;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.dataloader.BatchLoaderWithContext;
-import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Component;
-
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
-import fi.digitraffic.graphql.rail.entities.QPassengerInformationMessage;
 import fi.digitraffic.graphql.rail.entities.TrainId;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
+import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
+import fi.digitraffic.graphql.rail.queries.PassengerInformationMessagesQuery;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
 
-// @Component -- replaced by links/jpql/TrainToPassengerInformationMessagesLink
-public class TrainToPassengerInformationMessagesLink extends
-        OneToManyLink<TrainId, TrainTO, PassengerInformationMessage, PassengerInformationMessageTO> {
-    @Autowired
-    private PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;
+@Component
+public class TrainToPassengerInformationMessagesLink
+        extends OneToManyLink<TrainId, TrainTO, PassengerInformationMessage, PassengerInformationMessageTO> {
+
+    private final PassengerInformationMessageTOConverter passengerInformationMessageTOConverter;
+
+    public TrainToPassengerInformationMessagesLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                                   final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                                   @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                                   final PassengerInformationMessageTOConverter passengerInformationMessageTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.passengerInformationMessageTOConverter = passengerInformationMessageTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -56,8 +57,8 @@ public class TrainToPassengerInformationMessagesLink extends
     }
 
     @Override
-    public PassengerInformationMessageTO createChildTOFromTuple(final Tuple tuple) {
-        return passengerInformationMessageTOConverter.convert(tuple);
+    public PassengerInformationMessageTO createChildTOFromEntity(final PassengerInformationMessage entity) {
+        return passengerInformationMessageTOConverter.convertEntity(entity);
     }
 
     @Override
@@ -66,26 +67,25 @@ public class TrainToPassengerInformationMessagesLink extends
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.PASSENGER_INFORMATION_MESSAGE;
+    protected KeyWhereClause buildKeyWhereClause(final List<TrainId> keys) {
+        return TrainIdWhereClause.build(getEntityAlias(), "trainDepartureDate", "trainNumber", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QPassengerInformationMessage.passengerInformationMessage;
+    protected KeyWhereClause buildBaseWhereClause() {
+        final String alias = getEntityAlias();
+        final ZonedDateTime now = ZonedDateTime.now();
+        return new KeyWhereClause(
+                PassengerInformationMessagesQuery.latestVersionSubquery(alias)
+                + " AND " + PassengerInformationMessagesQuery.activeMessageCondition(alias),
+                Map.of("now", now));
     }
 
     @Override
-    public BatchLoaderWithContext<TrainId, List<PassengerInformationMessageTO>> createLoader() {
-        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction =
-                (queryFactory) -> getPassengerInformationBaseQuery(queryFactory, getEntityTable());
-        return doCreateLoader(queryAfterFromFunction);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".creationDateTime ASC";
     }
-
-    @Override
-    public BooleanExpression createWhere(final List<TrainId> keys) {
-        return TrainIdOptimizer.optimize(QPassengerInformationMessage.passengerInformationMessage.train.id, keys);
-    }
-
 }
+
+
 

@@ -1,25 +1,30 @@
 package fi.digitraffic.graphql.rail.queries;
 
 import java.time.LocalDate;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-//@Component // Replaced by JPQL implementation in queries/jpql/TrainsByDepartureDateQuery.java
-public class TrainsByDepartureDateQuery extends BaseQuery<TrainTO> {
-    @Autowired
-    private TrainTOConverter trainTOConverter;
+@Component
+public class TrainsByDepartureDateQuery extends BaseQuery<Train, TrainTO> {
+
+    private final TrainTOConverter trainTOConverter;
+
+    public TrainsByDepartureDateQuery(final JpqlWhereBuilder whereBuilder,
+                                      final JpqlOrderByBuilder orderByBuilder,
+                                      @Value("${digitraffic.max-returned-rows}") final int maxResults,
+                                      final TrainTOConverter trainTOConverter) {
+        super(whereBuilder, orderByBuilder, maxResults);
+        this.trainTOConverter = trainTOConverter;
+    }
 
     @Override
     public String getQueryName() {
@@ -27,30 +32,22 @@ public class TrainsByDepartureDateQuery extends BaseQuery<TrainTO> {
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Train> getEntityClass() {
         return Train.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN;
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                        final Map<String, Object> parameters) {
+        final LocalDate departureDate = env.getArgument("departureDate");
+        parameters.put("departureDate", departureDate);
+
+        return alias + ".id.departureDate = :departureDate";
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrain.train;
+    public TrainTO convertEntityToTO(final Train entity) {
+        return trainTOConverter.convertEntity(entity);
     }
-
-    @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        LocalDate departureDate = dataFetchingEnvironment.getArgument("departureDate");
-        return QTrain.train.id.departureDate.eq(departureDate);
-    }
-
-    @Override
-    public TrainTO convertEntityToTO(Tuple tuple) {
-        return trainTOConverter.convert(tuple);
-    }
-
-
 }
+

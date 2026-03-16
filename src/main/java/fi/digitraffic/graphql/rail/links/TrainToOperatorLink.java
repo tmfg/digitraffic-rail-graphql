@@ -2,25 +2,30 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.Operator;
-import fi.digitraffic.graphql.rail.entities.QOperator;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.OperatorTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.OperatorTOConverter;
 
-//@Component  // Replaced by JPQL implementation in links/jpql/TrainToOperatorLink.java
+@Component
 public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator, OperatorTO> {
-    @Autowired
-    private OperatorTOConverter operatorTOConverter;
+
+    private final OperatorTOConverter operatorTOConverter;
+
+    public TrainToOperatorLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                               final JpqlOrderByBuilder jpqlOrderByBuilder,
+                               @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                               final OperatorTOConverter operatorTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.operatorTOConverter = operatorTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -33,37 +38,32 @@ public class TrainToOperatorLink extends OneToOneLink<String, TrainTO, Operator,
     }
 
     @Override
-    public String createKeyFromParent(TrainTO trainTO) {
+    public String createKeyFromParent(final TrainTO trainTO) {
         return trainTO.getOperatorShortCode();
     }
 
     @Override
-    public String createKeyFromChild(OperatorTO operatorTO) {
+    public String createKeyFromChild(final OperatorTO operatorTO) {
         return operatorTO.getShortCode();
     }
 
     @Override
-    public OperatorTO createChildTOFromTuple(Tuple tuple) {
-        return operatorTOConverter.convert(tuple);
+    public OperatorTO createChildTOFromEntity(final Operator entity) {
+        return operatorTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Operator> getEntityClass() {
         return Operator.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.OPERATOR;
+    protected KeyWhereClause buildKeyWhereClause(final List<String> keys) {
+        return simpleInClause(getEntityAlias() + ".shortCode IN :keys", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QOperator.operator;
-    }
-
-    @Override
-    public BooleanExpression createWhere(List<String> keys) {
-        return QOperator.operator.shortCode.in(keys);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".shortCode ASC";
     }
 }

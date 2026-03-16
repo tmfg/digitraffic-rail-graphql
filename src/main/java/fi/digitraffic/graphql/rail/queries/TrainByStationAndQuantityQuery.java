@@ -5,37 +5,42 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.config.graphql.CustomException;
-import fi.digitraffic.graphql.rail.entities.QTrain;
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.entities.TrainId;
+import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.repositories.TrainCategoryRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.repositories.TrainRepository;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
-// @Component – replaced by queries/jpql/TrainByStationAndQuantityQuery
-public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
-    @Autowired
-    private TrainRepository trainRepository;
+@Component
+public class TrainByStationAndQuantityQuery extends BaseQuery<Train, TrainTO> {
 
-    @Autowired
-    private TrainTOConverter trainTOConverter;
+    private final TrainRepository trainRepository;
+    private final TrainTOConverter trainTOConverter;
+    private final TrainCategoryRepository trainCategoryRepository;
 
-    @Autowired
-    private TrainCategoryRepository trainCategoryRepository;
+    public TrainByStationAndQuantityQuery(final JpqlWhereBuilder whereBuilder,
+                                          final JpqlOrderByBuilder orderByBuilder,
+                                          @Value("${digitraffic.max-returned-rows}") final int maxResults,
+                                          final TrainRepository trainRepository,
+                                          final TrainTOConverter trainTOConverter,
+                                          final TrainCategoryRepository trainCategoryRepository) {
+        super(whereBuilder, orderByBuilder, maxResults);
+        this.trainRepository = trainRepository;
+        this.trainTOConverter = trainTOConverter;
+        this.trainCategoryRepository = trainCategoryRepository;
+    }
 
     @Override
     public String getQueryName() {
@@ -43,80 +48,59 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<TrainTO> {
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Train> getEntityClass() {
         return Train.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN;
-    }
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                       final Map<String, Object> parameters) {
+        final String station = env.getArgument("station");
+        final int arrivedTrains = firstNonNull(env.getArgument("arrivedTrains"), 5);
+        final int arrivingTrains = firstNonNull(env.getArgument("arrivingTrains"), 5);
+        final int departedTrains = firstNonNull(env.getArgument("departedTrains"), 5);
+        final int departingTrains = firstNonNull(env.getArgument("departingTrains"), 5);
+        final Boolean includeNonStopping = firstNonNull(env.getArgument("includeNonStopping"), false);
+        final List<String> trainCategoryNames = env.getArgument("trainCategories");
 
-    @Override
-    public EntityPath getEntityTable() {
-        return QTrain.train;
-    }
-
-    @Override
-    public BooleanExpression createWhereFromArguments(final DataFetchingEnvironment dataFetchingEnvironment) {
-        final String station = dataFetchingEnvironment.getArgument("station");
-        final int arrivedTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivedTrains"), 5);
-        final int arrivingTrains = firstNonNull(dataFetchingEnvironment.getArgument("arrivingTrains"), 5);
-        final int departedTrains = firstNonNull(dataFetchingEnvironment.getArgument("departedTrains"), 5);
-        final int departingTrains = firstNonNull(dataFetchingEnvironment.getArgument("departingTrains"), 5);
-        final Boolean includeNonStopping = firstNonNull(dataFetchingEnvironment.getArgument("includeNonStopping"), false);
-        final List<String> trainCategoryNames = dataFetchingEnvironment.getArgument("trainCategories");
-
-        if (arrivedTrains + arrivingTrains + departedTrains + departingTrains > MAX_RESULTS) {
-            throw new CustomException(400, "Can not return more than " + MAX_RESULTS + " rows");
+        if (arrivedTrains + arrivingTrains + departedTrains + departingTrains > maxResults) {
+            throw new CustomException(400, "Can not return more than " + maxResults + " rows");
         }
 
         final List<Long> trainCategoryIds;
         if (trainCategoryNames == null) {
-            trainCategoryIds = trainCategoryRepository.findAll().stream().map(s -> s.id).collect(Collectors.toList());
+            trainCategoryIds = trainCategoryRepository.findAll().stream()
+                    .map(s -> s.id)
+                    .collect(Collectors.toList());
         } else {
             trainCategoryIds = trainCategoryRepository.findAllByNameIn(trainCategoryNames);
         }
 
-        final List<TrainId> trainIds = getLiveTrainsUsingQuantityFiltering(station, -1L,
-                arrivedTrains,
-                arrivingTrains,
-                departedTrains,
-                departingTrains,
-                includeNonStopping, trainCategoryIds);
+        final List<Object[]> liveTrains = trainRepository.findLiveTrainsIds(
+                station, departedTrains, departingTrains, arrivedTrains, arrivingTrains,
+                !includeNonStopping, trainCategoryIds);
+
+        final List<TrainId> trainIds = liveTrains.stream()
+                .map(row -> {
+                    final LocalDate departureDate = ((Date) row[1]).toLocalDate();
+                    final Long trainNumber = (Long) row[2];
+                    return new TrainId(trainNumber, departureDate);
+                })
+                .collect(Collectors.toList());
+
         if (trainIds.isEmpty()) {
-            trainIds.add(new TrainId(-9999L, LocalDate.now()));
+            // No matching trains — produce a condition that is always false
+            return "1 = 0";
         }
 
-        return TrainIdOptimizer.optimize(QTrain.train.id, trainIds);
+        final var keyWhere = TrainIdWhereClause.build(alias, "id.departureDate", "id.trainNumber", trainIds);
+        parameters.putAll(keyWhere.params());
+        return keyWhere.jpql();
     }
 
     @Override
-    public TrainTO convertEntityToTO(final Tuple tuple) {
-        return trainTOConverter.convert(tuple);
-    }
-
-    private List<TrainId> getLiveTrainsUsingQuantityFiltering(final String station,
-                                                              final long version,
-                                                              final int arrived_trains,
-                                                              final int arriving_trains,
-                                                              final int departedTrains,
-                                                              final int departingTrains,
-                                                              final Boolean includeNonstopping,
-                                                              final List<Long> trainCategoryIds) {
-        final List<Object[]> liveTrains = trainRepository.findLiveTrainsIds(station, departedTrains, departingTrains, arrived_trains,
-                arriving_trains, !includeNonstopping, trainCategoryIds);
-
-        return extractNewerTrainIds(version, liveTrains);
-
-
-    }
-
-    private List<TrainId> extractNewerTrainIds(final long version, final List<Object[]> liveTrains) {
-        return liveTrains.stream().filter(train -> ((Long) train[3]) > version).map(tuple -> {
-            final LocalDate departureDate = ((Date) tuple[1]).toLocalDate();
-            final Long trainNumber = (Long) tuple[2];
-            return new TrainId(trainNumber, departureDate);
-        }).collect(Collectors.toList());
+    public TrainTO convertEntityToTO(final Train entity) {
+        return trainTOConverter.convertEntity(entity);
     }
 }
+

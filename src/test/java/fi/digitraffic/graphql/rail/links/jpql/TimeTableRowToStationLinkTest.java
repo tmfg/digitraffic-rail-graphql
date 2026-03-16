@@ -6,20 +6,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import fi.digitraffic.graphql.rail.entities.Station;
-import fi.digitraffic.graphql.rail.links.base.jpql.KeyWhereClause;
+import fi.digitraffic.graphql.rail.links.TimeTableRowToStationLink;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
-/**
- * Integration test for TimeTableRowToStationLink.
- * Tests that the JPQL link correctly fetches stations.
- */
-@SpringBootTest
 public class TimeTableRowToStationLinkTest extends BaseWebMVCTest {
 
     @Autowired
@@ -42,15 +36,6 @@ public class TimeTableRowToStationLinkTest extends BaseWebMVCTest {
     @Test
     public void testEntityClassIsStation() {
         assertEquals(Station.class, link.getEntityClass());
-    }
-
-    @Test
-    public void testWhereClauseGeneration() {
-        final var keys = List.of("HKI", "TPE");
-        final var result = link.buildKeyWhereClause(keys);
-
-        assertEquals(link.getEntityAlias() + ".shortCode IN :keys", result.jpql());
-        assertEquals(keys, result.params().get("keys"));
     }
 
     @Test
