@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.model.ThirdCategoryCodeTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.ThirdCategoryCodeTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/CauseToThirdCategoryCodeLink
 public class CauseToThirdCategoryCodeLink extends OneToOneLink<String, CauseTO, ThirdCategoryCode, ThirdCategoryCodeTO> {
     @Autowired
     private ThirdCategoryCodeTOConverter thirdCategoryCodeTOConverter;

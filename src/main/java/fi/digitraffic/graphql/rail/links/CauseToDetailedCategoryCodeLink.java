@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.model.DetailedCategoryCodeTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.DetailedCategoryCodeTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/CauseToDetailedCategoryCodeLink
 public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseTO, DetailedCategoryCode, DetailedCategoryCodeTO> {
     @Autowired
     private DetailedCategoryCodeTOConverter detailedCategoryCodeTOConverter;

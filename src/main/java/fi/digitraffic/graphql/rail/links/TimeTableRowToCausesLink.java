@@ -18,7 +18,7 @@ import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.CauseTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/TimeTableRowToCausesLink
 public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, TimeTableRowTO, Cause, CauseTO> {
     @Autowired
     private CauseTOConverter causeTOConverter;

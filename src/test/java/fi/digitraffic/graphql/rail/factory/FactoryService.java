@@ -52,6 +52,7 @@ public class FactoryService {
         entityManager.createQuery("DELETE FROM TrainTrackingMessage").executeUpdate();
         entityManager.createQuery("DELETE FROM TrainLocation").executeUpdate();
         entityManager.createQuery("DELETE FROM Cause").executeUpdate();
+        entityManager.createQuery("DELETE FROM CategoryCode").executeUpdate();
         entityManager.createQuery("DELETE FROM JourneySection").executeUpdate();
         entityManager.createQuery("DELETE FROM Composition").executeUpdate();
         entityManager.createQuery("DELETE FROM RoutesetMessage").executeUpdate();

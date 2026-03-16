@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 
-@Component
+// @Component – replaced by links/jpql/JourneySectionToEndTimeTableRowLink
 public class JourneySectionToEndTimeTableRowLink extends JourneySectionToStartTimeTableRowLink {
 
     @Override

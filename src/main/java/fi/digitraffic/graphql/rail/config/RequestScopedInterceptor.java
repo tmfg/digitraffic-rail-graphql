@@ -23,8 +23,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class RequestScopedInterceptor implements WebGraphQlInterceptor {
 
-    @Autowired
-    private List<BaseLink<?, ?, ?, ?, ?>> fetchers;
+    @Autowired(required = false)
+    private List<BaseLink<?, ?, ?, ?, ?>> fetchers = List.of();
 
     @Autowired
     private List<BaseLinkJpql<?, ?, ?, ?, ?>> jpqlLinks;

@@ -19,7 +19,7 @@ import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
-@Component
+// @Component – replaced by links/jpql/JourneySectionToStartTimeTableRowLink
 public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTableRowId, JourneySectionTO, TimeTableRow, TimeTableRowTO> {
     @Autowired
     private TimeTableRowTOConverter timeTableRowTOConverter;
