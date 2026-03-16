@@ -37,6 +37,9 @@ public class FactoryService {
     private JourneySectionFactory journeySectionFactory;
 
     @Autowired
+    private WagonFactory wagonFactory;
+
+    @Autowired
     private RoutesetMessageFactory routesetMessageFactory;
 
     @Autowired
@@ -53,6 +56,8 @@ public class FactoryService {
         entityManager.createQuery("DELETE FROM TrainLocation").executeUpdate();
         entityManager.createQuery("DELETE FROM Cause").executeUpdate();
         entityManager.createQuery("DELETE FROM CategoryCode").executeUpdate();
+        entityManager.createQuery("DELETE FROM Wagon").executeUpdate();
+        entityManager.createQuery("DELETE FROM Locomotive").executeUpdate();
         entityManager.createQuery("DELETE FROM JourneySection").executeUpdate();
         entityManager.createQuery("DELETE FROM Composition").executeUpdate();
         entityManager.createQuery("DELETE FROM RoutesetMessage").executeUpdate();
@@ -98,6 +103,10 @@ public class FactoryService {
 
     public JourneySectionFactory getJourneySectionFactory() {
         return journeySectionFactory;
+    }
+
+    public WagonFactory getWagonFactory() {
+        return wagonFactory;
     }
 
     public RoutesetMessageFactory getRoutesetMessageFactory() {

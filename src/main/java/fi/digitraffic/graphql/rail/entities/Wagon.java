@@ -31,7 +31,7 @@ public class Wagon {
     public Long journeysectionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "journeysectionId", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "journeysection", referencedColumnName = "id", nullable = false, insertable = false, updatable = false)
     private JourneySection journeySection;
 
     public Wagon() {
