@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.query;
+package fi.digitraffic.graphql.rail.queries;
 
 import java.time.OffsetDateTime;
 import java.util.HashMap;

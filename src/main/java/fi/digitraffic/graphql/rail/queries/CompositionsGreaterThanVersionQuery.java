@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.CompositionTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 

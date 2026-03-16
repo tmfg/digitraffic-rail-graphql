@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 

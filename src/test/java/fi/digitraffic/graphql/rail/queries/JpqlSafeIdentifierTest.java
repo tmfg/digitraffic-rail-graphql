@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.query;
+package fi.digitraffic.graphql.rail.queries;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import fi.digitraffic.graphql.rail.queries.JpqlSafeIdentifier;
 import graphql.execution.AbortExecutionException;
 
 /**

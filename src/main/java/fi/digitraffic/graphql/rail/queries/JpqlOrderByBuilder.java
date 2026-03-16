@@ -1,4 +1,4 @@
-package fi.digitraffic.graphql.rail.query;
+package fi.digitraffic.graphql.rail.queries;
 
 import java.util.ArrayList;
 import java.util.List;

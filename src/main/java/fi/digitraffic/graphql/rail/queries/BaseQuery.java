@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
 import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;

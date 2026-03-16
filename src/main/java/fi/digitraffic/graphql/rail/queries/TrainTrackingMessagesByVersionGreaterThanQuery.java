@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 

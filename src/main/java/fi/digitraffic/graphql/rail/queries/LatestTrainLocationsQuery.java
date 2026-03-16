@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.repositories.TrainLocationRepository;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 import graphql.schema.DataFetchingEnvironment;

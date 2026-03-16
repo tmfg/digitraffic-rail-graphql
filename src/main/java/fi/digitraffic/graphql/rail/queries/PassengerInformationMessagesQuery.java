@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.model.PassengerInformationMessageTO;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
 /**

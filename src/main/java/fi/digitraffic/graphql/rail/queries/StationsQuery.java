@@ -10,8 +10,6 @@ import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.entities.StationTypeEnum;
 import fi.digitraffic.graphql.rail.model.StationTO;
 import fi.digitraffic.graphql.rail.model.StationTypeTO;
-import fi.digitraffic.graphql.rail.query.JpqlOrderByBuilder;
-import fi.digitraffic.graphql.rail.query.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
 @Component
