@@ -15,7 +15,9 @@ public class JourneySectionToWagonLinkTest extends BaseWebMVCTest {
     private static final LocalDate DATE = LocalDate.of(2024, 6, 1);
 
     @Test
-    public void linkShouldWork() throws Exception {
+    public void wagonFieldsAndCountShouldBeCorrect() throws Exception {
+        // id and journeysectionId are hidden fields (stripped from schema), so we query
+        // all non-hidden wagon fields to exercise the full Hibernate mapping.
         final Train train = factoryService.getTrainFactory().createBaseTrain(1, DATE).getFirst();
         factoryService.getCompositionFactory().create(train);
         final long journeySectionId = factoryService.getJourneySectionFactory().create(train, 120, 500, 1L, 2L);
@@ -31,13 +33,23 @@ public class JourneySectionToWagonLinkTest extends BaseWebMVCTest {
                                 length
                                 location
                                 salesNumber
+                                catering
+                                disabled
+                                luggage
+                                pet
+                                playground
+                                smoking
+                                video
+                                wagonType
+                                vehicleNumber
                             }
                         }
                     }
                 }""");
 
+        result.andExpect(jsonPath("$.errors").doesNotExist());
         result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections[0].wagons.length()").value(2));
         result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections[0].wagons[0].length").value(10));
+        result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections[0].wagons[0].location").value(1));
     }
 }
-

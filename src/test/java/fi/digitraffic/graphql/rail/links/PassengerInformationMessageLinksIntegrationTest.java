@@ -164,5 +164,105 @@ public class PassengerInformationMessageLinksIntegrationTest extends BaseWebMVCT
         result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio").isEmpty());
         result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video").isEmpty());
     }
-}
 
+    @Test
+    public void fullMessageStructureIsReadable() throws Exception {
+        // Exercises all fields in a single query: message → audio (all fields incl. deliveryRules)
+        // + video (all fields incl. deliveryRules) + messageStations → station + train.
+        factoryService.getTrainFactory().createBaseTrain(1, LocalDate.of(2024, 1, 1));
+        factoryService.getStationFactory().create(HKI, 1, "FI");
+
+        insertRamiMessage(jdbcTemplate, "1", 1, ZonedDateTime.now().minusHours(1).format(dateFormat),
+                ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), 1, LocalDate.of(2024, 1, 1).toString(),
+                PassengerInformationMessage.MessageType.MONITORED_JOURNEY_SCHEDULED_MESSAGE.name());
+        insertRamiMessageStation(jdbcTemplate, "1", 1, HKI);
+
+        jdbcTemplate.update(
+                "INSERT INTO rami_message_audio (rami_message_id, rami_message_version, text_fi, text_sv, text_en, " +
+                "delivery_type, event_type, start_date_time, end_date_time, start_time, end_time, days_of_week, " +
+                "delivery_at, repetitions, repeat_every) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "1", 1, "Huomio", "Observera", "Attention",
+                "ON_SCHEDULE", "ARRIVING",
+                ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat),
+                "08:00", "20:00", 127,
+                ZonedDateTime.now().plusHours(1).format(dateFormat),
+                3, 10);
+
+        jdbcTemplate.update(
+                "INSERT INTO rami_message_video (rami_message_id, rami_message_version, text_fi, text_sv, text_en, " +
+                "delivery_type, start_date_time, end_date_time, start_time, end_time, days_of_week) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "1", 1, "VideoFi", "VideoSv", "VideoEn",
+                "WHEN",
+                ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat),
+                "08:00", "20:00", 127);
+
+        final ResultActions result = query("""
+                {
+                  passengerInformationMessages {
+                    id
+                    version
+                    creationDateTime
+                    startValidity
+                    endValidity
+                    trainDepartureDate
+                    trainNumber
+                    train { trainNumber cancelled }
+                    messageStations {
+                      stationShortCode
+                      messageId
+                      messageVersion
+                      station { shortCode name countryCode }
+                    }
+                    audio {
+                      messageId
+                      messageVersion
+                      text { fi sv en }
+                      deliveryRules {
+                        deliveryType
+                        eventType
+                        startDateTime
+                        endDateTime
+                        startTime
+                        endTime
+                        weekDays
+                        deliveryAt
+                        repetitions
+                        repeatEvery
+                      }
+                    }
+                    video {
+                      messageId
+                      messageVersion
+                      text { fi sv en }
+                      deliveryRules {
+                        deliveryType
+                        startDateTime
+                        endDateTime
+                        startTime
+                        endTime
+                        weekDays
+                      }
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.errors").doesNotExist());
+        result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].train.trainNumber").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations[0].stationShortCode").value(HKI));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations[0].station.shortCode").value(HKI));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio.text.fi").value("Huomio"));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio.deliveryRules.deliveryType").value("ON_SCHEDULE"));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio.deliveryRules.eventType").value("ARRIVING"));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio.deliveryRules.startTime").value("08:00:00"));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio.deliveryRules.repetitions").value(3));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].audio.deliveryRules.repeatEvery").value(10));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video.text.fi").value("VideoFi"));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video.deliveryRules.deliveryType").value("WHEN"));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video.deliveryRules.startTime").value("08:00:00"));
+    }
+}

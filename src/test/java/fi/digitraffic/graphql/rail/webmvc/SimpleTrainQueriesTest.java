@@ -3,22 +3,14 @@ package fi.digitraffic.graphql.rail.webmvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import fi.digitraffic.graphql.rail.entities.TimeTableRow;
-import fi.digitraffic.graphql.rail.entities.Train;
-import fi.digitraffic.graphql.rail.repositories.TimeTableRowRepository;
-import fi.digitraffic.graphql.rail.repositories.TrainRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.factory.TrainFactory;
+import fi.digitraffic.graphql.rail.repositories.TimeTableRowRepository;
 
 public class SimpleTrainQueriesTest extends BaseWebMVCTest {
     @Autowired
@@ -127,5 +119,76 @@ public class SimpleTrainQueriesTest extends BaseWebMVCTest {
                 }""");
 
         result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+    }
+
+    @Test
+    public void allTrainFieldsAreReadable() throws Exception {
+        // Queries every non-hidden field on Train to ensure no field mapping issue
+        // is hidden by only querying a subset.
+        // Not queryable because hidden: trainTypeId, operatorShortCode, trainCategoryId.
+        trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2000-01-01") {
+                        trainNumber
+                        version
+                        departureDate
+                        cancelled
+                        deleted
+                        runningCurrently
+                        commuterLineid
+                        timetableType
+                        timetableAcceptanceDate
+                        operator { name shortCode uicCode }
+                        trainType { name trainCategory { name } }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").doesNotExist());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainNumber").value(66));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].cancelled").value(false));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timetableType").value("REGULAR"));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].operator.shortCode").value("test"));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainType.name").value("Test TrainType"));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainType.trainCategory.name").value("Test TrainCategory"));
+    }
+
+    @Test
+    public void allTimeTableRowFieldsAreReadable() throws Exception {
+        // Queries every non-hidden field on TimeTableRow to ensure no field mapping
+        // issue is hidden by only querying a subset.
+        // Not queryable because hidden: id, trainNumber, departureDate, stationShortCode, stationUICCode, countryCode.
+        trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2000-01-01") {
+                        trainNumber
+                        timeTableRows {
+                            type
+                            trainStopping
+                            commercialStop
+                            commercialTrack
+                            cancelled
+                            scheduledTime
+                            actualTime
+                            differenceInMinutes
+                            liveEstimateTime
+                            estimateSourceType
+                            unknownDelay
+                            stopSector
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").doesNotExist());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows.length()").value(8));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].trainStopping").value(true));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].commercialStop").value(true));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].commercialTrack").value("1"));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].cancelled").value(false));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].estimateSourceType").value("LIIKE_AUTOMATIC"));
     }
 }
