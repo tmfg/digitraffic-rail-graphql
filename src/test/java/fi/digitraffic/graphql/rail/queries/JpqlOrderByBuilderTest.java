@@ -126,6 +126,20 @@ class JpqlOrderByBuilderTest {
         }
 
         @Test
+        void rejectsNullDirectionValue() {
+            final Map<String, Object> map = new java.util.HashMap<>();
+            map.put("trainNumber", null);
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", List.of(map)));
+        }
+
+        @Test
+        void rejectsNonStringDirectionValue() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", List.of(Map.of("trainNumber", 42))));
+        }
+
+        @Test
         void acceptsValidFieldNames() {
             // camelCase
             assertEquals("e.trainNumber ASC", builder.build("e", List.of(Map.of("trainNumber", "ASCENDING"))));

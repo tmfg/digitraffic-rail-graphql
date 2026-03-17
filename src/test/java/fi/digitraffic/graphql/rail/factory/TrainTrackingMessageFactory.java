@@ -48,7 +48,7 @@ public class TrainTrackingMessageFactory {
     }
 
     @Transactional
-    public TrainTrackingMessage createWithNonNumericTrainNumber(final Train train, final String trainNumber) {
+    public void createWithNonNumericTrainNumber(final Train train, final String trainNumber) {
         final long id = idSequence++;
         entityManager.createNativeQuery(
                 "INSERT INTO train_running_message (id, version, timestamp, train_number, departure_date, track_section, station, type) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)")
@@ -60,6 +60,5 @@ public class TrainTrackingMessageFactory {
                 .setParameter(6, "TEST99")
                 .setParameter(7, TrainTrackingMessageTypeEnum.OCCUPY.ordinal())
                 .executeUpdate();
-        return null;
     }
 }
