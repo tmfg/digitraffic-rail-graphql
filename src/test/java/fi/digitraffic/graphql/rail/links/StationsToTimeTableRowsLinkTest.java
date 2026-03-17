@@ -28,7 +28,7 @@ public class StationsToTimeTableRowsLinkTest extends BaseWebMVCTest {
                     }
                 }""");
 
-        result.andExpect(jsonPath("$.data.stations[?(@.shortCode == 'HKI')].timeTableRows.length()").isNotEmpty());
+        result.andExpect(jsonPath("$.data.stations[?(@.shortCode == 'HKI')].timeTableRows").isNotEmpty());
     }
 }
 

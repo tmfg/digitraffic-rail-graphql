@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.links;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
@@ -58,6 +59,6 @@ public class RoutesetToRouteSectionsLinkTest extends BaseWebMVCTest {
                 }""");
 
         result.andExpect(jsonPath("$.errors").doesNotExist());
-        result.andExpect(jsonPath("$.data.routesetMessagesByVersionGreaterThan[0].routesections[0].commercialTrackId").isEmpty());
+        result.andExpect(jsonPath("$.data.routesetMessagesByVersionGreaterThan[0].routesections[0].commercialTrackId").value(nullValue()));
     }
 }

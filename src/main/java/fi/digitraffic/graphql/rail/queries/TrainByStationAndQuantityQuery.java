@@ -81,7 +81,12 @@ public class TrainByStationAndQuantityQuery extends BaseQuery<Train, TrainTO> {
 
         final List<TrainId> trainIds = liveTrains.stream()
                 .map(row -> {
-                    final LocalDate departureDate = ((Date) row[1]).toLocalDate();
+                    final LocalDate departureDate;
+                    if (row[1] instanceof LocalDate ld) {
+                        departureDate = ld;
+                    } else {
+                        departureDate = ((Date) row[1]).toLocalDate();
+                    }
                     final Long trainNumber = (Long) row[2];
                     return new TrainId(trainNumber, departureDate);
                 })
