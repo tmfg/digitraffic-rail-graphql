@@ -53,8 +53,7 @@ Sample query to be run:
 * `config` — Spring Boot config, GraphQL wiring, instruments etc.
 * `entities` — Hibernate `@Entity` classes mapping database tables
 * `links` — Graph-edge resolvers: fetch related entities for a parent TO (DataLoader pattern)
-* `queries` — Root-level GraphQL query fetchers
-* `query` — Utilities for building WHERE and ORDER BY clauses from GraphQL arguments
+* `queries` — Root-level GraphQL query fetchers and JPQL utilities (`JpqlWhereBuilder`, `JpqlOrderByBuilder`, `JpqlSafeIdentifier`)
 * `to` — Converters from Hibernate entities to generated GraphQL TOs
 
 GraphQL TOs are **code-generated** from `schema.graphqls` at compile time into `target/generated-sources/` — do not edit them manually.
