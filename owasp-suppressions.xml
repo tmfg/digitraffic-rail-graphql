@@ -3,6 +3,19 @@
     <!--
           Temporary suppressions, check and update these periodically
       -->
+    <!-- We dont use logger to send logs to remote servers -->
+    <suppress until="2026-06-01">
+        <notes><![CDATA[file name: log4j-api-2.24.3.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j-api@.*$</packageUrl>
+        <cve>CVE-2025-68161</cve>
+    </suppress>
+
+    <!-- Suppress CVE-2022-37734 for java-dataloader-5.0.3, as the vulnerability is in graphql-java and not java-dataloader -->
+    <suppress until="2027-02-27">
+        <notes><![CDATA[file name: java-dataloader-5.0.3.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.graphql-java/java-dataloader@5\.0\.3$</packageUrl>
+        <cve>CVE-2022-37734</cve>
+    </suppress>
 
     <!--
           Permanent suppressions
