@@ -1,7 +1,6 @@
 package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,7 +35,7 @@ public class CauseToDetailedCategoryCodeLink extends OneToOneLink<String, CauseT
 
     @Override
     public String createKeyFromParent(final CauseTO causeTO) {
-        return Objects.requireNonNullElse(causeTO.getDetailedCategoryCodeOid(), "-");
+        return causeTO.getDetailedCategoryCodeOid();
     }
 
     @Override

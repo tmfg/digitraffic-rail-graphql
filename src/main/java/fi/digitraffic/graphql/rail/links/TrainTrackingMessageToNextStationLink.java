@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-
 import fi.digitraffic.graphql.rail.entities.Station;
 import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
@@ -37,7 +35,7 @@ public class TrainTrackingMessageToNextStationLink extends OneToOneLink<String, 
 
     @Override
     public String createKeyFromParent(final TrainTrackingMessageTO msg) {
-        return Strings.nullToEmpty(msg.getNextStationShortCode());
+        return msg.getNextStationShortCode();
     }
 
     @Override

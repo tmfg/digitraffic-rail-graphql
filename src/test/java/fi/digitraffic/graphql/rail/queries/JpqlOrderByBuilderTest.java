@@ -80,9 +80,9 @@ class JpqlOrderByBuilderTest {
         }
 
         @Test
-        void unknownDirectionDefaultsToDesc() {
-            final var result = builder.build("e", List.of(Map.of("trainNumber", "UNKNOWN")));
-            assertEquals("e.trainNumber DESC", result);
+        void unknownDirectionThrows() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", List.of(Map.of("trainNumber", "UNKNOWN"))));
         }
     }
 

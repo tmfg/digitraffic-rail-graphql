@@ -75,10 +75,15 @@ public class JpqlOrderByBuilder {
 
     /**
      * Maps GraphQL direction enum (ASCENDING/DESCENDING) to JPQL (ASC/DESC).
-     * Only ASCENDING maps to ASC; everything else (including unknown values) maps to DESC.
+     * Throws {@link AbortExecutionException} for unknown values.
      */
     private String mapDirection(final String graphqlDirection) {
-        return "ASCENDING".equals(graphqlDirection) ? "ASC" : "DESC";
+        return switch (graphqlDirection) {
+            case "ASCENDING" -> "ASC";
+            case "DESCENDING" -> "DESC";
+            default -> throw new AbortExecutionException(
+                    "orderBy direction must be ASCENDING or DESCENDING, got: " + graphqlDirection);
+        };
     }
 }
 
