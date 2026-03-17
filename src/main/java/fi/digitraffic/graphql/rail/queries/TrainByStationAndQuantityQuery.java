@@ -2,6 +2,7 @@ package fi.digitraffic.graphql.rail.queries;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
