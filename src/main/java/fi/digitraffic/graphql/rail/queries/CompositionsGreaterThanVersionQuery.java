@@ -1,26 +1,29 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import fi.digitraffic.graphql.rail.entities.Composition;
-import fi.digitraffic.graphql.rail.entities.QComposition;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
 import fi.digitraffic.graphql.rail.to.CompositionTOConverter;
 import graphql.schema.DataFetchingEnvironment;
 
 @Component
-public class CompositionsGreaterThanVersionQuery extends BaseQuery<CompositionTO> {
-    @Autowired
-    private CompositionTOConverter compositionTOConverter;
+public class CompositionsGreaterThanVersionQuery extends BaseQuery<Composition, CompositionTO> {
+
+    private static final int MAX_LIMIT = 2000;
+
+    private final CompositionTOConverter compositionTOConverter;
+
+    public CompositionsGreaterThanVersionQuery(final JpqlWhereBuilder whereBuilder,
+                                               final JpqlOrderByBuilder orderByBuilder,
+                                               @Value("${digitraffic.max-returned-rows}") final int maxResults,
+                                               final CompositionTOConverter compositionTOConverter) {
+        super(whereBuilder, orderByBuilder, Math.min(maxResults, MAX_LIMIT));
+        this.compositionTOConverter = compositionTOConverter;
+    }
 
     @Override
     public String getQueryName() {
@@ -28,38 +31,26 @@ public class CompositionsGreaterThanVersionQuery extends BaseQuery<CompositionTO
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<Composition> getEntityClass() {
         return Composition.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.COMPOSITION;
+    public String buildBaseWhereClause(final String alias, final DataFetchingEnvironment env,
+                                       final Map<String, Object> parameters) {
+        final Long version = Long.parseLong(env.getArgument("version"));
+        parameters.put("version", version);
+        return alias + ".version > :version";
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QComposition.composition;
+    public String getDefaultOrderBy(final String alias) {
+        return alias + ".version ASC";
     }
 
     @Override
-    public BooleanExpression createWhereFromArguments(DataFetchingEnvironment dataFetchingEnvironment) {
-        Long version = Long.parseLong(dataFetchingEnvironment.getArgument("version"));
-        return QComposition.composition.version.gt(version);
-    }
-
-    @Override
-    protected JPAQuery<Tuple> createLimitQuery(JPAQuery<Tuple> query, Object limitArgument) {
-        return super.createLimitQuery(query, Math.min((limitArgument != null ? (int) limitArgument : MAX_RESULTS), 2000));
-    }
-
-    @Override
-    public CompositionTO convertEntityToTO(Tuple tuple) {
-        return compositionTOConverter.convert(tuple);
-    }
-
-    @Override
-    public OrderSpecifier createDefaultOrder() {
-        return new OrderSpecifier(Order.ASC, QComposition.composition.version);
+    public CompositionTO convertEntityToTO(final Composition entity) {
+        return compositionTOConverter.convertEntity(entity);
     }
 }
+

@@ -2,27 +2,33 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
+import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
 
 @Component
-public class TrainToTrainTrackingMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, TrainTrackingMessage, TrainTrackingMessageTO> {
-    @Autowired
-    private TrainTrackingTOConverter trainTrackingTOConverter;
+public class TrainToTrainTrackingMessagesLink
+        extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, TrainTrackingMessage, TrainTrackingMessageTO> {
+
+    private final TrainTrackingTOConverter trainTrackingTOConverter;
+
+    public TrainToTrainTrackingMessagesLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                            final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                            @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                            final TrainTrackingTOConverter trainTrackingTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.trainTrackingTOConverter = trainTrackingTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -40,32 +46,29 @@ public class TrainToTrainTrackingMessagesLink extends OneToManyLink<StringVirtua
     }
 
     @Override
-    public StringVirtualDepartureDateTrainId createKeyFromChild(final TrainTrackingMessageTO trainTrackingMessageTO) {
-        return new StringVirtualDepartureDateTrainId(String.valueOf(trainTrackingMessageTO.getTrainNumber()), trainTrackingMessageTO.getDepartureDate());
+    public StringVirtualDepartureDateTrainId createKeyFromChild(final TrainTrackingMessageTO child) {
+        return new StringVirtualDepartureDateTrainId(child.getTrainNumber(), child.getDepartureDate());
     }
 
     @Override
-    public TrainTrackingMessageTO createChildTOFromTuple(final Tuple tuple) {
-        return trainTrackingTOConverter.convert(tuple);
+    public TrainTrackingMessageTO createChildTOFromEntity(final TrainTrackingMessage entity) {
+        return trainTrackingTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<TrainTrackingMessage> getEntityClass() {
         return TrainTrackingMessage.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_TRACKING_MESSAGE;
+    protected KeyWhereClause buildKeyWhereClause(final List<StringVirtualDepartureDateTrainId> keys) {
+        return TrainIdWhereClause.buildForVirtualDepartureDate(
+                getEntityAlias(), "trainId.virtualDepartureDate", "trainId.trainNumber", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrainTrackingMessage.trainTrackingMessage;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<StringVirtualDepartureDateTrainId> keys) {
-        return TrainIdOptimizer.optimize(QTrainTrackingMessage.trainTrackingMessage.trainId, keys);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".timestamp ASC";
     }
 }
+

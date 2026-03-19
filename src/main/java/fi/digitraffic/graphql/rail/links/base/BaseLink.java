@@ -1,14 +1,11 @@
 package fi.digitraffic.graphql.rail.links.base;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.function.TriFunction;
 import org.dataloader.BatchLoaderWithContext;
@@ -17,45 +14,43 @@ import org.dataloader.DataLoaderRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Lists;
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import fi.digitraffic.graphql.rail.querydsl.OrderByExpressionBuilder;
-import fi.digitraffic.graphql.rail.querydsl.WhereExpressionBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.persistence.TypedQuery;
 
-import static fi.digitraffic.graphql.rail.queries.BaseQuery.replaceOffsetsWithZonedDateTimes;
-
+/**
+ * Base class for graph-edge resolvers (links).
+ */
 public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, ChildFieldType> {
     private static final ThreadPoolExecutor executor = new MdcAwareThreadPoolExecutor(20);
     private static final ThreadPoolExecutor sqlExecutor = new MdcAwareThreadPoolExecutor(10);
 
     private static final Logger log = LoggerFactory.getLogger(BaseLink.class);
 
-    @Value("${digitraffic.batch-load-size:500}")
-    private Integer BATCH_LOAD_SIZE;
+    private final int batchLoadSize;
+    protected final JpqlWhereBuilder jpqlWhereBuilder;
+    protected final JpqlOrderByBuilder jpqlOrderByBuilder;
 
-    @Autowired
-    private WhereExpressionBuilder whereExpressionBuilder;
+    @PersistenceContext
+    protected EntityManager entityManager;
 
-    @Autowired
-    private OrderByExpressionBuilder orderByExpressionBuilder;
+    protected BaseLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                           final JpqlOrderByBuilder jpqlOrderByBuilder,
+                           @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize) {
+        this.jpqlWhereBuilder = jpqlWhereBuilder;
+        this.jpqlOrderByBuilder = jpqlOrderByBuilder;
+        this.batchLoadSize = batchLoadSize;
+    }
 
     public boolean cachingEnabled() {
         return true;
@@ -69,44 +64,75 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         return this.getTypeName() + "." + this.getFieldName();
     }
 
+    /**
+     * Creates the lookup key from the parent TO.
+     * Return {@code null} if no lookup should be performed (e.g. the parent has no FK value set).
+     * The fetcher will return {@code null} for the child field in that case.
+     */
     public abstract KeyType createKeyFromParent(final ParentTOType parent);
 
     public abstract KeyType createKeyFromChild(final ChildTOType child);
 
-    public abstract ChildTOType createChildTOFromTuple(final Tuple tuple);
+    public abstract ChildTOType createChildTOFromEntity(final ChildEntityType entity);
 
     public abstract BatchLoaderWithContext<KeyType, ChildFieldType> createLoader();
 
     public abstract Class<ChildEntityType> getEntityClass();
 
-    public abstract Expression[] getFields();
+    /**
+     * Returns the entity alias used in JPQL queries (e.g., "e" for "SELECT e FROM Station e")
+     */
+    public String getEntityAlias() {
+        return "e";
+    }
 
-    public abstract EntityPath getEntityTable();
+    /**
+     * Builds the key-based WHERE clause and its named parameters.
+     * <p>
+     * For simple single-column keys use {@link #simpleInClause(String, List)}:
+     * <pre>
+     *     return simpleInClause("e.shortCode IN :keys", keys);
+     * </pre>
+     * For composite keys (e.g. {@link fi.digitraffic.graphql.rail.entities.TrainId}) delegate to
+     * {@link TrainIdWhereClause#build}.
+     */
+    protected abstract KeyWhereClause buildKeyWhereClause(final List<KeyType> keys);
 
-    public abstract BooleanExpression createWhere(final List<KeyType> keys);
+    protected static <T> KeyWhereClause simpleInClause(final String jpql, final List<T> keys) {
+        return new KeyWhereClause(jpql, Map.of("keys", keys));
+    }
 
-    public OrderSpecifier createDefaultOrder() {
+    /**
+     * Returns default ORDER BY clause or null if no default ordering.
+     * Example: "e.name ASC"
+     */
+    public String getDefaultOrderBy() {
         return null;
     }
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    protected JPAQueryFactory queryFactory;
-
-    @PostConstruct
-    public void setup() {
-        queryFactory = new JPAQueryFactory(entityManager);
+    /**
+     * Builds fixed WHERE conditions that are always applied regardless of key or user filters.
+     * Override to add entity-specific base conditions (e.g. active-only, latest-version).
+     * Returns {@link KeyWhereClause#EMPTY} by default (no extra conditions).
+     */
+    protected KeyWhereClause buildBaseWhereClause() {
+        return KeyWhereClause.EMPTY;
     }
+
 
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
             final ParentTOType parent = dataFetchingEnvironment.getSource();
+            final KeyType key = createKeyFromParent(parent);
+
+            if (key == null) {
+                return CompletableFuture.completedFuture(null);
+            }
 
             final DataLoaderRegistry dataLoaderRegistry = dataFetchingEnvironment.getDataLoaderRegistry();
             final DataLoader<KeyType, ChildFieldType> dataloader = dataLoaderRegistry.getDataLoader(getTypeName() + "." + getFieldName());
 
-            return dataloader.load(createKeyFromParent(parent), dataFetchingEnvironment);
+            return dataloader.load(key, dataFetchingEnvironment);
         };
     }
 
@@ -118,14 +144,14 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
         // make new batches for those that have alias
         // and collect all others to one list
-        for(int i = 0; i < keys.size(); i++) {
+        for (int i = 0; i < keys.size(); i++) {
             final var key = keys.get(i);
             final var dfe = (DataFetchingEnvironment) keyContextsList.get(i);
 
-            if(dfe.getMergedField().getSingleField().getAlias() != null) {
+            if (dfe.getMergedField().getSingleField().getAlias() != null) {
                 batches.add(new LoaderBatch<>(List.of(key), dfe));
             } else {
-                if(other.isEmpty()) {
+                if (other.isEmpty()) {
                     other.add(new LoaderBatch<>(new ArrayList<>(), dfe));
                 }
 
@@ -134,8 +160,8 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         }
 
         // then partition the list with required size
-        if(!other.isEmpty()) {
-            final List<List<KeyType>> partitions = Lists.partition(other.get(0).keys, BATCH_LOAD_SIZE);
+        if (!other.isEmpty()) {
+            final List<List<KeyType>> partitions = Lists.partition(other.get(0).keys, batchLoadSize);
             batches.addAll(partitions.stream().map(p -> new LoaderBatch<>(p, other.get(0).dfe)).toList());
         }
 
@@ -143,42 +169,36 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     }
 
     protected <ResultType> BatchLoaderWithContext<KeyType, ResultType> createDataLoader(
-            final TriFunction<List<KeyType>, List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction,
-            final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
+            final TriFunction<List<KeyType>, List<ChildTOType>, DataFetchingEnvironment, Map<KeyType, ResultType>> childGroupFunction) {
         return (keys, loaderContext) -> {
             final var batches = createBatches(keys, loaderContext.getKeyContextsList());
 
             return CompletableFuture.supplyAsync(() -> {
                 final var resultMap = new CountingKeyMap<KeyType, ResultType>(keys.size());
 
-                final Class<ChildEntityType> entityClass = getEntityClass();
-                final PathBuilder<ChildEntityType> pathBuilder = new PathBuilder<>(entityClass,
-                        entityClass.getSimpleName().substring(0, 1).toLowerCase() + entityClass.getSimpleName().substring(1));
-
                 final List<Future<Map<KeyType, ResultType>>> futures = new ArrayList<>();
 
                 for (final LoaderBatch<KeyType> batch : batches) {
                     MDC.put("execution_id", batch.dfe.getExecutionId().toString());
 
-                    final BooleanExpression basicWhere = BaseLink.this.createWhere(batch.keys);
-                    final JPAQuery<Tuple> queryAfterFrom = queryAfterFromFunction.apply(queryFactory);
-                    final JPAQuery<Tuple> queryAfterWhere =
-                            createWhereQuery(queryAfterFrom, pathBuilder, basicWhere, batch.dfe.getArgument("where"));
-                    final JPAQuery<Tuple> queryAfterOrderBy =
-                            createOrderByQuery(queryAfterWhere, pathBuilder, batch.dfe.getArgument("orderBy"));
+                    futures.add(sqlExecutor.submit(() -> {
+                        final List<ChildEntityType> entities = executeQuery(
+                                batch.keys,
+                                batch.dfe.getArgument("where"),
+                                batch.dfe.getArgument("orderBy")
+                        );
 
-                    futures.add(sqlExecutor.submit(
-                            () -> childGroupFunction.apply(batch.keys,
-                                    queryAfterOrderBy.fetch().stream()
-                                    .map(BaseLink.this::createChildTOFromTuple)
-                                    .toList()
-                            , batch.dfe)));
+                        final List<ChildTOType> children = entities.stream()
+                                .map(this::createChildTOFromEntity)
+                                .toList();
+
+                        return childGroupFunction.apply(batch.keys, children, batch.dfe);
+                    }));
                 }
 
                 for (final Future<Map<KeyType, ResultType>> future : futures) {
                     try {
                         final var map = future.get();
-
                         resultMap.putAll(map);
                     } catch (final QueryTimeoutException e) {
                         log.info("Timeout fetching children", e);
@@ -194,33 +214,87 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         };
     }
 
-    // TODO: is this needed? same as in BaseQuery?
-    private JPAQuery<Tuple> createWhereQuery(final JPAQuery<Tuple> query, final PathBuilder root, final BooleanExpression basicWhere,
-                                             final Map<String, Object> whereAsMap) {
-        if (whereAsMap != null) {
-            final Map<String, Object> properWhereMap = replaceOffsetsWithZonedDateTimes(whereAsMap);
+    /**
+     * Executes the JPQL query with the given keys, where clause, and order by.
+     */
+    protected List<ChildEntityType> executeQuery(
+            final List<KeyType> keys,
+            final Map<String, Object> whereMap,
+            final List<Map<String, Object>> orderByList) {
 
-            final BooleanExpression whereExpression = whereExpressionBuilder.create(null, root, properWhereMap);
-            return query.where(basicWhere.and(whereExpression));
-        } else {
-            return query.where(basicWhere);
+        final String alias = getEntityAlias();
+        final Class<ChildEntityType> entityClass = getEntityClass();
+        final String entityName = entityClass.getSimpleName();
+
+        // Build base query
+        final StringBuilder jpql = new StringBuilder();
+        jpql.append("SELECT ").append(alias)
+                .append(" FROM ").append(entityName).append(" ").append(alias);
+
+        // Build WHERE clause
+        final var params = new java.util.HashMap<String, Object>();
+        final List<String> whereClauses = new ArrayList<>();
+
+        // Add base (fixed) where clause
+        final KeyWhereClause baseWhere = buildBaseWhereClause();
+        if (!baseWhere.jpql().isEmpty()) {
+            whereClauses.add(baseWhere.jpql());
+            params.putAll(baseWhere.params());
         }
+
+        // Add key-based where clause
+        final KeyWhereClause keyWhere = buildKeyWhereClause(keys);
+        if (!keyWhere.jpql().isEmpty()) {
+            whereClauses.add(keyWhere.jpql());
+            params.putAll(keyWhere.params());
+        }
+
+        // Add user-provided where clause
+        if (whereMap != null && !whereMap.isEmpty()) {
+            final var whereResult = jpqlWhereBuilder.build(alias, replaceOffsetsWithZonedDateTimes(whereMap));
+            if (!whereResult.jpql().isEmpty()) {
+                whereClauses.add(whereResult.jpql());
+                params.putAll(whereResult.params());
+            }
+        }
+
+        if (!whereClauses.isEmpty()) {
+            jpql.append(" WHERE ").append(String.join(" AND ", whereClauses));
+        }
+
+        // Build ORDER BY clause
+        if (orderByList != null && !orderByList.isEmpty()) {
+            final String orderByClause = jpqlOrderByBuilder.build(alias, orderByList);
+            if (!orderByClause.isEmpty()) {
+                jpql.append(" ORDER BY ").append(orderByClause);
+            }
+        } else {
+            final String defaultOrderBy = getDefaultOrderBy();
+            if (defaultOrderBy != null && !defaultOrderBy.isEmpty()) {
+                jpql.append(" ORDER BY ").append(defaultOrderBy);
+            }
+        }
+
+        // Execute query
+        final TypedQuery<ChildEntityType> query = entityManager.createQuery(jpql.toString(), entityClass);
+        params.forEach(query::setParameter);
+
+        return query.getResultList();
     }
 
-    private JPAQuery<Tuple> createOrderByQuery(JPAQuery<Tuple> query, final PathBuilder root, final List<Map<String, Object>> orderByArgument) {
-        if (orderByArgument != null) {
-            final List<OrderSpecifier> orderSpecifiers = this.orderByExpressionBuilder.create(root, orderByArgument);
-            for (final OrderSpecifier orderSpecifier : orderSpecifiers) {
-                query = query.orderBy(orderSpecifier);
-            }
-            return query;
-        } else {
-            final OrderSpecifier defaultOrder = this.createDefaultOrder();
-            if (defaultOrder != null) {
-                return query.orderBy(defaultOrder);
-            } else {
-                return query;
+    /**
+     * Converts OffsetDateTime to ZonedDateTime in the where map.
+     */
+    @SuppressWarnings("unchecked")
+    protected static Map<String, Object> replaceOffsetsWithZonedDateTimes(final Map<String, Object> whereAsMap) {
+        for (final String key : whereAsMap.keySet()) {
+            final Object value = whereAsMap.get(key);
+            if (value instanceof Map) {
+                replaceOffsetsWithZonedDateTimes((Map<String, Object>) value);
+            } else if (value instanceof final java.time.OffsetDateTime odt) {
+                whereAsMap.put(key, odt.toZonedDateTime());
             }
         }
+        return whereAsMap;
     }
 }

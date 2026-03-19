@@ -2,28 +2,28 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import fi.digitraffic.graphql.rail.entities.QTrainTrackingMessage;
+import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessageTypeEnum;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
 
 @Component
 public class TrainTrackingTOConverter {
-    public TrainTrackingMessageTO convert(final Tuple tuple) {
+
+    public TrainTrackingMessageTO convertEntity(final TrainTrackingMessage entity) {
         return new TrainTrackingMessageTO(
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.id).intValue(),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.trainNumber),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.trainId.virtualDepartureDate),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.stationShortCode),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextStationShortCode),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousStationShortCode),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.version).toString(),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.timestamp),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.track_section),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.nextTrackSectionCode),
-                tuple.get(QTrainTrackingMessage.trainTrackingMessage.previousTrackSectionCode),
-                getType(tuple.get(QTrainTrackingMessage.trainTrackingMessage.type)),
+                entity.id.intValue(),
+                entity.trainId.trainNumber,
+                entity.trainId.virtualDepartureDate,
+                entity.stationShortCode,
+                entity.nextStationShortCode,
+                entity.previousStationShortCode,
+                entity.version.toString(),
+                entity.timestamp,
+                entity.track_section,
+                entity.nextTrackSectionCode,
+                entity.previousTrackSectionCode,
+                getType(entity.type),
                 null, null, null, null, null);
     }
 

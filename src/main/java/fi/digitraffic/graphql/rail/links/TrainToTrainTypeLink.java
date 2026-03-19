@@ -2,25 +2,30 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTrainType;
 import fi.digitraffic.graphql.rail.entities.TrainType;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTypeTOConverter;
 
 @Component
 public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType, TrainTypeTO> {
-    @Autowired
-    private TrainTypeTOConverter trainTypeTOConverter;
+
+    private final TrainTypeTOConverter trainTypeTOConverter;
+
+    public TrainToTrainTypeLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                final TrainTypeTOConverter trainTypeTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.trainTypeTOConverter = trainTypeTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -43,27 +48,22 @@ public class TrainToTrainTypeLink extends OneToOneLink<Long, TrainTO, TrainType,
     }
 
     @Override
-    public TrainTypeTO createChildTOFromTuple(final Tuple tuple) {
-        return trainTypeTOConverter.convert(tuple);
+    public TrainTypeTO createChildTOFromEntity(final TrainType entity) {
+        return trainTypeTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<TrainType> getEntityClass() {
         return TrainType.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_TYPE;
+    protected KeyWhereClause buildKeyWhereClause(final List<Long> keys) {
+        return simpleInClause(getEntityAlias() + ".id IN :keys", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrainType.trainType;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<Long> keys) {
-        return QTrainType.trainType.id.in(keys);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".name ASC";
     }
 }

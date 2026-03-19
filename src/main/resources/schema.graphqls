@@ -221,7 +221,7 @@ type TrainTrackingMessage {
     nextTrackSectionCode : String
     previousTrackSectionCode : String
     type : TrainTrackingMessageType!
-    station : Station!
+    station : Station
     nextStation : Station
     previousStation : Station
     train : Train
@@ -242,10 +242,10 @@ type RoutesetMessage {
 
 type Routesection {
     sectionId : String!
-    commercialTrackId : String!
+    commercialTrackId : String
     stationCode : String!
     routesetId : Int!
-    station : Station!
+    station : Station
 }
 
 type TrackSection {

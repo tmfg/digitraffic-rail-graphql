@@ -2,40 +2,41 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import fi.digitraffic.graphql.rail.entities.Cause;
-import fi.digitraffic.graphql.rail.entities.QCause;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.CauseTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.CauseTOConverter;
 
 @Component
 public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, TimeTableRowTO, Cause, CauseTO> {
-    @Autowired
-    private CauseTOConverter causeTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "TimeTableRow";
+    private final CauseTOConverter causeTOConverter;
+
+    public TimeTableRowToCausesLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                    final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                    @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                    final CauseTOConverter causeTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.causeTOConverter = causeTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "causes";
-    }
+    public String getTypeName() { return "TimeTableRow"; }
 
     @Override
-    public TimeTableRowId createKeyFromParent(final TimeTableRowTO timeTableRow) {
-        return new TimeTableRowId(timeTableRow.getId(), timeTableRow.getDepartureDate(), timeTableRow.getTrainNumber());
+    public String getFieldName() { return "causes"; }
+
+    @Override
+    public TimeTableRowId createKeyFromParent(final TimeTableRowTO timeTableRowTO) {
+        return new TimeTableRowId(timeTableRowTO.getId(), timeTableRowTO.getDepartureDate(), timeTableRowTO.getTrainNumber());
     }
 
     @Override
@@ -44,27 +45,16 @@ public class TimeTableRowToCausesLink extends OneToManyLink<TimeTableRowId, Time
     }
 
     @Override
-    public CauseTO createChildTOFromTuple(final Tuple tuple) {
-        return causeTOConverter.convert(tuple);
+    public CauseTO createChildTOFromEntity(final Cause entity) {
+        return causeTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return Cause.class;
-    }
+    public Class<Cause> getEntityClass() { return Cause.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.CAUSE;
-    }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QCause.cause;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<TimeTableRowId> keys) {
-        return QCause.cause.timeTableRowId.in(keys);
+    protected KeyWhereClause buildKeyWhereClause(final List<TimeTableRowId> keys) {
+        return simpleInClause(getEntityAlias() + ".timeTableRowId IN :keys", keys);
     }
 }
+

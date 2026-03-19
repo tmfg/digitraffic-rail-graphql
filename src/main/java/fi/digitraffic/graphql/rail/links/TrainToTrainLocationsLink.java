@@ -2,27 +2,32 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTrainLocation;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.entities.TrainLocation;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
+import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
 import fi.digitraffic.graphql.rail.model.TrainLocationTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainLocationTOConverter;
 
 @Component
 public class TrainToTrainLocationsLink extends OneToManyLink<TrainId, TrainTO, TrainLocation, TrainLocationTO> {
-    @Autowired
-    private TrainLocationTOConverter trainLocationTOConverter;
+
+    private final TrainLocationTOConverter trainLocationTOConverter;
+
+    public TrainToTrainLocationsLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                     final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                     @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                     final TrainLocationTOConverter trainLocationTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.trainLocationTOConverter = trainLocationTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -45,27 +50,25 @@ public class TrainToTrainLocationsLink extends OneToManyLink<TrainId, TrainTO, T
     }
 
     @Override
-    public TrainLocationTO createChildTOFromTuple(final Tuple tuple) {
-        return trainLocationTOConverter.convert(tuple);
+    public TrainLocationTO createChildTOFromEntity(final TrainLocation entity) {
+        return trainLocationTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<TrainLocation> getEntityClass() {
         return TrainLocation.class;
     }
 
+
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_LOCATION;
+    protected KeyWhereClause buildKeyWhereClause(final List<TrainId> keys) {
+        // TrainLocation has flat departureDate and trainNumber columns (not inside an embedded id)
+        return TrainIdWhereClause.build(getEntityAlias(), "departureDate", "trainNumber", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTrainLocation.trainLocation;
-    }
-
-    @Override
-    public BooleanExpression createWhere(List<TrainId> keys) {
-        return TrainIdOptimizer.optimize(QTrainLocation.trainLocation.train.id, keys);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".trainLocationId.timestamp ASC";
     }
 }
+

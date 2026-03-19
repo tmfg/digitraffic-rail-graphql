@@ -1,51 +1,53 @@
 package fi.digitraffic.graphql.rail.links.base;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.dataloader.BatchLoaderWithContext;
+import org.springframework.beans.factory.annotation.Value;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import graphql.schema.DataFetchingEnvironment;
 
+/**
+ * One-to-many graph-edge resolver.
+ * For relationships where each parent has multiple children (e.g., Train → TimeTableRows).
+ */
 public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, ChildTOType>
         extends BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOType, List<ChildTOType>> {
 
+    protected OneToManyLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+    }
+
+    @Override
     public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader() {
-        final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction = (queryFactory) -> queryFactory.select(getFields()).from(getEntityTable());
-        return doCreateLoader(queryAfterFromFunction);
-    }
-
-    public BatchLoaderWithContext<KeyType, List<ChildTOType>> createLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
-        return doCreateLoader(queryAfterFromFunction);
-    }
-
-    public BatchLoaderWithContext<KeyType, List<ChildTOType>> doCreateLoader(final Function<JPAQueryFactory, JPAQuery<Tuple>> queryAfterFromFunction) {
-
         return createDataLoader((keys, children, dataFetchingEnvironment) -> {
-                    final Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
+            final Map<KeyType, List<ChildTOType>> childrenGroupedBy = new HashMap<>();
 
-                    keys.forEach(key -> childrenGroupedBy.put(key, new ArrayList<>()));
+            keys.forEach(key -> childrenGroupedBy.put(key, new ArrayList<>()));
 
-                    for (final ChildTOType child1 : children) {
-                        final KeyType parentId = createKeyFromChild(child1);
-                        final List<ChildTOType> childTOs = childrenGroupedBy.computeIfAbsent(parentId, k -> new ArrayList<>());
-                        childTOs.add(child1);
-                    }
+            for (final ChildTOType child : children) {
+                final KeyType parentId = createKeyFromChild(child);
+                final List<ChildTOType> childTOs = childrenGroupedBy.computeIfAbsent(parentId, k -> new ArrayList<>());
+                childTOs.add(child);
+            }
 
-                    filterWithSkipAndTake(childrenGroupedBy, dataFetchingEnvironment);
+            filterWithSkipAndTake(childrenGroupedBy, dataFetchingEnvironment);
 
-                    return childrenGroupedBy;
-                }
-                , queryAfterFromFunction);
+            return childrenGroupedBy;
+        });
     }
 
-    // This should be done in database, but Mysql 5.7 does not support partition...over
+    /**
+     * Filters results with skip and take arguments.
+     * This should be done in database, but MySQL 5.7 does not support partition...over
+     */
     private void filterWithSkipAndTake(final Map<KeyType, List<ChildTOType>> childrenGroupedBy,
                                        final DataFetchingEnvironment dataFetchingEnvironment) {
         final Integer skip = dataFetchingEnvironment.getArgument("skip");
@@ -54,9 +56,9 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
             final int start = skip != null ? skip : 0;
             final int elementsToPotentiallyTake = take != null ? take : Integer.MAX_VALUE;
 
-            for (final Map.Entry<KeyType, List<ChildTOType>> keyTypeListEntry : childrenGroupedBy.entrySet()) {
-                final List<ChildTOType> values = keyTypeListEntry.getValue();
-                final KeyType key = keyTypeListEntry.getKey();
+            for (final Map.Entry<KeyType, List<ChildTOType>> entry : childrenGroupedBy.entrySet()) {
+                final List<ChildTOType> values = entry.getValue();
+                final KeyType key = entry.getKey();
                 if (start < values.size()) {
                     final int end = Math.min(start + elementsToPotentiallyTake, values.size());
                     childrenGroupedBy.put(key, values.subList(start, end));
@@ -66,5 +68,5 @@ public abstract class OneToManyLink<KeyType, ParentTOType, ChildEntityType, Chil
             }
         }
     }
-
 }
+

@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 public class RequestScopedInterceptor implements WebGraphQlInterceptor {
 
     @Autowired
-    private List<BaseLink<?, ?, ?, ?, ?>> fetchers;
+    private List<BaseLink<?, ?, ?, ?, ?>> links;
 
     private static final DataLoaderOptions CACHING_ENABLED = DataLoaderOptions.newOptions().build();
     private static final DataLoaderOptions CACHING_DISABLED = DataLoaderOptions.newOptions().setCachingEnabled(false).build();
@@ -33,12 +33,13 @@ public class RequestScopedInterceptor implements WebGraphQlInterceptor {
         request.configureExecutionInput((executionInput, builder) -> {
             final DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
 
-            for (final var fetcher : fetchers) {
-                final BatchLoaderWithContext<?, ?> dataLoader = fetcher.createLoader();
-                final DataLoaderOptions options = fetcher.cachingEnabled() ? CACHING_ENABLED : CACHING_DISABLED;
+            for (final var link : links) {
+                final BatchLoaderWithContext<?, ?> dataLoader = link.createLoader();
+                final DataLoaderOptions options = link.cachingEnabled() ? CACHING_ENABLED : CACHING_DISABLED;
                 final DataLoader<?, ?> loader = DataLoaderFactory.newDataLoader(dataLoader, options);
-                dataLoaderRegistry.register(fetcher.createDataLoaderKey(), loader);
+                dataLoaderRegistry.register(link.createDataLoaderKey(), loader);
             }
+
             return builder
                     .dataLoaderRegistry(dataLoaderRegistry)
                     .build();

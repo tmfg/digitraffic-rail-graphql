@@ -2,35 +2,36 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTrainCategory;
 import fi.digitraffic.graphql.rail.entities.TrainCategory;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.TrainCategoryTO;
 import fi.digitraffic.graphql.rail.model.TrainTypeTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainCategoryTOConverter;
 
 @Component
 public class TrainTypeToTrainCategoryLink extends OneToOneLink<Long, TrainTypeTO, TrainCategory, TrainCategoryTO> {
-    @Autowired
-    private TrainCategoryTOConverter trainCategoryTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "TrainType";
+    private final TrainCategoryTOConverter trainCategoryTOConverter;
+
+    public TrainTypeToTrainCategoryLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                        final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                        @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                        final TrainCategoryTOConverter trainCategoryTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.trainCategoryTOConverter = trainCategoryTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "trainCategory";
-    }
+    public String getTypeName() { return "TrainType"; }
+
+    @Override
+    public String getFieldName() { return "trainCategory"; }
 
     @Override
     public Long createKeyFromParent(final TrainTypeTO trainTypeTO) {
@@ -43,27 +44,15 @@ public class TrainTypeToTrainCategoryLink extends OneToOneLink<Long, TrainTypeTO
     }
 
     @Override
-    public TrainCategoryTO createChildTOFromTuple(final Tuple tuple) {
-        return trainCategoryTOConverter.convert(tuple);
+    public TrainCategoryTO createChildTOFromEntity(final TrainCategory entity) {
+        return trainCategoryTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return TrainCategory.class;
-    }
+    public Class<TrainCategory> getEntityClass() { return TrainCategory.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TRAIN_CATEGORY;
-    }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QTrainCategory.trainCategory;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<Long> keys) {
-        return QTrainCategory.trainCategory.id.in(keys);
+    protected KeyWhereClause buildKeyWhereClause(final List<Long> keys) {
+        return simpleInClause(getEntityAlias() + ".id IN :keys", keys);
     }
 }

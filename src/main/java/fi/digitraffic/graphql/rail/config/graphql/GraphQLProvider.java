@@ -56,14 +56,17 @@ import graphql.schema.idl.TypeRuntimeWiring;
 public class GraphQLProvider {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private DigitrafficConfig digitrafficConfig;
+    private final DigitrafficConfig digitrafficConfig;
+    private final List<BaseQuery<?, ?>> rootFetchers;
+    private final List<BaseLink<?, ?, ?, ?, ?>> links;
 
-    @Autowired
-    private List<BaseLink> fetchers;
-
-    @Autowired
-    private List<BaseQuery> rootFetchers;
+    public GraphQLProvider(final DigitrafficConfig digitrafficConfig,
+                           final List<BaseQuery<?, ?>> rootFetchers,
+                           final List<BaseLink<?, ?, ?, ?, ?>> links) {
+        this.digitrafficConfig = digitrafficConfig;
+        this.rootFetchers = rootFetchers;
+        this.links = links;
+    }
 
     private final Set<String> PRIMITIVE_TYPES = Set.of("Boolean", "String", "Date", "DateTime", "Int");
     private final Map<String, String> fieldNameOrderByOverrides = Map.of("trainType", "TrainTypeOrderBy");
@@ -388,14 +391,15 @@ public class GraphQLProvider {
                 .scalar(ExtendedScalars.Date)
                 .scalar(ExtendedScalars.DateTime);
 
-        for (final BaseQuery fetcher : rootFetchers) {
+        for (final BaseQuery<?, ?> fetcher : rootFetchers) {
             query.dataFetcher(fetcher.getQueryName(), fetcher.createFetcher());
         }
+
         builder.type(query);
 
-        for (final BaseLink fetcher : this.fetchers) {
-            builder.type(newTypeWiring(fetcher.getTypeName())
-                    .dataFetcher(fetcher.getFieldName(), fetcher.createFetcher()));
+        for (final BaseLink<?, ?, ?, ?, ?> link : this.links) {
+            builder.type(newTypeWiring(link.getTypeName())
+                    .dataFetcher(link.getFieldName(), link.createFetcher()));
         }
 
         return builder.build();

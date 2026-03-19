@@ -2,27 +2,33 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QRoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.RoutesetMessage;
 import fi.digitraffic.graphql.rail.entities.StringVirtualDepartureDateTrainId;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
+import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
 import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.RoutesetMessageTOConverter;
 
 @Component
-public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, RoutesetMessage, RoutesetMessageTO> {
-    @Autowired
-    private RoutesetMessageTOConverter routesetMessageTOConverter;
+public class TrainToRoutesetMessagesLink
+        extends OneToManyLink<StringVirtualDepartureDateTrainId, TrainTO, RoutesetMessage, RoutesetMessageTO> {
+
+    private final RoutesetMessageTOConverter routesetMessageTOConverter;
+
+    public TrainToRoutesetMessagesLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                       final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                       @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                       final RoutesetMessageTOConverter routesetMessageTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.routesetMessageTOConverter = routesetMessageTOConverter;
+    }
 
     @Override
     public String getTypeName() {
@@ -40,32 +46,29 @@ public class TrainToRoutesetMessagesLink extends OneToManyLink<StringVirtualDepa
     }
 
     @Override
-    public StringVirtualDepartureDateTrainId createKeyFromChild(final RoutesetMessageTO routesetMessageTO) {
-        return new StringVirtualDepartureDateTrainId(String.valueOf(routesetMessageTO.getTrainNumber()), routesetMessageTO.getDepartureDate());
+    public StringVirtualDepartureDateTrainId createKeyFromChild(final RoutesetMessageTO child) {
+        return new StringVirtualDepartureDateTrainId(child.getTrainNumber(), child.getDepartureDate());
     }
 
     @Override
-    public RoutesetMessageTO createChildTOFromTuple(final Tuple tuple) {
-        return routesetMessageTOConverter.convert(tuple);
+    public RoutesetMessageTO createChildTOFromEntity(final RoutesetMessage entity) {
+        return routesetMessageTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<RoutesetMessage> getEntityClass() {
         return RoutesetMessage.class;
     }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.ROUTESET;
+    protected KeyWhereClause buildKeyWhereClause(final List<StringVirtualDepartureDateTrainId> keys) {
+        return TrainIdWhereClause.buildForVirtualDepartureDate(
+                getEntityAlias(), "trainId.virtualDepartureDate", "trainId.trainNumber", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QRoutesetMessage.routesetMessage;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<StringVirtualDepartureDateTrainId> keys) {
-        return TrainIdOptimizer.optimize(QRoutesetMessage.routesetMessage.trainId, keys);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".messageTime ASC";
     }
 }
+

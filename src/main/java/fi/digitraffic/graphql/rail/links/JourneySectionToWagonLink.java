@@ -2,35 +2,36 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QWagon;
 import fi.digitraffic.graphql.rail.entities.Wagon;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.WagonTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.WagonTOConverter;
 
 @Component
 public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectionTO, Wagon, WagonTO> {
-    @Autowired
-    private WagonTOConverter wagonTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "JourneySection";
+    private final WagonTOConverter wagonTOConverter;
+
+    public JourneySectionToWagonLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                     final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                     @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                     final WagonTOConverter wagonTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.wagonTOConverter = wagonTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "wagons";
-    }
+    public String getTypeName() { return "JourneySection"; }
+
+    @Override
+    public String getFieldName() { return "wagons"; }
 
     @Override
     public Long createKeyFromParent(final JourneySectionTO journeySectionTO) {
@@ -43,27 +44,16 @@ public class JourneySectionToWagonLink extends OneToManyLink<Long, JourneySectio
     }
 
     @Override
-    public WagonTO createChildTOFromTuple(final Tuple tuple) {
-        return wagonTOConverter.convert(tuple);
+    public WagonTO createChildTOFromEntity(final Wagon entity) {
+        return wagonTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return Wagon.class;
-    }
+    public Class<Wagon> getEntityClass() { return Wagon.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.WAGON;
-    }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QWagon.wagon;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<Long> keys) {
-        return QWagon.wagon.journeysectionId.in(keys);
+    protected KeyWhereClause buildKeyWhereClause(final List<Long> keys) {
+        return simpleInClause(getEntityAlias() + ".journeysectionId IN :keys", keys);
     }
 }
+

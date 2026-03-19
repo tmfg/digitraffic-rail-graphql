@@ -2,21 +2,21 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import fi.digitraffic.graphql.rail.entities.QComposition;
+import fi.digitraffic.graphql.rail.entities.Composition;
 import fi.digitraffic.graphql.rail.model.CompositionTO;
 
 @Component
-public class CompositionTOConverter extends BaseConverter<CompositionTO>{
-    public CompositionTO convert(Tuple tuple) {
+public class CompositionTOConverter extends BaseConverter{
+
+    public CompositionTO convertEntity(final Composition entity) {
         return new CompositionTO(
-                tuple.get(QComposition.composition.id.departureDate),
-                tuple.get(QComposition.composition.id.trainNumber).intValue(),
-                tuple.get(QComposition.composition.operatorShortCode),
-                tuple.get(QComposition.composition.trainCategoryId).intValue(),
-                tuple.get(QComposition.composition.trainTypeId).intValue(),
-                tuple.get(QComposition.composition.version).toString(),
-                tuple.get(QComposition.composition.operatorUicCode),
+                entity.id.departureDate,
+                entity.id.trainNumber.intValue(),
+                entity.operatorShortCode,
+                entity.trainCategoryId.intValue(),
+                entity.trainTypeId.intValue(),
+                entity.version.toString(),
+                entity.operatorUicCode,
                 null,
                 null
         );

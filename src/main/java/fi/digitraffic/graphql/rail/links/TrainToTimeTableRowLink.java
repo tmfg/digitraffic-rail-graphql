@@ -2,27 +2,32 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.links.base.OneToManyLink;
+import fi.digitraffic.graphql.rail.links.base.TrainIdWhereClause;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
 public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, TimeTableRow, TimeTableRowTO> {
-    @Autowired
-    private TimeTableRowTOConverter timeTableRowTOConverter;
+
+    private final TimeTableRowTOConverter timeTableRowTOConverter;
+
+    public TrainToTimeTableRowLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                   final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                   @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                   final TimeTableRowTOConverter timeTableRowTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.timeTableRowTOConverter = timeTableRowTOConverter;
+    }
 
     @Override
     public boolean cachingEnabled() {
@@ -50,27 +55,24 @@ public class TrainToTimeTableRowLink extends OneToManyLink<TrainId, TrainTO, Tim
     }
 
     @Override
-    public TimeTableRowTO createChildTOFromTuple(final Tuple tuple) {
-        return timeTableRowTOConverter.convert(tuple);
+    public TimeTableRowTO createChildTOFromEntity(final TimeTableRow entity) {
+        return timeTableRowTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
+    public Class<TimeTableRow> getEntityClass() {
         return TimeTableRow.class;
     }
 
+
     @Override
-    public Expression[] getFields() {
-        return AllFields.TIME_TABLE_ROW;
+    protected KeyWhereClause buildKeyWhereClause(final List<TrainId> keys) {
+        return TrainIdWhereClause.build(getEntityAlias(), "departureDate", "trainNumber", keys);
     }
 
     @Override
-    public EntityPath getEntityTable() {
-        return QTimeTableRow.timeTableRow;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<TrainId> keys) {
-        return TrainIdOptimizer.optimize(QTimeTableRow.timeTableRow.train.id, keys);
+    public String getDefaultOrderBy() {
+        return getEntityAlias() + ".scheduledTime ASC";
     }
 }
+

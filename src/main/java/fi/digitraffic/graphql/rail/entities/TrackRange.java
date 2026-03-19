@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -20,9 +21,10 @@ public class TrackRange {
     public Integer startMetres;
     public Integer endMetres;
 
+    @Column(name = "track_section_id", insertable = false, updatable = false)
     public Long trackSectionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trackSection", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "track_section_id", nullable = false, insertable = false, updatable = false)
     public TrackSection trackSection;
 }

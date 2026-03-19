@@ -2,49 +2,45 @@ package fi.digitraffic.graphql.rail.links;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.core.types.EntityPath;
-import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import fi.digitraffic.graphql.rail.entities.QTimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.entities.TimeTableRowId;
+import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.links.base.OneToOneLink;
 import fi.digitraffic.graphql.rail.model.JourneySectionTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
-import fi.digitraffic.graphql.rail.querydsl.AllFields;
-import fi.digitraffic.graphql.rail.repositories.TrainIdOptimizer;
+import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
+import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TimeTableRowTOConverter;
 
 @Component
 public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTableRowId, JourneySectionTO, TimeTableRow, TimeTableRowTO> {
-    @Autowired
-    private TimeTableRowTOConverter timeTableRowTOConverter;
 
-    @Override
-    public String getTypeName() {
-        return "JourneySection";
+    private final TimeTableRowTOConverter timeTableRowTOConverter;
+
+    public JourneySectionToStartTimeTableRowLink(final JpqlWhereBuilder jpqlWhereBuilder,
+                                                 final JpqlOrderByBuilder jpqlOrderByBuilder,
+                                                 @Value("${digitraffic.batch-load-size:500}") final int batchLoadSize,
+                                                 final TimeTableRowTOConverter timeTableRowTOConverter) {
+        super(jpqlWhereBuilder, jpqlOrderByBuilder, batchLoadSize);
+        this.timeTableRowTOConverter = timeTableRowTOConverter;
     }
 
     @Override
-    public String getFieldName() {
-        return "startTimeTableRow";
-    }
+    public String getTypeName() { return "JourneySection"; }
+
+    @Override
+    public String getFieldName() { return "startTimeTableRow"; }
 
     @Override
     public TimeTableRowId createKeyFromParent(final JourneySectionTO journeySectionTO) {
-        Integer beginTimeTableRowId = journeySectionTO.getBeginTimeTableRowId();
-        if (beginTimeTableRowId == null) {
-            beginTimeTableRowId = -1;
+        final Integer beginId = journeySectionTO.getBeginTimeTableRowId();
+        if (beginId == null) {
+            return null;
         }
-        return new TimeTableRowId(
-                beginTimeTableRowId,
-                journeySectionTO.getDepartureDate(),
-                journeySectionTO.getTrainNumber()
-        );
+        return new TimeTableRowId(beginId, journeySectionTO.getDepartureDate(), journeySectionTO.getTrainNumber());
     }
 
     @Override
@@ -53,28 +49,16 @@ public class JourneySectionToStartTimeTableRowLink extends OneToOneLink<TimeTabl
     }
 
     @Override
-    public TimeTableRowTO createChildTOFromTuple(final Tuple tuple) {
-        return timeTableRowTOConverter.convert(tuple);
+    public TimeTableRowTO createChildTOFromEntity(final TimeTableRow entity) {
+        return timeTableRowTOConverter.convertEntity(entity);
     }
 
     @Override
-    public Class getEntityClass() {
-        return TimeTableRow.class;
-    }
+    public Class<TimeTableRow> getEntityClass() { return TimeTableRow.class; }
 
     @Override
-    public Expression[] getFields() {
-        return AllFields.TIME_TABLE_ROW;
+    protected KeyWhereClause buildKeyWhereClause(final List<TimeTableRowId> keys) {
+        return simpleInClause(getEntityAlias() + ".id IN :keys", keys);
     }
-
-    @Override
-    public EntityPath getEntityTable() {
-        return QTimeTableRow.timeTableRow;
-    }
-
-    @Override
-    public BooleanExpression createWhere(final List<TimeTableRowId> keys) {
-        return TrainIdOptimizer.optimize(QTimeTableRow.timeTableRow.id, keys);
-    }
-
 }
+

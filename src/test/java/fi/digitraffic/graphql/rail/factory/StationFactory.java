@@ -13,12 +13,16 @@ public class StationFactory {
     private StationRepository stationRepository;
 
     public Station create(final String shortCode, final int uicCode, final String country) {
+        return createWithPassengerTraffic(shortCode, uicCode, country, true);
+    }
+
+    public Station createWithPassengerTraffic(final String shortCode, final int uicCode, final String country, final boolean passengerTraffic) {
         final Station station = new Station();
         station.countryCode = country;
         station.name = shortCode;
         station.shortCode = shortCode;
         station.id = (long) station.name.hashCode();
-        station.passengerTraffic = true;
+        station.passengerTraffic = passengerTraffic;
         station.longitude = 1D;
         station.latitude = 2D;
         station.type = StationTypeEnum.STATION;
