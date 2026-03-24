@@ -1,5 +1,6 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
@@ -190,5 +191,23 @@ public class SimpleTrainQueriesTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].commercialTrack").value("1"));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].cancelled").value(false));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].estimateSourceType").value("LIIKE_AUTOMATIC"));
+    }
+
+    @Test
+    public void timestampShouldAlwaysIncludeMilliseconds() throws Exception {
+        trainFactory.createBaseTrain(new TrainId(66L, LocalDate.of(2000, 1, 1)));
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2000-01-01") {
+                        timeTableRows {
+                            scheduledTime
+                        }
+                    }
+                }""");
+
+        // Timestamp must always use format yyyy-MM-dd'T'HH:mm:ss.SSS'Z' (exactly 3 decimal places)
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].timeTableRows[0].scheduledTime",
+                matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z")));
     }
 }
