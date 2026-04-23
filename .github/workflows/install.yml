@@ -108,7 +108,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: graphql-sbom.json
-          path: graphql-sbom.json
+          path: target/graphql-sbom.json
 
   deploy:
     if: ${{ always() && github.repository != 'tmfg/digitraffic-graphql' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
