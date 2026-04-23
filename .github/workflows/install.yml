@@ -82,7 +82,7 @@ jobs:
           
           docker buildx build \
             --no-cache \
-            --build-arg LOGCONF_FILE=conf/rail/graphql-lockback.xml \
+            --build-arg LOGCONF_FILE=conf/rail/graphql-logback.xml \
             --build-arg APP_FILE=rail-graphql.jar \
             --build-arg PROPERTY_FILE=conf/rail/graphql-${{ github.event.inputs.env }}.properties \
             --platform linux/arm64 \
