@@ -156,7 +156,7 @@ jobs:
           DIFF_ONLY: ${{ github.event.inputs['diff-only'] }}
           # the value of AWS_PROFILE is only used by the stack code, local AWS profile configurations are not being set up
           AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
-          STACK_NAME: Graphql{{$ github.events.input.env == 'prod' && 'Prod' || 'Test' }}
+          STACK_NAME: Graphql${{ github.event.inputs['env'] == 'prod' && 'Prod' || 'Test' }}
         working-directory: digitraffic-ci/aws/cdk/infra/scripts
         run: |
           pnpm install
