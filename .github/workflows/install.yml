@@ -3,16 +3,21 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: "Environment"
+        description: 'Environment'
         required: true
         type: environment
-        default: "beta"
+        default: 'beta'
       ref:
-        description: "Branch/tag/SHA of digitraffic-rail-graphql-private"
+        description: 'Branch/tag/SHA of digitraffic-rail-graphql-private'
         required: true
-        default: "master"
+        default: 'master'
+      diff-only:
+        description: "Only run diff"
+        required: true
+        type: boolean
+        default: false
       config-repo-branch:
-        description: "Config repo branch"
+        description: 'Config repo branch'
         default: master
         required: true
         type: string
@@ -26,6 +31,19 @@ jobs:
       actions: read
     environment: ${{ github.event.inputs.env }}
     steps:
+      - name: Log workflow inputs and environment
+        run: |
+          echo "## Workflow Inputs" >> $GITHUB_STEP_SUMMARY
+          echo "| Name | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| actor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| env | ${{ github.event.inputs.env }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ref | ${{ github.event.inputs.ref }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| diff-only | ${{ github.event.inputs.diff-only }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| config-repo-branch | ${{ github.event.inputs.config-repo-branch }} |" >> $GITHUB_STEP_SUMMARY
+          # echo "| db-install | ${{ github.event.inputs.db-install }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+        shell: bash
       - name: Checkout
         uses: actions/checkout@v6
         with:
@@ -34,7 +52,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: ${{ secrets.CONFIG_REPO_NAME }}
-          ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
+          ssh-key: ${{ secrets.CONFIG_SSH_PRIVATE_KEY }}
           ref: ${{ inputs.config-repo-branch }}
           path: digitraffic-ci
       - name: Setup Java
@@ -44,63 +62,110 @@ jobs:
           distribution: corretto
           cache: maven
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.AWS_ROLE }}
-          role-session-name: gh-actions-install-rail-graphql-${{ github.event.inputs.env }}
+          role-session-name: gh-actions-build-rail-graphql-${{ github.event.inputs.env }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Set capitalized app variable
-        run: |
-          APP_CAPITALIZED=$(echo ${{ github.event.inputs.app }} | awk '{print toupper(substr($0, 0, 1)) substr($0, 2)}')
-          echo "APP_CAPITALIZED=$APP_CAPITALIZED" >> $GITHUB_ENV
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
       - name: Build
         run: |
           mvn -f pom.xml install -e -U -DskipTests=true -Ddependency-check.skip=true
-          
+
           cp target/rail-graphql-0.0.1-SNAPSHOT.jar digitraffic-ci/aws/rail-graphql.jar
           cd digitraffic-ci/aws
           
           docker buildx build \
             --no-cache \
-            --build-arg JAR_FILE=rail-graphql.jar \
-            --build-arg PROPERTY_FILE=conf/rail-graphql-${{ github.event.inputs.env }}.properties \
-            --build-arg LOGCONF_FILE=conf/graphql-logback.xml \
+            --build-arg LOGCONF_FILE=conf/rail/graphql-lockback.xml \
+            --build-arg APP_FILE=rail-graphql.jar \
+            --build-arg PROPERTY_FILE=conf/rail/graphql-${{ github.event.inputs.env }}.properties \
             --platform linux/arm64 \
             --output type=docker \
-            --tag ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA} \
+            --tag ${{ secrets.ECR_URL }}/dt-rail-graphql-repository:${{ github.sha }}-${{ github.run_id }} \
             --pull=true \
             --file=docker/Dockerfile-rail-graphql .
           
-          docker push ${{ secrets.ECR_URL }}/rata-graphql:${GITHUB_SHA}
-      - name: Generate SBOM
+          docker push ${{ secrets.ECR_URL }}/dt-rail-graphql-repository:${{ github.sha }}-${{ github.run_id }}
+      - name: Put backend tag in Parameter Store
+        run: |
+          aws ssm put-parameter \
+            --name "/rail/graphql/image-tag" \
+            --value "${{ github.sha }}-${{ github.run_id }}" \
+            --type "String" \
+            --overwrite
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+      - name: Generate graphql SBOM
         run: |
           mvn -DoutputName=graphql-sbom cyclonedx:makeBom
-      - name: Update GraphQL task definition
-        uses: tmfg/digitraffic-actions@update-task-def/v2
+      - name: Upload graphql SBOM
+        uses: actions/upload-artifact@v7
         with:
-          task-def-file-name: rail-${{ github.event.inputs.env }}-graphql
-          family-name: digitraffic-graphql
-          image-arn: ${{ secrets.ECR_URL }}/rata-graphql:${{ github.sha }}
-          aws-role: ${{ secrets.AWS_ROLE }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          ci-repo-url: ${{ secrets.CONFIG_REPO_NAME }}
-          ci-repo-branch: ${{ github.event.inputs.config-repo-branch }}
-          ci-ssh-key: ${{ secrets.CONFIG_REPO_SSH_KEY }}
-      - name: Update ECS service
-        uses: tmfg/digitraffic-actions@ecs-service-update/v1
+          name: graphql-sbom.json
+          path: graphql-sbom.json
+
+  deploy:
+    if: ${{ always() && github.repository != 'tmfg/digitraffic-graphql' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
+    environment: ${{ github.event.inputs.env }}
+    needs: install
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout CI-repo
+        uses: actions/checkout@v6
         with:
-          aws-role: ${{ secrets.AWS_ROLE }}
+          repository: ${{ secrets.CONFIG_REPO_NAME }}
+          ssh-key: ${{ secrets.CONFIG_SSH_PRIVATE_KEY }}
+          ref: ${{ inputs.config-repo-branch }}
+          path: digitraffic-ci
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+          role-session-name: gh-actions-install-rail-${{ github.event.inputs.env }}
           aws-region: ${{ secrets.AWS_REGION }}
-          task-definition: digitraffic-graphql
-          service-name: digitraffic-graphql
-          cluster-name: ${{ secrets.CLUSTER_NAME }}
-          desired-count: ${{ secrets.CONTAINER_COUNT }}
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Build CI/CDK Infra project
+        working-directory: digitraffic-ci/aws/cdk/infra
+        run: |
+          pnpm install
+          pnpm build:ci
+
+      - name: Diff and deploy
+        env:
+          DEPLOY_ALL_CHANGES: true
+          DIFF_ONLY: ${{ github.event.inputs['diff-only'] }}
+          # the value of AWS_PROFILE is only used by the stack code, local AWS profile configurations are not being set up
+          AWS_PROFILE: ${{ secrets.AWS_PROFILE }}
+        working-directory: digitraffic-ci/aws/cdk/infra/scripts
+        run: |
+          pnpm install
+          pnpm build
+          pnpm run start:diff-and-deploy Graphql{{ github.events.input.env == 'prod' && 'Prod' || 'Test' }}      
+
+      - name: Download graphql SBOM
+        uses: actions/download-artifact@v8
+        with:
+          name: graphql-sbom.json
 
       - name: Read SBOM config
         id: sbom-config
@@ -111,15 +176,15 @@ jobs:
 
           echo "common<<EOF" >> $GITHUB_OUTPUT
           cat digitraffic-ci/aws/sbom/config.json >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT            
+          echo "EOF" >> $GITHUB_OUTPUT                  
 
       - name: Configure AWS credentials for SBOM install
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ fromJson(steps.sbom-config.outputs.common).sbomUploadRoleArn }}
-          role-session-name: gh-actions-upload-sbom-rail-graphql-${{ github.event.inputs.env }}
+          role-session-name: gh-actions-upload-sbom-rail-${{ github.event.inputs.env }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Upload SBOM
+      - name: Upload SBOM files
         run: |
-          aws s3 cp target/graphql-sbom.json s3://${{ fromJson(steps.sbom-config.outputs.common).bucketArn }}/${{ fromJson(steps.sbom-config.outputs.config)[github.event.inputs.env]['graphql'] }}/${{ github.run_id }}-${{ github.sha }}.json
+          aws s3 cp graphql-sbom.json s3://${{ fromJson(steps.sbom-config.outputs.common).bucketArn }}/${{ fromJson(steps.sbom-config.outputs.config)[github.event.inputs.env]['graphql'] }}/${{ github.run_id }}-${{ github.sha }}.json
