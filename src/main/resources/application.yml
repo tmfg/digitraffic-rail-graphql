@@ -3,10 +3,8 @@ spring:
     url: jdbc:mysql:aws://localhost/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
     password:
-    driver-class-name: software.aws.rds.jdbc.mysql.Driver
   jpa:
     properties:
-      hibernate.dialect: 'org.hibernate.dialect.MySQLDialect'
       jakarta:
         persistence:
           query:
