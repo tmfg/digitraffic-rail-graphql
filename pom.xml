@@ -35,11 +35,10 @@
         </dependency>
 
         <dependency>
-            <groupId>software.aws.rds</groupId>
-            <artifactId>aws-mysql-jdbc</artifactId>
-            <version>1.1.15</version>
+            <groupId>software.amazon.jdbc</groupId>
+            <artifactId>aws-advanced-jdbc-wrapper</artifactId>
+            <version>3.3.0</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
