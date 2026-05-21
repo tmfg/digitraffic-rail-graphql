@@ -6,7 +6,12 @@ spring:
     driver-class-name: software.aws.rds.jdbc.mysql.Driver
   jpa:
     properties:
-      hibernate.dialect: 'org.hibernate.dialect.MySQLDialect'
+      hibernate:
+        dialect: 'org.hibernate.dialect.MySQLDialect'
+        cache:
+          use_second_level_cache: true
+          region.factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+        javax.cache.provider: org.ehcache.jsr107.EhcacheCachingProvider
       jakarta:
         persistence:
           query:
