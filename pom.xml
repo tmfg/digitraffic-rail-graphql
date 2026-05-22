@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>fi.digitraffic</groupId>
@@ -11,13 +11,17 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.13 and Tomcat ≥11.0.22
+             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat) -->
+        <netty.version>4.2.13.Final</netty.version>
+        <tomcat.version>11.0.22</tomcat.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.5</version>
-        <relativePath/>
+        <version>4.0.6</version>
+        <relativePath />
     </parent>
 
     <dependencies>
@@ -27,7 +31,8 @@
             <version>1.20.0</version>
         </dependency>
 
-        <!--This is used to add support for bootstrap.properties file-->
+        <!--This
+        is used to add support for bootstrap.properties file-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
@@ -78,7 +83,7 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>9.0</version>
         </dependency>
-        
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -171,9 +176,10 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>12.2.0</version>
+                        <version>12.2.2</version>
                         <configuration>
-                            <!--suppress UnresolvedMavenProperty -->
+                            <!--suppress
+                            UnresolvedMavenProperty -->
                             <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                             <failBuildOnCVSS>7</failBuildOnCVSS>
                             <suppressionFile>owasp-suppressions.xml</suppressionFile>
@@ -235,7 +241,8 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>2.21.0</version>
                 <configuration>
-                    <rulesUri>file:///${maven.multiModuleProjectDirectory}/versions-maven-plugin-rules.xml</rulesUri>
+                    <rulesUri>
+                        file:///${maven.multiModuleProjectDirectory}/versions-maven-plugin-rules.xml</rulesUri>
                 </configuration>
             </plugin>
 
