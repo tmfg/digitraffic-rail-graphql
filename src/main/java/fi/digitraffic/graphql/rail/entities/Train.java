@@ -11,8 +11,13 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 
 @Entity
+@Immutable
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Train {
     public enum TimetableType {
         REGULAR,

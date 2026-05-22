@@ -15,13 +15,13 @@ import org.hibernate.annotations.Immutable;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Station {
     public String name;
+    @Id
     public String shortCode;
     public int uicCode;
     public String countryCode;
     public Double longitude;
     public Double latitude;
 
-    @Id
     public Long id;
 
     public Boolean passengerTraffic;
