@@ -56,6 +56,19 @@ public class TrainToTrainTrackingMessagesLink
     }
 
     @Override
+    protected String getProjectionExpression() {
+        return "e.id, e.trainId.trainNumber, e.trainId.virtualDepartureDate, " +
+                "e.stationShortCode, e.nextStationShortCode, e.previousStationShortCode, " +
+                "e.version, e.timestamp, e.track_section, " +
+                "e.nextTrackSectionCode, e.previousTrackSectionCode, e.type";
+    }
+
+    @Override
+    protected TrainTrackingMessageTO createChildTOFromProjection(final Object[] row) {
+        return trainTrackingTOConverter.convertProjection(row);
+    }
+
+    @Override
     public Class<TrainTrackingMessage> getEntityClass() {
         return TrainTrackingMessage.class;
     }
