@@ -5,11 +5,14 @@ import static fi.digitraffic.graphql.rail.util.TestDataUtils.TPE;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.dateFormat;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessage;
 import static fi.digitraffic.graphql.rail.util.TestDataUtils.insertRamiMessageStation;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,11 +20,15 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.entities.PassengerInformationMessage;
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
+import jakarta.persistence.EntityManagerFactory;
 
 public class PassengerInformationMessageLinksIntegrationTest extends BaseWebMVCTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Test
     public void messageToMessageStations_linkShouldWork() throws Exception {
@@ -264,5 +271,45 @@ public class PassengerInformationMessageLinksIntegrationTest extends BaseWebMVCT
         result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video.text.fi").value("VideoFi"));
         result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video.deliveryRules.deliveryType").value("WHEN"));
         result.andExpect(jsonPath("$.data.passengerInformationMessages[0].video.deliveryRules.startTime").value("08:00:00"));
+    }
+
+    @Test
+    void messageStationProjectionDoesNotTriggerStationQueries() throws Exception {
+        // given — create a message with multiple stations
+        insertRamiMessage(jdbcTemplate, "1", 1, ZonedDateTime.now().minusHours(1).format(dateFormat),
+                ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), null, null,
+                PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE.name());
+        factoryService.getStationFactory().create(HKI, 1, "FI");
+        factoryService.getStationFactory().create(TPE, 3, "FI");
+        insertRamiMessageStation(jdbcTemplate, "1", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "1", 1, TPE);
+
+        // Enable Hibernate statistics
+        final Statistics stats = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+        stats.setStatisticsEnabled(true);
+        stats.clear();
+
+        // when — query only scalar fields of messageStations (no station link)
+        final ResultActions result = query("""
+                {
+                  passengerInformationMessages {
+                    messageStations {
+                      stationShortCode
+                      messageId
+                      messageVersion
+                    }
+                  }
+                }
+                """);
+
+        // then — Station must not be loaded via PassengerInformationMessageStation @ManyToOne
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations.length()").value(2));
+        final long stationLoads = stats.getEntityStatistics(
+                "fi.digitraffic.graphql.rail.entities.Station").getLoadCount();
+        assertEquals(0, stationLoads,
+                "Projection should not trigger any Station entity loads, but found " + stationLoads);
+
+        stats.setStatisticsEnabled(false);
     }
 }

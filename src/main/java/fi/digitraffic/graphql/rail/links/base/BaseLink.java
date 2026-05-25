@@ -25,8 +25,8 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.persistence.QueryTimeoutException;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -130,10 +130,10 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
     }
 
     /**
-     * Converts a projected row to a child TO.
+     * Converts a projected Tuple row to a child TO.
      * Only called when {@link #getProjectionExpression()} returns non-null.
      */
-    protected ChildTOType createChildTOFromProjection(final Object[] row) {
+    protected ChildTOType createChildTOFromProjection(final Tuple row) {
         throw new UnsupportedOperationException("Override createChildTOFromProjection when using projection");
     }
 
@@ -290,7 +290,6 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
      * Uses the same WHERE/ORDER BY logic as {@link #executeQuery} but selects scalar columns
      * instead of full entities, bypassing Hibernate entity hydration and association proxies.
      */
-    @SuppressWarnings("unchecked")
     private List<ChildTOType> executeProjectionQuery(
             final String projectionExpression,
             final List<KeyType> keys,
@@ -305,10 +304,10 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
 
         final var params = appendWhereAndOrderBy(jpql, keys, whereMap, orderByList);
 
-        final Query query = entityManager.createQuery(jpql.toString());
+        final TypedQuery<Tuple> query = entityManager.createQuery(jpql.toString(), Tuple.class);
         params.forEach(query::setParameter);
 
-        final List<Object[]> rows = query.getResultList();
+        final List<Tuple> rows = query.getResultList();
         return rows.stream()
                 .map(this::createChildTOFromProjection)
                 .toList();

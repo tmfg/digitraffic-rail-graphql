@@ -1,14 +1,12 @@
 package fi.digitraffic.graphql.rail.to;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-
 import org.springframework.stereotype.Component;
 
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessageTypeEnum;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
+import jakarta.persistence.Tuple;
 
 @Component
 public class TrainTrackingTOConverter {
@@ -30,30 +28,24 @@ public class TrainTrackingTOConverter {
                 null, null, null, null, null);
     }
 
-    private static final int PROJECTION_COLUMN_COUNT = 12;
-
     /**
-     * Converts a JPQL projection row to a TrainTrackingMessageTO.
-     * Row order must match the projection expression in TrainToTrainTrackingMessagesLink.
+     * Converts a JPQL Tuple row to a TrainTrackingMessageTO.
+     * Alias names must match the projection expression in TrainToTrainTrackingMessagesLink.
      */
-    public TrainTrackingMessageTO convertProjection(final Object[] row) {
-        if (row.length != PROJECTION_COLUMN_COUNT) {
-            throw new IllegalStateException(
-                    "Expected " + PROJECTION_COLUMN_COUNT + " projection columns but got " + row.length);
-        }
+    public TrainTrackingMessageTO convertProjection(final Tuple row) {
         return new TrainTrackingMessageTO(
-                ((Long) row[0]).intValue(),
-                (String) row[1],
-                (LocalDate) row[2],
-                (String) row[3],
-                (String) row[4],
-                (String) row[5],
-                ((Long) row[6]).toString(),
-                (ZonedDateTime) row[7],
-                (String) row[8],
-                (String) row[9],
-                (String) row[10],
-                getType((TrainTrackingMessageTypeEnum) row[11]),
+                row.get("id", Long.class).intValue(),
+                row.get("trainNumber", String.class),
+                row.get("virtualDepartureDate", java.time.LocalDate.class),
+                row.get("stationShortCode", String.class),
+                row.get("nextStationShortCode", String.class),
+                row.get("previousStationShortCode", String.class),
+                row.get("version", Long.class).toString(),
+                row.get("timestamp", java.time.ZonedDateTime.class),
+                row.get("track_section", String.class),
+                row.get("nextTrackSectionCode", String.class),
+                row.get("previousTrackSectionCode", String.class),
+                getType(row.get("type", TrainTrackingMessageTypeEnum.class)),
                 null, null, null, null, null);
     }
 

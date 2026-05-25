@@ -1,17 +1,25 @@
 package fi.digitraffic.graphql.rail.links;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import fi.digitraffic.graphql.rail.webmvc.BaseWebMVCTest;
+import jakarta.persistence.EntityManagerFactory;
 
 public class StationsToTimeTableRowsLinkTest extends BaseWebMVCTest {
 
     private static final LocalDate DATE = LocalDate.of(2024, 6, 1);
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Test
     public void linkShouldWork() throws Exception {
@@ -29,6 +37,51 @@ public class StationsToTimeTableRowsLinkTest extends BaseWebMVCTest {
                 }""");
 
         result.andExpect(jsonPath("$.data.stations[?(@.shortCode == 'HKI')].timeTableRows").isNotEmpty());
+    }
+
+    @Test
+    void projectionDoesNotTriggerStationQueriesViaStationPath() throws Exception {
+        // given — create train with timetable rows at stations
+        factoryService.getTrainFactory().createBaseTrain(1, DATE);
+
+        // Enable Hibernate statistics
+        final Statistics stats = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+        stats.setStatisticsEnabled(true);
+
+        // Baseline: root stations query WITHOUT timeTableRows child link
+        stats.clear();
+        query("""
+                {
+                    stations {
+                        shortCode
+                    }
+                }""");
+        final long baselineStationLoads = stats.getEntityStatistics(
+                "fi.digitraffic.graphql.rail.entities.Station").getLoadCount();
+
+        // when — query stations → timeTableRows with only scalar fields
+        stats.clear();
+        final ResultActions result = query("""
+                {
+                    stations {
+                        shortCode
+                        timeTableRows {
+                            type
+                            scheduledTime
+                            cancelled
+                        }
+                    }
+                }""");
+
+        // then — Station loads should not increase when timeTableRows uses projection
+        result.andExpect(jsonPath("$.data.stations[?(@.shortCode == 'HKI')].timeTableRows").isNotEmpty());
+        final long stationLoads = stats.getEntityStatistics(
+                "fi.digitraffic.graphql.rail.entities.Station").getLoadCount();
+        assertEquals(baselineStationLoads, stationLoads,
+                "Projection should not trigger additional Station entity loads via TimeTableRow, " +
+                "but found " + stationLoads + " vs baseline " + baselineStationLoads);
+
+        stats.setStatisticsEnabled(false);
     }
 }
 

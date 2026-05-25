@@ -14,6 +14,7 @@ import fi.digitraffic.graphql.rail.entities.TrainTrackingMessage;
 import fi.digitraffic.graphql.rail.entities.TrainTrackingMessageTypeEnum;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTypeTO;
+import jakarta.persistence.Tuple;
 
 class TrainTrackingTOConverterTest {
 
@@ -22,20 +23,20 @@ class TrainTrackingTOConverterTest {
     @Test
     void allScalarFieldsAreMappedFromProjectionRow() {
         // given
-        final Object[] row = new Object[]{
-                1L,                                                                                    // id
-                "66",                                                                                  // trainNumber
-                LocalDate.of(2024, 1, 1),                                                              // virtualDepartureDate
-                "HKI",                                                                                 // stationShortCode
-                "TPE",                                                                                 // nextStationShortCode
-                "PSL",                                                                                 // previousStationShortCode
-                42L,                                                                                   // version
-                ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")),               // timestamp
-                "TRACK_001",                                                                           // track_section
-                "TRACK_002",                                                                           // nextTrackSectionCode
-                "TRACK_000",                                                                           // previousTrackSectionCode
-                TrainTrackingMessageTypeEnum.OCCUPY                                                    // type
-        };
+        final Tuple row = TestTuple.builder()
+                .put("id", 1L)
+                .put("trainNumber", "66")
+                .put("virtualDepartureDate", LocalDate.of(2024, 1, 1))
+                .put("stationShortCode", "HKI")
+                .put("nextStationShortCode", "TPE")
+                .put("previousStationShortCode", "PSL")
+                .put("version", 42L)
+                .put("timestamp", ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")))
+                .put("track_section", "TRACK_001")
+                .put("nextTrackSectionCode", "TRACK_002")
+                .put("previousTrackSectionCode", "TRACK_000")
+                .put("type", TrainTrackingMessageTypeEnum.OCCUPY)
+                .build();
 
         // when
         final TrainTrackingMessageTO to = converter.convertProjection(row);
@@ -64,18 +65,20 @@ class TrainTrackingTOConverterTest {
     @Test
     void nullableFieldsAcceptNull() {
         // given
-        final Object[] row = new Object[]{
-                1L, "66", LocalDate.of(2024, 1, 1),
-                "HKI",
-                null,   // nextStationShortCode
-                null,   // previousStationShortCode
-                1L,
-                ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")),
-                "TRACK_001",
-                null,   // nextTrackSectionCode
-                null,   // previousTrackSectionCode
-                TrainTrackingMessageTypeEnum.OCCUPY
-        };
+        final Tuple row = TestTuple.builder()
+                .put("id", 1L)
+                .put("trainNumber", "66")
+                .put("virtualDepartureDate", LocalDate.of(2024, 1, 1))
+                .put("stationShortCode", "HKI")
+                .put("nextStationShortCode", null)
+                .put("previousStationShortCode", null)
+                .put("version", 1L)
+                .put("timestamp", ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")))
+                .put("track_section", "TRACK_001")
+                .put("nextTrackSectionCode", null)
+                .put("previousTrackSectionCode", null)
+                .put("type", TrainTrackingMessageTypeEnum.OCCUPY)
+                .build();
 
         // when
         final TrainTrackingMessageTO to = converter.convertProjection(row);
@@ -105,13 +108,20 @@ class TrainTrackingTOConverterTest {
         entity.previousTrackSectionCode = "SECTION_Z";
         entity.type = TrainTrackingMessageTypeEnum.RELEASE;
 
-        final Object[] row = new Object[]{
-                99L, "123", LocalDate.of(2024, 6, 15),
-                "TKL", "KVL", "HKI",
-                7L, timestamp,
-                "SECTION_A", "SECTION_B", "SECTION_Z",
-                TrainTrackingMessageTypeEnum.RELEASE
-        };
+        final Tuple row = TestTuple.builder()
+                .put("id", 99L)
+                .put("trainNumber", "123")
+                .put("virtualDepartureDate", LocalDate.of(2024, 6, 15))
+                .put("stationShortCode", "TKL")
+                .put("nextStationShortCode", "KVL")
+                .put("previousStationShortCode", "HKI")
+                .put("version", 7L)
+                .put("timestamp", timestamp)
+                .put("track_section", "SECTION_A")
+                .put("nextTrackSectionCode", "SECTION_B")
+                .put("previousTrackSectionCode", "SECTION_Z")
+                .put("type", TrainTrackingMessageTypeEnum.RELEASE)
+                .build();
 
         // when
         final TrainTrackingMessageTO fromEntity = converter.convertEntity(entity);
@@ -135,13 +145,20 @@ class TrainTrackingTOConverterTest {
     @Test
     void releaseTypeIsCorrectlyMapped() {
         // given
-        final Object[] row = new Object[]{
-                1L, "1", LocalDate.of(2024, 1, 1),
-                "HKI", null, null,
-                1L, ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")),
-                "T1", null, null,
-                TrainTrackingMessageTypeEnum.RELEASE
-        };
+        final Tuple row = TestTuple.builder()
+                .put("id", 1L)
+                .put("trainNumber", "1")
+                .put("virtualDepartureDate", LocalDate.of(2024, 1, 1))
+                .put("stationShortCode", "HKI")
+                .put("nextStationShortCode", null)
+                .put("previousStationShortCode", null)
+                .put("version", 1L)
+                .put("timestamp", ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")))
+                .put("track_section", "T1")
+                .put("nextTrackSectionCode", null)
+                .put("previousTrackSectionCode", null)
+                .put("type", TrainTrackingMessageTypeEnum.RELEASE)
+                .build();
 
         // when
         final TrainTrackingMessageTO to = converter.convertProjection(row);

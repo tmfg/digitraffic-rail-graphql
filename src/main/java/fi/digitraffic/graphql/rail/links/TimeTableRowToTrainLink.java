@@ -15,6 +15,7 @@ import fi.digitraffic.graphql.rail.model.TrainTO;
 import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTOConverter;
+import jakarta.persistence.Tuple;
 
 @Component
 public class TimeTableRowToTrainLink extends OneToOneLink<TrainId, TimeTableRowTO, Train, TrainTO> {
@@ -48,6 +49,18 @@ public class TimeTableRowToTrainLink extends OneToOneLink<TrainId, TimeTableRowT
     @Override
     public TrainTO createChildTOFromEntity(final Train entity) {
         return trainTOConverter.convertEntity(entity);
+    }
+
+    @Override
+    protected String getProjectionExpression() {
+        return "e.cancelled AS cancelled, e.commuterLineid AS commuterLineid, e.deleted AS deleted, e.id.departureDate AS departureDate, " +
+                "e.operatorShortCode AS operatorShortCode, e.runningCurrently AS runningCurrently, e.timetableAcceptanceDate AS timetableAcceptanceDate, " +
+                "e.timetableType AS timetableType, e.id.trainNumber AS trainNumber, e.version AS version, e.trainTypeId AS trainTypeId, e.trainCategoryId AS trainCategoryId";
+    }
+
+    @Override
+    protected TrainTO createChildTOFromProjection(final Tuple row) {
+        return trainTOConverter.convertProjection(row);
     }
 
     @Override

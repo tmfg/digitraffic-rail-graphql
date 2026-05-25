@@ -14,6 +14,7 @@ import fi.digitraffic.graphql.rail.links.base.KeyWhereClause;
 import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageStationTOConverter;
+import jakarta.persistence.Tuple;
 
 @Component
 public class PassengerInformationMessageToMessageStationLink
@@ -52,6 +53,16 @@ public class PassengerInformationMessageToMessageStationLink
     @Override
     public PassengerInformationMessageStationTO createChildTOFromEntity(final PassengerInformationMessageStation entity) {
         return stationTOConverter.convertEntity(entity);
+    }
+
+    @Override
+    protected String getProjectionExpression() {
+        return "e.stationShortCode AS stationShortCode, e.messageId AS messageId, e.messageVersion AS messageVersion";
+    }
+
+    @Override
+    protected PassengerInformationMessageStationTO createChildTOFromProjection(final Tuple row) {
+        return stationTOConverter.convertProjection(row);
     }
 
     @Override

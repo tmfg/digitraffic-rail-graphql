@@ -15,6 +15,7 @@ import fi.digitraffic.graphql.rail.model.TrainTrackingMessageTO;
 import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.TrainTrackingTOConverter;
+import jakarta.persistence.Tuple;
 
 @Component
 public class TrainToTrainTrackingMessagesLink
@@ -57,14 +58,14 @@ public class TrainToTrainTrackingMessagesLink
 
     @Override
     protected String getProjectionExpression() {
-        return "e.id, e.trainId.trainNumber, e.trainId.virtualDepartureDate, " +
-                "e.stationShortCode, e.nextStationShortCode, e.previousStationShortCode, " +
-                "e.version, e.timestamp, e.track_section, " +
-                "e.nextTrackSectionCode, e.previousTrackSectionCode, e.type";
+        return "e.id AS id, e.trainId.trainNumber AS trainNumber, e.trainId.virtualDepartureDate AS virtualDepartureDate, " +
+                "e.stationShortCode AS stationShortCode, e.nextStationShortCode AS nextStationShortCode, e.previousStationShortCode AS previousStationShortCode, " +
+                "e.version AS version, e.timestamp AS timestamp, e.track_section AS track_section, " +
+                "e.nextTrackSectionCode AS nextTrackSectionCode, e.previousTrackSectionCode AS previousTrackSectionCode, e.type AS type";
     }
 
     @Override
-    protected TrainTrackingMessageTO createChildTOFromProjection(final Object[] row) {
+    protected TrainTrackingMessageTO createChildTOFromProjection(final Tuple row) {
         return trainTrackingTOConverter.convertProjection(row);
     }
 
