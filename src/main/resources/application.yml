@@ -1,6 +1,7 @@
 spring:
   datasource:
     url: jdbc:mysql:aws://localhost/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
+    driver-class-name: software.amazon.jdbc.Driver
     username: root
     password:
   jpa:
