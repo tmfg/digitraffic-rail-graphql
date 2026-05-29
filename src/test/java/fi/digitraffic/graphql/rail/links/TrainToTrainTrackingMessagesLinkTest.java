@@ -94,7 +94,9 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
                 """);
 
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)]").exists());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)]").exists());
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)].trainTrackingMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)].trainTrackingMessages.length()").value(0));
     }
 }
 

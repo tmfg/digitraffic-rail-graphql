@@ -36,6 +36,7 @@ public class TrainJoinWhereTest extends BaseWebMVCTest {
                 """);
 
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)]").exists());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)]").doesNotExist());
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)].routesetMessages.length()").value(1));
     }
 
