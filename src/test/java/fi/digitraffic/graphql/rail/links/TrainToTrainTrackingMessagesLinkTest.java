@@ -70,5 +70,31 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)].trainTrackingMessages.length()").value(1));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)].trainTrackingMessages.length()").value(0));
     }
+
+    @Test
+    void trainTrackingWhereTrackSectionCode() throws Exception {
+        final var train1 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
+        final var train2 = factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, LocalDate.of(2020, 9, 17)));
+        factoryService.getTrainTrackingMessageFactory().create(train1.getFirst());
+
+        final ResultActions result = query("""
+                {
+                    trainsByDepartureDate(departureDate: "2020-09-17") {
+                      trainNumber
+                      trainTrackingMessages(
+                        where: {trackSectionCode: {equals: "TEST_UNIQUE"}}
+                      ) {
+                        station {
+                          name
+                        }
+                        trackSectionCode
+                      }
+                    }
+                  }
+                """);
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)]").exists());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)].trainTrackingMessages.length()").value(1));
+    }
 }
 
