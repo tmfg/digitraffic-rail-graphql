@@ -7,6 +7,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "train_running_message")
+/// @See RoutesetMessageForWhere
 public class TrainTrackingMessageForWhere {
     @Id
     public Long id;
