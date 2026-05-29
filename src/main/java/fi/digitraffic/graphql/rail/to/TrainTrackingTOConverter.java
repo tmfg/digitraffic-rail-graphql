@@ -20,7 +20,7 @@ public class TrainTrackingTOConverter {
                 entity.previousStationShortCode,
                 entity.version.toString(),
                 entity.timestamp,
-                entity.track_section,
+                entity.trackSectionCode,
                 entity.nextTrackSectionCode,
                 entity.previousTrackSectionCode,
                 getType(entity.type),

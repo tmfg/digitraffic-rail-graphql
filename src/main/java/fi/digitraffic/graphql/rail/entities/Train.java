@@ -65,7 +65,15 @@ public class Train {
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
-    private Set<TrainLocation> trainLocations;
+    private Set<TrainLocationForWhere> trainLocations;
+
+    @OneToMany(mappedBy = "train",
+            fetch = FetchType.LAZY)
+    private Set<TrainTrackingMessageForWhere> trainTrackingMessages;
+
+    @OneToMany(mappedBy = "train",
+            fetch = FetchType.LAZY)
+    private Set<RoutesetMessageForWhere> routesetMessages;
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
