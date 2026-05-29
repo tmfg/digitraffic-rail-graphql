@@ -7,13 +7,13 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Set;
 
-@Entity
-@Table(name = "routeset")
 /**
  * Why duplicate entity? The reason for this is, that Train has the primary key as (train_number, departure_date) with types (Long, LocalDate).
  * However routeset and trainrunningmessage has train_number as a string, because that's what we get from the integration.
  * So, for filtering to function correctly, a new set of entities (*ForWhere) has been created, having train_number as Long, allowing filtering.
  */
+@Entity
+@Table(name = "routeset")
 public class RoutesetMessageForWhere {
     @Id
     @JsonIgnore
