@@ -34,5 +34,49 @@ public class CompositionToJourneySectionsLinkTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion.length()").value(1));
         result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections.length()").value(2));
     }
+
+    @Test
+    public void whereOrderByAndTakeShouldWork() throws Exception {
+        final Train train = factoryService.getTrainFactory().createBaseTrain(1, DATE).getFirst();
+        factoryService.getCompositionFactory().create(train);
+        factoryService.getJourneySectionFactory().create(train, 120, 500, 1L, 2L);
+        factoryService.getJourneySectionFactory().create(train, 140, 600, 3L, 4L);
+
+        final ResultActions result = this.query("""
+                {
+                    compositionsGreaterThanVersion(version: "0") {
+                        journeySections(
+                            where: { maximumSpeed: { greaterThan: 120 } }
+                            orderBy: [{ maximumSpeed: DESCENDING }]
+                            take: 1
+                        ) {
+                            maximumSpeed
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections.length()").value(1));
+        result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections[0].maximumSpeed").value(140));
+    }
+
+    @Test
+    public void skipShouldWork() throws Exception {
+        final Train train = factoryService.getTrainFactory().createBaseTrain(1, DATE).getFirst();
+        factoryService.getCompositionFactory().create(train);
+        factoryService.getJourneySectionFactory().create(train, 120, 500, 1L, 2L);
+        factoryService.getJourneySectionFactory().create(train, 140, 600, 3L, 4L);
+
+        final ResultActions result = this.query("""
+                {
+                    compositionsGreaterThanVersion(version: "0") {
+                        journeySections(orderBy: [{ maximumSpeed: ASCENDING }], skip: 1, take: 1) {
+                            maximumSpeed
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections.length()").value(1));
+        result.andExpect(jsonPath("$.data.compositionsGreaterThanVersion[0].journeySections[0].maximumSpeed").value(140));
+    }
 }
 
