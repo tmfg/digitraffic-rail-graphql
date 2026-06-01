@@ -14,8 +14,9 @@ public class TrainTrackingMessageForWhere {
     public Long version;
 
     @Embedded
-    public StringVirtualDepartureDateTrainId trainId;
+    public TrainId trainId;
 
+    @Column(insertable = false, updatable = false)
     public LocalDate departureDate;
 
     @Column
@@ -37,7 +38,7 @@ public class TrainTrackingMessageForWhere {
     public TrainTrackingMessageTypeEnum type;
 
     @Column(updatable = false, insertable = false)
-    public String trainNumber;
+    public Long trainNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station", referencedColumnName = "shortCode", updatable = false, insertable = false)
