@@ -89,4 +89,21 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
 
         result.andExpect(jsonPath("$.errors").isNotEmpty());
     }
+
+    @Test
+    public void insideWithInvalidCoordinateCountShouldReturnError() throws Exception {
+        trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.queryAndExpectError("""
+                {
+                    trainsByDepartureDate(
+                        departureDate: "2024-01-01"
+                        where: { timeTableRows: { contains: { station: { location: { inside: [24.0, 60.0, 25.0] } } } } }
+                    ) {
+                        trainNumber
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").isNotEmpty());
+    }
 }

@@ -58,7 +58,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
     @Test
     void linkOnlyReturnsMessagesForCorrectTrain() throws Exception {
         final var train1 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
-        final var train2 = factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, LocalDate.of(2020, 9, 17)));
+        factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, LocalDate.of(2020, 9, 17)));
         factoryService.getTrainTrackingMessageFactory().create(train1.getFirst());
 
         final ResultActions result = query("""
@@ -79,7 +79,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
     @Test
     void trainTrackingWhereTrackSectionCode() throws Exception {
         final var train1 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, LocalDate.of(2020, 9, 17)));
-        final var train2 = factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, LocalDate.of(2020, 9, 17)));
+        factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, LocalDate.of(2020, 9, 17)));
         factoryService.getTrainTrackingMessageFactory().create(train1.getFirst());
 
         final ResultActions result = query("""
