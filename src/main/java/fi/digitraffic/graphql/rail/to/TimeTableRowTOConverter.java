@@ -6,6 +6,7 @@ import fi.digitraffic.graphql.rail.entities.TimeTableRow;
 import fi.digitraffic.graphql.rail.model.EstimateSourceTypeTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTO;
 import fi.digitraffic.graphql.rail.model.TimeTableRowTypeTO;
+import jakarta.persistence.Tuple;
 
 @Component
 public class TimeTableRowTOConverter extends BaseConverter {
@@ -64,5 +65,32 @@ public class TimeTableRowTOConverter extends BaseConverter {
         } else {
             throw new IllegalArgumentException(type.toString());
         }
+    }
+
+    /**
+     * Converts a JPQL Tuple row to a TimeTableRowTO.
+     * Alias names must match the projection expression in TrainToTimeTableRowLink / StationsToTimeTableRowsLink.
+     */
+    public TimeTableRowTO convertProjection(final Tuple row) {
+        return new TimeTableRowTO(
+                row.get("stationShortCode", String.class),
+                row.get("stationUICCode", Integer.class),
+                row.get("countryCode", String.class),
+                convertTimeTableRowType(row.get("type", TimeTableRow.TimeTableRowType.class)),
+                row.get("trainStopping", Boolean.class),
+                row.get("commercialStop", Boolean.class),
+                row.get("commercialTrack", String.class),
+                row.get("cancelled", Boolean.class),
+                row.get("scheduledTime", java.time.ZonedDateTime.class),
+                row.get("actualTime", java.time.ZonedDateTime.class),
+                nullableInt(row.get("differenceInMinutes", Long.class)),
+                row.get("liveEstimateTime", java.time.ZonedDateTime.class),
+                convertEstimateSource(row.get("estimateSource", TimeTableRow.EstimateSourceEnum.class)),
+                row.get("unknownDelay", Boolean.class),
+                row.get("stopSector", String.class),
+                row.get("attapId", Long.class).intValue(),
+                row.get("trainNumber", Long.class).intValue(),
+                row.get("departureDate", java.time.LocalDate.class),
+                null, null, null);                                        // station, train, causes
     }
 }
