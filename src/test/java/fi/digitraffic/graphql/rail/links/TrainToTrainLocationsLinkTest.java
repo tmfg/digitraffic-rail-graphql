@@ -33,5 +33,48 @@ public class TrainToTrainLocationsLinkTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(2));
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations[0].speed").value(100));
     }
+
+    @Test
+    public void whereOrderByAndTakeShouldWork() throws Exception {
+        final var train = factoryService.getTrainFactory().createBaseTrain(1, DATE).getFirst();
+        factoryService.getTrainLocationFactory().create(25.0, 60.0, 100, train);
+        factoryService.getTrainLocationFactory().create(25.1, 60.1, 110, train);
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2024-06-01") {
+                        trainNumber
+                        trainLocations(
+                            where: { speed: { greaterThan: 100 } }
+                            orderBy: [{ speed: DESCENDING }]
+                            take: 1
+                        ) {
+                            speed
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations[0].speed").value(110));
+    }
+
+    @Test
+    public void skipShouldWork() throws Exception {
+        final var train = factoryService.getTrainFactory().createBaseTrain(1, DATE).getFirst();
+        factoryService.getTrainLocationFactory().create(25.0, 60.0, 100, train);
+        factoryService.getTrainLocationFactory().create(25.1, 60.1, 110, train);
+
+        final ResultActions result = this.query("""
+                {
+                    trainsByDepartureDate(departureDate: "2024-06-01") {
+                        trainLocations(orderBy: [{ speed: ASCENDING }], skip: 1, take: 1) {
+                            speed
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainLocations[0].speed").value(110));
+    }
 }
 

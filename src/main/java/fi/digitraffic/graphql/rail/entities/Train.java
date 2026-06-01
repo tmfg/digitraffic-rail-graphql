@@ -11,8 +11,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 
 @Entity
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Train {
     public enum TimetableType {
         REGULAR,
@@ -62,6 +66,14 @@ public class Train {
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)
     private Set<TrainLocation> trainLocations;
+
+    @OneToMany(mappedBy = "train",
+            fetch = FetchType.LAZY)
+    private Set<TrainTrackingMessageForWhere> trainTrackingMessages;
+
+    @OneToMany(mappedBy = "train",
+            fetch = FetchType.LAZY)
+    private Set<RoutesetMessageForWhere> routesetMessages;
 
     @OneToMany(mappedBy = "train",
                fetch = FetchType.LAZY)

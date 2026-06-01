@@ -34,7 +34,7 @@ public class TrainTrackingMessageFactory {
         ttr.id = idSequence++;
         ttr.trainId = new StringVirtualDepartureDateTrainId(train.id.trainNumber.toString(), train.id.departureDate);
         ttr.departureDate = train.id.departureDate;
-        ttr.track_section = trackSectionCode;
+        ttr.trackSectionCode = trackSectionCode;
         ttr.nextTrackSectionCode = null;
         ttr.previousTrackSectionCode = null;
         ttr.stationShortCode = "TEST99";

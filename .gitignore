@@ -17,6 +17,7 @@
 !src/**/resources/**/*.svg
 !src/**/resources/**/*.graphqls
 !src/**/resources/**/*.properties
+!src/**/resources/ehcache.xml
 
 !.github/
 !.github/**/

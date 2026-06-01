@@ -32,7 +32,7 @@ class TrainTrackingTOConverterTest {
                 .put("previousStationShortCode", "PSL")
                 .put("version", 42L)
                 .put("timestamp", ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")))
-                .put("track_section", "TRACK_001")
+                .put("trackSectionCode", "TRACK_001")
                 .put("nextTrackSectionCode", "TRACK_002")
                 .put("previousTrackSectionCode", "TRACK_000")
                 .put("type", TrainTrackingMessageTypeEnum.OCCUPY)
@@ -74,7 +74,7 @@ class TrainTrackingTOConverterTest {
                 .put("previousStationShortCode", null)
                 .put("version", 1L)
                 .put("timestamp", ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")))
-                .put("track_section", "TRACK_001")
+                .put("trackSectionCode", "TRACK_001")
                 .put("nextTrackSectionCode", null)
                 .put("previousTrackSectionCode", null)
                 .put("type", TrainTrackingMessageTypeEnum.OCCUPY)
@@ -103,7 +103,7 @@ class TrainTrackingTOConverterTest {
         entity.previousStationShortCode = "HKI";
         entity.version = 7L;
         entity.timestamp = timestamp;
-        entity.track_section = "SECTION_A";
+        entity.trackSectionCode = "SECTION_A";
         entity.nextTrackSectionCode = "SECTION_B";
         entity.previousTrackSectionCode = "SECTION_Z";
         entity.type = TrainTrackingMessageTypeEnum.RELEASE;
@@ -117,7 +117,7 @@ class TrainTrackingTOConverterTest {
                 .put("previousStationShortCode", "HKI")
                 .put("version", 7L)
                 .put("timestamp", timestamp)
-                .put("track_section", "SECTION_A")
+                .put("trackSectionCode", "SECTION_A")
                 .put("nextTrackSectionCode", "SECTION_B")
                 .put("previousTrackSectionCode", "SECTION_Z")
                 .put("type", TrainTrackingMessageTypeEnum.RELEASE)
@@ -154,7 +154,7 @@ class TrainTrackingTOConverterTest {
                 .put("previousStationShortCode", null)
                 .put("version", 1L)
                 .put("timestamp", ZonedDateTime.of(2024, 1, 1, 10, 0, 0, 0, ZoneId.of("Europe/Helsinki")))
-                .put("track_section", "T1")
+                .put("trackSectionCode", "T1")
                 .put("nextTrackSectionCode", null)
                 .put("previousTrackSectionCode", null)
                 .put("type", TrainTrackingMessageTypeEnum.RELEASE)

@@ -60,7 +60,7 @@ public class TrainToTrainTrackingMessagesLink
     protected String getProjectionExpression() {
         return "e.id AS id, e.trainId.trainNumber AS trainNumber, e.trainId.virtualDepartureDate AS virtualDepartureDate, " +
                 "e.stationShortCode AS stationShortCode, e.nextStationShortCode AS nextStationShortCode, e.previousStationShortCode AS previousStationShortCode, " +
-                "e.version AS version, e.timestamp AS timestamp, e.track_section AS track_section, " +
+                "e.version AS version, e.timestamp AS timestamp, e.trackSectionCode AS trackSectionCode, " +
                 "e.nextTrackSectionCode AS nextTrackSectionCode, e.previousTrackSectionCode AS previousTrackSectionCode, e.type AS type";
     }
 

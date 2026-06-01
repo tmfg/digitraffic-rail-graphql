@@ -312,4 +312,58 @@ public class PassengerInformationMessageLinksIntegrationTest extends BaseWebMVCT
 
         stats.setStatisticsEnabled(false);
     }
+
+    @Test
+    public void messageStationsWhereOrderByAndTakeShouldWork() throws Exception {
+        insertRamiMessage(jdbcTemplate, "1", 1, ZonedDateTime.now().minusHours(1).format(dateFormat),
+                ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), null, null,
+                PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE.name());
+        insertRamiMessageStation(jdbcTemplate, "1", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "1", 1, TPE);
+
+        final ResultActions result = query("""
+                {
+                  passengerInformationMessages {
+                    id
+                    messageStations(
+                      where: { stationShortCode: { greaterThan: "HKI" } }
+                      orderBy: [{ stationShortCode: DESCENDING }]
+                      take: 1
+                    ) {
+                      stationShortCode
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations.length()").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations[0].stationShortCode").value(TPE));
+    }
+
+    @Test
+    public void messageStationsSkipShouldWork() throws Exception {
+        insertRamiMessage(jdbcTemplate, "1", 1, ZonedDateTime.now().minusHours(1).format(dateFormat),
+                ZonedDateTime.now().minusDays(1).format(dateFormat),
+                ZonedDateTime.now().plusDays(1).format(dateFormat), null, null,
+                PassengerInformationMessage.MessageType.SCHEDULED_MESSAGE.name());
+        insertRamiMessageStation(jdbcTemplate, "1", 1, HKI);
+        insertRamiMessageStation(jdbcTemplate, "1", 1, TPE);
+
+        final ResultActions result = query("""
+                {
+                  passengerInformationMessages {
+                    id
+                    messageStations(orderBy: [{ stationShortCode: ASCENDING }], skip: 1, take: 1) {
+                      stationShortCode
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations.length()").value(1));
+        result.andExpect(jsonPath("$.data.passengerInformationMessages[0].messageStations[0].stationShortCode").value(TPE));
+    }
 }

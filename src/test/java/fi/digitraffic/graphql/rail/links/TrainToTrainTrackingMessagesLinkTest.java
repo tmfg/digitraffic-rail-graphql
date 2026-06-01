@@ -67,7 +67,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
     @Test
     void linkOnlyReturnsMessagesForCorrectTrain() throws Exception {
         final var train1 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
-        final var train2 = factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, DATE));
+        factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, DATE));
         factoryService.getTrainTrackingMessageFactory().create(train1.getFirst());
 
         final ResultActions result = query("""
@@ -85,7 +85,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)].trainTrackingMessages.length()").value(0));
     }
 
-    // --- Projection regression tests (verify behavior is preserved after projection is implemented) ---
+    // --- Projection regression tests ---
 
     @Test
     void allFieldsArePopulatedCorrectly() throws Exception {
@@ -93,8 +93,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
         final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
         factoryService.getTrainTrackingMessageFactory().create(train.getFirst());
 
-        // when — query all non-hidden scalar fields
-        // Hidden fields: trainNumber, departureDate, stationShortCode, nextStationShortCode, previousStationShortCode
+        // when
         final ResultActions result = query("""
                 {
                   trainsByDepartureDate(departureDate: "2020-09-17") {
@@ -145,6 +144,76 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
     }
 
     @Test
+    void trainTrackingWhereTrackSectionCode() throws Exception {
+        final var train1 = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
+        factoryService.getTrainFactory().createBaseTrain(new TrainId(77L, DATE));
+        factoryService.getTrainTrackingMessageFactory().create(train1.getFirst());
+
+        final ResultActions result = query("""
+                {
+                    trainsByDepartureDate(departureDate: "2020-09-17") {
+                      trainNumber
+                      trainTrackingMessages(
+                        where: {trackSectionCode: {equals: "TEST_UNIQUE"}}
+                      ) {
+                        station {
+                          name
+                        }
+                        trackSectionCode
+                      }
+                    }
+                  }
+                """);
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)]").exists());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)]").exists());
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==66)].trainTrackingMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[?(@.trainNumber==77)].trainTrackingMessages.length()").value(0));
+    }
+
+    @Test
+    void trainTrackingOrderByAndTake() throws Exception {
+        final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
+        final var first = factoryService.getTrainTrackingMessageFactory().create(train.getFirst());
+        final var second = factoryService.getTrainTrackingMessageFactory().createWithTrackSection(train.getFirst(), "TEST_UNIQUE_2");
+        first.version = 1L;
+        second.version = 2L;
+        trainTrackingMessageRepository.save(first);
+        trainTrackingMessageRepository.save(second);
+
+        final ResultActions result = query("""
+                {
+                  trainsByDepartureDate(departureDate: "2020-09-17") {
+                    trainTrackingMessages(orderBy: [{ version: DESCENDING }], take: 1) {
+                      version
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainTrackingMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainTrackingMessages[0].version").value("2"));
+    }
+
+    @Test
+    void trainTrackingSkipShouldWork() throws Exception {
+        final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
+        factoryService.getTrainTrackingMessageFactory().create(train.getFirst());
+
+        final ResultActions result = query("""
+                {
+                  trainsByDepartureDate(departureDate: "2020-09-17") {
+                    trainTrackingMessages(skip: 99) {
+                      version
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainTrackingMessages").isEmpty());
+    }
+
+    @Test
     void orderByTimestampDescReversesDefaultOrder() throws Exception {
         // given
         final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
@@ -154,7 +223,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
         message2.timestamp = message2.timestamp.plusHours(1);
         trainTrackingMessageRepository.save(message2);
 
-        // when — default order is ASC by timestamp, so DESC should reverse
+        // when
         final ResultActions result = query("""
                 {
                   trainsByDepartureDate(departureDate: "2020-09-17") {
@@ -251,19 +320,19 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
 
     @Test
     void projectionDoesNotTriggerStationQueries() throws Exception {
-        // given — create a train with multiple tracking messages, each with a stationShortCode
+        // given
         final var train = factoryService.getTrainFactory().createBaseTrain(new TrainId(66L, DATE));
         factoryService.getStationFactory().create("TEST99", 99, "FI");
         for (int i = 0; i < 5; i++) {
             factoryService.getTrainTrackingMessageFactory().create(train.getFirst());
         }
 
-        // Enable Hibernate statistics to count entity loads
+        // Enable Hibernate statistics
         final Statistics stats = entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
         stats.setStatisticsEnabled(true);
         stats.clear();
 
-        // when — query only scalar fields (no station/train/trackSection links)
+        // when
         final ResultActions result = query("""
                 {
                   trainsByDepartureDate(departureDate: "2020-09-17") {
@@ -277,7 +346,7 @@ class TrainToTrainTrackingMessagesLinkTest extends BaseWebMVCTest {
                 }
                 """);
 
-        // then — projection bypasses entity loading, so Station must never be loaded
+        // then
         result.andExpect(jsonPath("$.data.trainsByDepartureDate[0].trainTrackingMessages.length()").value(5));
         final long stationLoads = stats.getEntityStatistics(
                 "fi.digitraffic.graphql.rail.entities.Station").getLoadCount();

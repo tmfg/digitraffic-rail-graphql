@@ -8,10 +8,10 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Operator implements Serializable {
-    @Id
     public Long id;
 
     @Column(name = "operator_short_code")
+    @Id
     public String shortCode;
     public Integer operatorUicCode;
     @Column(name = "operator_name")

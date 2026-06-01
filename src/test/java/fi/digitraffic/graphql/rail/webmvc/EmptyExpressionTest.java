@@ -38,4 +38,72 @@ public class EmptyExpressionTest extends BaseWebMVCTest {
 
         result.andExpect(jsonPath("$.errors.length()").value(2));
     }
+
+    @Test
+    public void invalidOrderByDirectionShouldReturnError() throws Exception {
+        trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.queryAndExpectError("""
+                {
+                    trainsByDepartureDate(departureDate: "2024-01-01") {
+                        trainNumber
+                        timeTableRows(orderBy: [{ scheduledTime: SIDEWAYS }]) {
+                            scheduledTime
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").isNotEmpty());
+    }
+
+    @Test
+    public void unknownFilterOperatorShouldReturnError() throws Exception {
+        trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.queryAndExpectError("""
+                {
+                    trainsByDepartureDate(departureDate: "2024-01-01") {
+                        trainNumber
+                        timeTableRows(where: { type: { bogus: "ARRIVAL" } }) {
+                            type
+                        }
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").isNotEmpty());
+    }
+
+    @Test
+    public void containsWithInvalidShapeShouldReturnError() throws Exception {
+        trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.queryAndExpectError("""
+                {
+                    trainsByDepartureDate(
+                        departureDate: "2024-01-01"
+                        where: { timeTableRows: { contains: 1 } }
+                    ) {
+                        trainNumber
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").isNotEmpty());
+    }
+
+    @Test
+    public void insideWithInvalidCoordinateCountShouldReturnError() throws Exception {
+        trainFactory.createBaseTrain(66, LocalDate.of(2024, 1, 1));
+
+        final ResultActions result = this.queryAndExpectError("""
+                {
+                    trainsByDepartureDate(
+                        departureDate: "2024-01-01"
+                        where: { timeTableRows: { contains: { station: { location: { inside: [24.0, 60.0, 25.0] } } } } }
+                    ) {
+                        trainNumber
+                    }
+                }""");
+
+        result.andExpect(jsonPath("$.errors").isNotEmpty());
+    }
 }
