@@ -1,5 +1,7 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
@@ -89,5 +91,86 @@ public class TrainLocationQueriesTest extends BaseWebMVCTest {
         result.andExpect(jsonPath("$.data.latestTrainLocations[3].train.trainNumber").value(68));
         result.andExpect(jsonPath("$.data.latestTrainLocations[4].train.trainNumber").value(67));
         result.andExpect(jsonPath("$.data.latestTrainLocations[5].train.trainNumber").value(66));
+    }
+
+    @Test
+    public void timestampShouldBeValidIso8601() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(80L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, 5, train);
+
+        final ResultActions result = query("{ latestTrainLocations { timestamp } }");
+        // NOTE: GraphQL uses ExtendedScalars.DateTime (ISO_OFFSET_DATE_TIME: variable fractional seconds, numeric
+        // offset or Z). Unlike REST it does NOT guarantee the fixed yyyy-MM-dd'T'HH:mm:ss.SSS'Z' format — a contract
+        // difference to preserve/decide during the PALA migration.
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].timestamp",
+                matchesPattern("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})")));
+    }
+
+    @Test
+    public void locationShouldBeFloatArray() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(81L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, 5, train);
+
+        final ResultActions result = query("{ latestTrainLocations { location } }");
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].location[0]").value(25.0));
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].location[1]").value(60.0));
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].location.length()").value(2));
+    }
+
+    @Test
+    public void accuracyShouldAppearWhenNonNull() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(82L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, 5, train);
+
+        final ResultActions result = query("{ latestTrainLocations { accuracy } }");
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].accuracy").value(5));
+    }
+
+    @Test
+    public void accuracyShouldBeNullWhenNull() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(83L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, null, train);
+
+        final ResultActions result = query("{ latestTrainLocations { accuracy } }");
+        // GraphQL returns an explicit null (unlike REST, which omits the field entirely)
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].accuracy").value(nullValue()));
+    }
+
+    @Test
+    public void speedShouldBePresentAndNonNull() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(84L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, 5, train);
+
+        // Pins the current speed : Int! (non-null) contract. PALA can return nopeus: null, which would violate this.
+        final ResultActions result = query("{ latestTrainLocations { speed } }");
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].speed").value(100));
+    }
+
+    @Test
+    public void isGpsLocationTrueShouldAppearInResponse() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(85L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, 5, true, train);
+
+        final ResultActions result = query("{ latestTrainLocations { isGpsLocation } }");
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].isGpsLocation").value(true));
+    }
+
+    @Test
+    public void isGpsLocationFalseShouldAppearInResponse() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(86L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, null, false, train);
+
+        final ResultActions result = query("{ latestTrainLocations { isGpsLocation } }");
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].isGpsLocation").value(false));
+    }
+
+    @Test
+    public void isGpsLocationShouldBeNonNull() throws Exception {
+        final Train train = trainFactory.createBaseTrain(new TrainId(87L, LocalDate.of(2000, 1, 1))).getFirst();
+        trainLocationFactory.create(25.0, 60.0, 100, 5, train);
+
+        // isGpsLocation : Boolean! (non-null) — every train location must report a value.
+        final ResultActions result = query("{ latestTrainLocations { isGpsLocation } }");
+        result.andExpect(jsonPath("$.data.latestTrainLocations[0].isGpsLocation").isBoolean());
     }
 }

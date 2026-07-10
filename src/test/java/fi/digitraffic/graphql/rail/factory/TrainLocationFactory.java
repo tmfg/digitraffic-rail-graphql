@@ -29,4 +29,28 @@ public class TrainLocationFactory {
 
         return trainLocationRepository.save(trainLocation);
     }
+
+    @Transactional
+    public TrainLocation create(final double x, final double y, final Integer speed, final Integer accuracy, final Train train) {
+        final TrainLocation trainLocation = new TrainLocation();
+        trainLocation.trainLocationId = new TrainLocationId(train.id.trainNumber, train.id.departureDate, ZonedDateTime.now());
+        trainLocation.speed = speed;
+        trainLocation.accuracy = accuracy;
+        trainLocation.location = geometryFactory.createPoint(new Coordinate(x, y));
+
+        return trainLocationRepository.save(trainLocation);
+    }
+
+    @Transactional
+    public TrainLocation create(final double x, final double y, final Integer speed, final Integer accuracy,
+                                final boolean isGpsLocation, final Train train) {
+        final TrainLocation trainLocation = new TrainLocation();
+        trainLocation.trainLocationId = new TrainLocationId(train.id.trainNumber, train.id.departureDate, ZonedDateTime.now());
+        trainLocation.speed = speed;
+        trainLocation.accuracy = accuracy;
+        trainLocation.isGpsLocation = isGpsLocation;
+        trainLocation.location = geometryFactory.createPoint(new Coordinate(x, y));
+
+        return trainLocationRepository.save(trainLocation);
+    }
 }
