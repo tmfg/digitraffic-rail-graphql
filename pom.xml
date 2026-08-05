@@ -11,16 +11,17 @@
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.13 and Tomcat ≥11.0.22
-             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat) -->
-        <netty.version>4.2.13.Final</netty.version>
-        <tomcat.version>11.0.22</tomcat.version>
+        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.16 and Tomcat ≥11.0.24
+             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat)
+             Modified 2026-08-05 to fix multiple cves -->
+        <netty.version>4.2.16.Final</netty.version>
+        <tomcat.version>11.0.24</tomcat.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.6</version>
+        <version>4.1.0</version>
         <relativePath />
     </parent>
 
