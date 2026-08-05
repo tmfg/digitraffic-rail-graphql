@@ -4,6 +4,19 @@
           Temporary suppressions, check and update these periodically
       -->
 
+    <suppress until="2026-11-01">
+        <notes><![CDATA[file name: httpcore5-5.4.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents\.core5/httpcore5@.*$</packageUrl>
+        <cpe>cpe:/a:apache:httpcomponents_core</cpe>
+    </suppress>
+
+
+    <suppress until="2026-11-01">
+        <notes><![CDATA[file name: httpcore5-h2-5.4.2.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents\.core5/httpcore5-h2@.*$</packageUrl>
+        <cpe>cpe:/a:apache:httpcomponents_core</cpe>
+    </suppress>
+
     <!--
           Permanent suppressions
       -->
