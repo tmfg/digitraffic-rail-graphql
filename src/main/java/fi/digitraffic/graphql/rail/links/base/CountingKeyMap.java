@@ -54,7 +54,7 @@ public class CountingKeyMap<KeyType, ResultType> {
                 if(values.size() > index) {
                     newList.add(values.get(index));
                 } else {
-//                    log.error("Could not get index {} for key {}", index, key);
+                    // this is by design
                     newList.add(values.get(values.size() - 1));
                 }
             }

@@ -84,6 +84,12 @@ class JpqlOrderByBuilderTest {
             assertThrows(AbortExecutionException.class, () ->
                     builder.build("e", List.of(Map.of("trainNumber", "UNKNOWN"))));
         }
+
+        @Test
+        void emptyNestedMapThrows() {
+            assertThrows(AbortExecutionException.class, () ->
+                    builder.build("e", List.of(Map.of("trainType", Map.of()))));
+        }
     }
 
     @Nested

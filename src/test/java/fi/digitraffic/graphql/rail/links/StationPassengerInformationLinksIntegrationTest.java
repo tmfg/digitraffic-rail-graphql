@@ -106,5 +106,45 @@ public class StationPassengerInformationLinksIntegrationTest extends BaseWebMVCT
         // Each stationMessage should have a station link back
         result.andExpect(jsonPath("$.data.stations[?(@.shortCode=='HKI')].stationMessages[0].station.shortCode").value("HKI"));
     }
+
+    @Test
+    public void stationMessagesWhereOrderByAndTakeShouldWork() throws Exception {
+        final ResultActions result = query("""
+                {
+                  stations(where: { shortCode: { equals: "TPE" } }) {
+                    shortCode
+                    stationMessages(
+                      where: { messageId: { greaterThan: "1" } }
+                      orderBy: [{ messageId: DESCENDING }]
+                      take: 1
+                    ) {
+                      messageId
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.data.stations.length()").value(1));
+        result.andExpect(jsonPath("$.data.stations[0].stationMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.stations[0].stationMessages[0].messageId").value("2"));
+    }
+
+    @Test
+    public void stationMessagesSkipShouldWork() throws Exception {
+        final ResultActions result = query("""
+                {
+                  stations(where: { shortCode: { equals: "TPE" } }) {
+                    shortCode
+                    stationMessages(orderBy: [{ messageId: ASCENDING }], skip: 1, take: 1) {
+                      messageId
+                    }
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.data.stations.length()").value(1));
+        result.andExpect(jsonPath("$.data.stations[0].stationMessages.length()").value(1));
+        result.andExpect(jsonPath("$.data.stations[0].stationMessages[0].messageId").value("2"));
+    }
 }
 

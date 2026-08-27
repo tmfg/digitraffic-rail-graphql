@@ -26,6 +26,7 @@ import graphql.schema.DataFetchingEnvironment;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 
 /**
@@ -119,6 +120,23 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         return KeyWhereClause.EMPTY;
     }
 
+    /**
+     * Returns a JPQL projection expression selecting scalar columns, or null for default entity loading.
+     * When non-null, queries use {@code SELECT <projection> FROM Entity e} instead of {@code SELECT e FROM Entity e},
+     * bypassing entity hydration and association proxies.
+     */
+    protected String getProjectionExpression() {
+        return null;
+    }
+
+    /**
+     * Converts a projected Tuple row to a child TO.
+     * Only called when {@link #getProjectionExpression()} returns non-null.
+     */
+    protected ChildTOType createChildTOFromProjection(final Tuple row) {
+        throw new UnsupportedOperationException("Override createChildTOFromProjection when using projection");
+    }
+
 
     public DataFetcher<CompletableFuture<ChildFieldType>> createFetcher() {
         return dataFetchingEnvironment -> {
@@ -182,15 +200,26 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
                     MDC.put("execution_id", batch.dfe.getExecutionId().toString());
 
                     futures.add(sqlExecutor.submit(() -> {
-                        final List<ChildEntityType> entities = executeQuery(
-                                batch.keys,
-                                batch.dfe.getArgument("where"),
-                                batch.dfe.getArgument("orderBy")
-                        );
+                        final List<ChildTOType> children;
+                        final String projection = getProjectionExpression();
 
-                        final List<ChildTOType> children = entities.stream()
-                                .map(this::createChildTOFromEntity)
-                                .toList();
+                        if (projection != null) {
+                            children = executeProjectionQuery(
+                                    projection,
+                                    batch.keys,
+                                    batch.dfe.getArgument("where"),
+                                    batch.dfe.getArgument("orderBy")
+                            );
+                        } else {
+                            final List<ChildEntityType> entities = executeQuery(
+                                    batch.keys,
+                                    batch.dfe.getArgument("where"),
+                                    batch.dfe.getArgument("orderBy")
+                            );
+                            children = entities.stream()
+                                    .map(this::createChildTOFromEntity)
+                                    .toList();
+                        }
 
                         return childGroupFunction.apply(batch.keys, children, batch.dfe);
                     }));
@@ -231,49 +260,7 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
         jpql.append("SELECT ").append(alias)
                 .append(" FROM ").append(entityName).append(" ").append(alias);
 
-        // Build WHERE clause
-        final var params = new java.util.HashMap<String, Object>();
-        final List<String> whereClauses = new ArrayList<>();
-
-        // Add base (fixed) where clause
-        final KeyWhereClause baseWhere = buildBaseWhereClause();
-        if (!baseWhere.jpql().isEmpty()) {
-            whereClauses.add(baseWhere.jpql());
-            params.putAll(baseWhere.params());
-        }
-
-        // Add key-based where clause
-        final KeyWhereClause keyWhere = buildKeyWhereClause(keys);
-        if (!keyWhere.jpql().isEmpty()) {
-            whereClauses.add(keyWhere.jpql());
-            params.putAll(keyWhere.params());
-        }
-
-        // Add user-provided where clause
-        if (whereMap != null && !whereMap.isEmpty()) {
-            final var whereResult = jpqlWhereBuilder.build(alias, replaceOffsetsWithZonedDateTimes(whereMap));
-            if (!whereResult.jpql().isEmpty()) {
-                whereClauses.add(whereResult.jpql());
-                params.putAll(whereResult.params());
-            }
-        }
-
-        if (!whereClauses.isEmpty()) {
-            jpql.append(" WHERE ").append(String.join(" AND ", whereClauses));
-        }
-
-        // Build ORDER BY clause
-        if (orderByList != null && !orderByList.isEmpty()) {
-            final String orderByClause = jpqlOrderByBuilder.build(alias, orderByList);
-            if (!orderByClause.isEmpty()) {
-                jpql.append(" ORDER BY ").append(orderByClause);
-            }
-        } else {
-            final String defaultOrderBy = getDefaultOrderBy();
-            if (defaultOrderBy != null && !defaultOrderBy.isEmpty()) {
-                jpql.append(" ORDER BY ").append(defaultOrderBy);
-            }
-        }
+        final var params = appendWhereAndOrderBy(jpql, keys, whereMap, orderByList);
 
         // Execute query
         final TypedQuery<ChildEntityType> query = entityManager.createQuery(jpql.toString(), entityClass);
@@ -296,5 +283,86 @@ public abstract class BaseLink<KeyType, ParentTOType, ChildEntityType, ChildTOTy
             }
         }
         return whereAsMap;
+    }
+
+    /**
+     * Executes a JPQL projection query, returning already-converted TOs.
+     * Uses the same WHERE/ORDER BY logic as {@link #executeQuery} but selects scalar columns
+     * instead of full entities, bypassing Hibernate entity hydration and association proxies.
+     */
+    private List<ChildTOType> executeProjectionQuery(
+            final String projectionExpression,
+            final List<KeyType> keys,
+            final Map<String, Object> whereMap,
+            final List<Map<String, Object>> orderByList) {
+
+        final String entityName = getEntityClass().getSimpleName();
+
+        final StringBuilder jpql = new StringBuilder();
+        jpql.append("SELECT ").append(projectionExpression)
+                .append(" FROM ").append(entityName).append(" ").append(getEntityAlias());
+
+        final var params = appendWhereAndOrderBy(jpql, keys, whereMap, orderByList);
+
+        final TypedQuery<Tuple> query = entityManager.createQuery(jpql.toString(), Tuple.class);
+        params.forEach(query::setParameter);
+
+        final List<Tuple> rows = query.getResultList();
+        return rows.stream()
+                .map(this::createChildTOFromProjection)
+                .toList();
+    }
+
+    /**
+     * Appends WHERE and ORDER BY clauses to the JPQL builder and returns the parameter map.
+     * Shared between {@link #executeQuery} and {@link #executeProjectionQuery}.
+     */
+    private Map<String, Object> appendWhereAndOrderBy(
+            final StringBuilder jpql,
+            final List<KeyType> keys,
+            final Map<String, Object> whereMap,
+            final List<Map<String, Object>> orderByList) {
+
+        final String alias = getEntityAlias();
+        final var params = new java.util.HashMap<String, Object>();
+        final List<String> whereClauses = new ArrayList<>();
+
+        final KeyWhereClause baseWhere = buildBaseWhereClause();
+        if (!baseWhere.jpql().isEmpty()) {
+            whereClauses.add(baseWhere.jpql());
+            params.putAll(baseWhere.params());
+        }
+
+        final KeyWhereClause keyWhere = buildKeyWhereClause(keys);
+        if (!keyWhere.jpql().isEmpty()) {
+            whereClauses.add(keyWhere.jpql());
+            params.putAll(keyWhere.params());
+        }
+
+        if (whereMap != null && !whereMap.isEmpty()) {
+            final var whereResult = jpqlWhereBuilder.build(alias, replaceOffsetsWithZonedDateTimes(whereMap));
+            if (!whereResult.jpql().isEmpty()) {
+                whereClauses.add(whereResult.jpql());
+                params.putAll(whereResult.params());
+            }
+        }
+
+        if (!whereClauses.isEmpty()) {
+            jpql.append(" WHERE ").append(String.join(" AND ", whereClauses));
+        }
+
+        if (orderByList != null && !orderByList.isEmpty()) {
+            final String orderByClause = jpqlOrderByBuilder.build(alias, orderByList);
+            if (!orderByClause.isEmpty()) {
+                jpql.append(" ORDER BY ").append(orderByClause);
+            }
+        } else {
+            final String defaultOrderBy = getDefaultOrderBy();
+            if (defaultOrderBy != null && !defaultOrderBy.isEmpty()) {
+                jpql.append(" ORDER BY ").append(defaultOrderBy);
+            }
+        }
+
+        return params;
     }
 }

@@ -18,6 +18,7 @@ import fi.digitraffic.graphql.rail.queries.PassengerInformationMessagesQuery;
 import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.PassengerInformationMessageTOConverter;
+import jakarta.persistence.Tuple;
 
 @Component
 public class TrainToPassengerInformationMessagesLink
@@ -59,6 +60,17 @@ public class TrainToPassengerInformationMessagesLink
     @Override
     public PassengerInformationMessageTO createChildTOFromEntity(final PassengerInformationMessage entity) {
         return passengerInformationMessageTOConverter.convertEntity(entity);
+    }
+
+    @Override
+    protected String getProjectionExpression() {
+        return "e.id.id AS id, e.id.version AS version, e.creationDateTime AS creationDateTime, " +
+                "e.startValidity AS startValidity, e.endValidity AS endValidity, e.trainDepartureDate AS trainDepartureDate, e.trainNumber AS trainNumber";
+    }
+
+    @Override
+    protected PassengerInformationMessageTO createChildTOFromProjection(final Tuple row) {
+        return passengerInformationMessageTOConverter.convertProjection(row);
     }
 
     @Override

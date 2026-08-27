@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -36,32 +33,26 @@ public class PassengerInformationMessage {
     public ZonedDateTime startValidity;
     public ZonedDateTime endValidity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumns({
             @JoinColumn(name = "trainDepartureDate",
                         referencedColumnName = "departureDate",
-                        nullable = false,
+                        nullable = true,
                         insertable = false,
                         updatable = false),
             @JoinColumn(name = "trainNumber",
                         referencedColumnName = "trainNumber",
-                        nullable = false,
+                        nullable = true,
                         insertable = false,
                         updatable = false) })
     public Train train;
     public LocalDate trainDepartureDate;
     public Long trainNumber;
-    @OneToMany(mappedBy = "message",
-               fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
     public List<PassengerInformationMessageStation> stations;
-    @OneToOne(mappedBy = "message",
-              fetch = FetchType.LAZY,
-              optional = true)
+    @OneToOne(mappedBy = "message", fetch = FetchType.LAZY, optional = true)
     public PassengerInformationAudio audio;
-    @OneToOne(mappedBy = "message",
-              fetch = FetchType.LAZY,
-              optional = true)
+    @OneToOne(mappedBy = "message", fetch = FetchType.LAZY, optional = true)
     public PassengerInformationVideo video;
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type")
@@ -69,10 +60,10 @@ public class PassengerInformationMessage {
     public ZonedDateTime deleted;
 
     public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
-                                       final ZonedDateTime startValidity,
-                                       final ZonedDateTime endValidity, final LocalDate trainDepartureDate, final Long trainNumber,
-                                       final List<PassengerInformationMessageStation> stations, final PassengerInformationAudio audio,
-                                       final PassengerInformationVideo video, final MessageType messageType) {
+            final ZonedDateTime startValidity,
+            final ZonedDateTime endValidity, final LocalDate trainDepartureDate, final Long trainNumber,
+            final List<PassengerInformationMessageStation> stations, final PassengerInformationAudio audio,
+            final PassengerInformationVideo video, final MessageType messageType) {
         this.id = id;
         this.creationDateTime = creationDateTime;
         this.startValidity = startValidity;
@@ -86,9 +77,9 @@ public class PassengerInformationMessage {
     }
 
     public PassengerInformationMessage(final PassengerInformationMessageId id, final ZonedDateTime creationDateTime,
-                                       final ZonedDateTime startValidity,
-                                       final ZonedDateTime endValidity,
-                                       final MessageType messageType) {
+            final ZonedDateTime startValidity,
+            final ZonedDateTime endValidity,
+            final MessageType messageType) {
         this.id = id;
         this.creationDateTime = creationDateTime;
         this.startValidity = startValidity;

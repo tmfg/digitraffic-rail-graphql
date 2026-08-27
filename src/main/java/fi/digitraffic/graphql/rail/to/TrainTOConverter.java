@@ -2,10 +2,10 @@ package fi.digitraffic.graphql.rail.to;
 
 import org.springframework.stereotype.Component;
 
-
 import fi.digitraffic.graphql.rail.entities.Train;
 import fi.digitraffic.graphql.rail.model.TimetableTypeTO;
 import fi.digitraffic.graphql.rail.model.TrainTO;
+import jakarta.persistence.Tuple;
 
 @Component
 public class TrainTOConverter extends BaseConverter {
@@ -38,5 +38,26 @@ public class TrainTOConverter extends BaseConverter {
         } else {
             throw new IllegalArgumentException(timetableType.toString());
         }
+    }
+
+    /**
+     * Converts a JPQL Tuple row to a TrainTO.
+     * Alias names must match the projection expression in TimeTableRowToTrainLink.
+     */
+    public TrainTO convertProjection(final Tuple row) {
+        return new TrainTO(
+                row.get("cancelled", Boolean.class),
+                row.get("commuterLineid", String.class),
+                row.get("deleted", Boolean.class),
+                row.get("departureDate", java.time.LocalDate.class),
+                row.get("operatorShortCode", String.class),
+                row.get("runningCurrently", Boolean.class),
+                row.get("timetableAcceptanceDate", java.time.ZonedDateTime.class),
+                convert(row.get("timetableType", Train.TimetableType.class)),
+                row.get("trainNumber", Long.class).intValue(),
+                nullableString(row.get("version", Long.class)),
+                nullableInt(row.get("trainTypeId", Long.class)),
+                nullableInt(row.get("trainCategoryId", Long.class)),
+                null, null, null, null, null, null, null, null);          // associations
     }
 }

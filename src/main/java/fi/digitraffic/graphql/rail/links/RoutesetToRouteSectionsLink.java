@@ -13,6 +13,7 @@ import fi.digitraffic.graphql.rail.model.RoutesetMessageTO;
 import fi.digitraffic.graphql.rail.queries.JpqlOrderByBuilder;
 import fi.digitraffic.graphql.rail.queries.JpqlWhereBuilder;
 import fi.digitraffic.graphql.rail.to.RoutesectionTOConverter;
+import jakarta.persistence.Tuple;
 
 @Component
 public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMessageTO, Routesection, RoutesectionTO> {
@@ -46,6 +47,17 @@ public class RoutesetToRouteSectionsLink extends OneToManyLink<Long, RoutesetMes
     @Override
     public RoutesectionTO createChildTOFromEntity(final Routesection entity) {
         return routesectionTOConverter.convertEntity(entity);
+    }
+
+    @Override
+    protected String getProjectionExpression() {
+        return "e.sectionId AS sectionId, e.commercialTrackId AS commercialTrackId, " +
+                "e.stationCode AS stationCode, e.routesetId AS routesetId, e.sectionOrder AS sectionOrder";
+    }
+
+    @Override
+    protected RoutesectionTO createChildTOFromProjection(final Tuple row) {
+        return routesectionTOConverter.convertProjection(row);
     }
 
     @Override
