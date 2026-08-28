@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql:aws://localhost/avoindata_test?autoReconnect=true&rewriteBatchedStatements=true&cachePrepStmts=true&useTimezone=true&serverTimezone=UTC
     username: root
     password:
-    driver-class-name: software.aws.rds.jdbc.mysql.Driver
+    driver-class-name: software.amazon.jdbc.Driver
   jpa:
     properties:
       hibernate.dialect: 'org.hibernate.dialect.MySQLDialect'
@@ -20,9 +20,9 @@ server:
 logging:
   level:
     root: INFO
-    #    org.springframework.web.servlet.DispatcherServlet: DEBUG
-#    org.hibernate.SQL: DEBUG
-#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+ #   org.hibernate.SQL: DEBUG
+ #   org.hibernate.orm.jdbc.bind: TRACE
+ #   org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 
 cache:
