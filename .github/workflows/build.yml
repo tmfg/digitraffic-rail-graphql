@@ -27,7 +27,7 @@ jobs:
       - name: Get database IP
         run: echo "db_addr=$(docker inspect dbrail_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Run tests
-        run: mvn -f pom.xml test -Dspring.datasource.url=jdbc:mysql://${{ env.db_addr }}/avoindata_test
+        run: mvn -f pom.xml test -Dspring.datasource.url=jdbc:aws-wrapper:mysql://${{ env.db_addr }}/avoindata_test
       - name: Publish test results
         uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # v3.0.0
         if: success() || failure()
