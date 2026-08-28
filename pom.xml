@@ -44,24 +44,17 @@
             <version>3.12.0</version>
             <scope>compile</scope>
         </dependency>
-
-        <!--This is used to add support for bootstrap.properties file-->
+        
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>5.0.2</version>
+            <groupId>software.amazon.jdbc</groupId>
+            <artifactId>aws-advanced-jdbc-wrapper</artifactId>
+            <version>3.3.0</version>
         </dependency>
 
         <dependency>
-            <groupId>io.awspring.cloud</groupId>
-            <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
-            <version>4.1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>software.aws.rds</groupId>
-            <artifactId>aws-mysql-jdbc</artifactId>
-            <version>1.1.15</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.6.0</version>
         </dependency>
 
 
