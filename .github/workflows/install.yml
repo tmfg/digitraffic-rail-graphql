@@ -83,8 +83,8 @@ jobs:
           docker buildx build \
             --no-cache \
             --build-arg APP_FILE=rail-graphql.jar \
-            --build-arg PROPERTY_FILE=conf/rail-graphql-${{ github.event.inputs.env }}.properties \
-            --build-arg LOGCONF_FILE=conf/graphql-logback.xml \
+            --build-arg PROPERTY_FILE=conf/rail/graphql-${{ github.event.inputs.env }}.properties \
+            --build-arg LOGCONF_FILE=conf/rail/graphql-logback.xml \
             --platform linux/arm64 \
             --output type=docker \
             --tag ${{ secrets.ECR_URL }}/dt-rail-graphql-repository:${{ github.sha }}-${{ github.run_id }} \
