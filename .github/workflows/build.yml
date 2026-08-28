@@ -25,7 +25,7 @@ jobs:
         run: |
           docker compose up -d
       - name: Get database IP
-        run: echo "db_addr=$(docker inspect dbrail_db_1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
+        run: echo "db_addr=$(docker inspect dbrail-db-1 -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}')" >> $GITHUB_ENV
       - name: Run tests
         run: mvn -f pom.xml test -Dspring.datasource.url=jdbc:aws-wrapper:mysql://${{ env.db_addr }}/avoindata_test
       - name: Publish test results
