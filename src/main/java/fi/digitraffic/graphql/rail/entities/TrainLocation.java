@@ -35,6 +35,8 @@ public class TrainLocation {
 
     public Integer accuracy;
 
+    public boolean isGpsLocation = true;
+
     @Column(updatable = false, insertable = false)
     public Long trainNumber;
 

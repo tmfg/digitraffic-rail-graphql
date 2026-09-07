@@ -17,6 +17,7 @@ and available at `http://localhost:8083/graphiql`.
 
 Sample query to be run:
 
+
 ```graphql
 {
   train(trainNumber: 51, departureDate: "2020-06-29") {
