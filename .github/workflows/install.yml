@@ -24,7 +24,7 @@ on:
 jobs:
   install:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       id-token: write
       contents: read
@@ -114,7 +114,7 @@ jobs:
     if: ${{ always() && github.repository != 'tmfg/digitraffic-rail-graphql' && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure')) }}
     environment: ${{ github.event.inputs.env }}
     needs: install
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       id-token: write
       contents: read
