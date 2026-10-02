@@ -18,6 +18,7 @@ public class TrainLocationTOConverter extends BaseConverter {
                 entity.trainLocationId.timestamp,
                 nullableInt(entity.trainLocationId.trainNumber),
                 List.of(entity.location.getX(), entity.location.getY()),
+                entity.isGpsLocation,
                 null
         );
     }

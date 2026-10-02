@@ -113,6 +113,7 @@ type TrainLocation {
     timestamp : DateTime!
     trainNumber : Int!
     location : [Float!]!
+    isGpsLocation : Boolean!
     train : Train
 }
 

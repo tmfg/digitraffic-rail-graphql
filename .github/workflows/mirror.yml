@@ -6,10 +6,10 @@ on:
 jobs:
   mirror-action:
     if: github.repository != 'tmfg/digitraffic-rail-graphql'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: mirror
-        uses: tmfg/digitraffic-actions@mirror/v2
+        uses: tmfg/digitraffic-actions@80082556de86d5f8643e40312ae9f4cdfcbd4b82 # mirror/v3
         with:
           mirror-repo: git@github.com:tmfg/digitraffic-rail-graphql.git
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
