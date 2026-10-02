@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>fi.digitraffic</groupId>
@@ -11,11 +10,8 @@
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <!-- TODO: Remove overrides when Spring Boot includes Netty ≥4.2.16 and Tomcat ≥11.0.24
-             Added 2026-05-22 to fix CVE-2026-42581 (Netty) and CVE-2026-41293 (Tomcat)
-             Modified 2026-08-05 to fix multiple cves -->
-        <netty.version>4.2.16.Final</netty.version>
-        <tomcat.version>11.0.24</tomcat.version>
+        <!-- TODO: Remove override when Spring Boot includes Tomcat ≥11.0.26 -->
+        <tomcat.version>11.0.26</tomcat.version>
     </properties>
 
     <parent>
@@ -51,10 +47,10 @@
             <version>4.4.0</version>
         </dependency>
 
+        <!-- Do not upgrade to 26.7.0 before db is updated to 8.4! -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <!-- do no upgrade to 26.7.0 before db is updated to 8.4! -->
             <version>9.7.0</version>
         </dependency>
 
