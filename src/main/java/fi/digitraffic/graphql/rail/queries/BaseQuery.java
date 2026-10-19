@@ -107,7 +107,7 @@ public abstract class BaseQuery<E, T> {
         return env -> {
             try {
                 return executeQuery(env);
-            } catch (final QueryTimeoutException e) {
+            } catch (final QueryTimeoutException | IllegalArgumentException e) {
                 throw new AbortExecutionException(e);
             }
         };
