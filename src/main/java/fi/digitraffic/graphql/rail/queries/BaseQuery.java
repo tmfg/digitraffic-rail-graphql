@@ -1,13 +1,5 @@
 package fi.digitraffic.graphql.rail.queries;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Value;
-
 import graphql.execution.AbortExecutionException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -15,6 +7,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.QueryTimeoutException;
 import jakarta.persistence.TypedQuery;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for GraphQL root queries.
@@ -110,8 +109,6 @@ public abstract class BaseQuery<E, T> {
                 return executeQuery(env);
             } catch (final QueryTimeoutException e) {
                 throw new AbortExecutionException(e);
-            } catch (final IllegalArgumentException e) {
-                throw new AbortExecutionException(e.getMessage());
             }
         };
     }

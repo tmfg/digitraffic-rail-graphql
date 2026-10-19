@@ -1,25 +1,15 @@
 package fi.digitraffic.graphql.rail.config.graphql;
 
-import static graphql.language.NodeChildrenContainer.newNodeChildrenContainer;
-import static graphql.language.ObjectTypeDefinition.CHILD_DIRECTIVES;
-import static graphql.language.ObjectTypeDefinition.CHILD_FIELD_DEFINITIONS;
-import static graphql.language.ObjectTypeDefinition.CHILD_IMPLEMENTZ;
-import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.google.common.io.Resources;
+import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
+import fi.digitraffic.graphql.rail.links.base.BaseLink;
+import fi.digitraffic.graphql.rail.queries.BaseQuery;
+import graphql.language.*;
+import graphql.scalars.ExtendedScalars;
+import graphql.schema.GraphQLSchema;
+import graphql.schema.idl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
@@ -28,29 +18,15 @@ import org.springframework.graphql.execution.GraphQlSource;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import fi.digitraffic.graphql.rail.config.DigitrafficConfig;
-import fi.digitraffic.graphql.rail.links.base.BaseLink;
-import fi.digitraffic.graphql.rail.queries.BaseQuery;
-import graphql.language.FieldDefinition;
-import graphql.language.InputObjectTypeDefinition;
-import graphql.language.InputValueDefinition;
-import graphql.language.ListType;
-import graphql.language.NodeChildrenContainer;
-import graphql.language.NonNullType;
-import graphql.language.ObjectTypeDefinition;
-import graphql.language.Type;
-import graphql.language.TypeDefinition;
-import graphql.language.TypeName;
-import graphql.scalars.ExtendedScalars;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
-import graphql.schema.idl.TypeRuntimeWiring;
+import static graphql.language.NodeChildrenContainer.newNodeChildrenContainer;
+import static graphql.language.ObjectTypeDefinition.*;
+import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 @Component
 public class GraphQLProvider {

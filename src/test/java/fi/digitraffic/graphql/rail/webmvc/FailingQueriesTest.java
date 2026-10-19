@@ -1,5 +1,8 @@
 package fi.digitraffic.graphql.rail.webmvc;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.not;
 import fi.digitraffic.graphql.rail.entities.TrainId;
 import fi.digitraffic.graphql.rail.factory.PassengerInformationMessageFactory;
 import fi.digitraffic.graphql.rail.factory.TrainFactory;
@@ -45,5 +48,27 @@ public class FailingQueriesTest extends BaseWebMVCTest {
         );
 
         result.andExpect(jsonPath("$.data.passengerInformationMessages.length()").value(2));
+    }
+
+    @Test
+    public void hibernateErrorsShouldNotBeSeen() throws Exception {
+        final ResultActions result = this.queryAndExpectError("""
+                {
+                  passengerInformationMessages(where:  {
+                     video:  {
+                        text:  {
+                           fi:  {
+                              equals: "moi"
+                           }
+                        }
+                     }
+                  }) {
+                    id
+                  }
+                }
+                """);
+
+        result.andExpect(jsonPath("$.errors").isNotEmpty())
+              .andExpect(jsonPath("$.errors[*].message").value(everyItem(not(containsString("Exception")))));
     }
 }
