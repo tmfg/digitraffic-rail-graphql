@@ -96,15 +96,16 @@ public class JpqlWhereBuilder {
 
     private String comparison(final String path, final Object value, final String op,
                                final String nullOp, final BuildContext ctx) {
+        final String resolvedPath = resolveJpaPath(path);
         if (value == null) {
             if (nullOp == null) {
                 throw new AbortExecutionException("Null value not supported for this operator");
             }
-            return path + " " + nullOp;
+            return resolvedPath + " " + nullOp;
         }
         final String param = ctx.nextParam();
         ctx.params.put(param, convertValue(value));
-        return path + " " + op + " :" + param;
+        return resolvedPath + " " + op + " :" + param;
     }
 
     private String logical(final List<Map<String, Object>> conditions, final String op,
@@ -130,15 +131,17 @@ public class JpqlWhereBuilder {
      * so an explicit subquery is required.
      */
     private String contains(final String path, final Map<String, Object> condition, final BuildContext ctx) {
+        final String resolvedPath = resolveJpaPath(path);
         final String subAlias = ctx.nextSubqueryAlias();
         final String innerCondition = buildInternal(subAlias, condition, ctx);
         if (innerCondition.isEmpty()) {
             return "";
         }
-        return "EXISTS (SELECT " + subAlias + " FROM " + path + " " + subAlias + " WHERE " + innerCondition + ")";
+        return "EXISTS (SELECT " + subAlias + " FROM " + resolvedPath + " " + subAlias + " WHERE " + innerCondition + ")";
     }
 
     private String inside(final String path, final List<Double> coords, final BuildContext ctx) {
+        final String resolvedPath = resolveJpaPath(path);
         if (coords == null || coords.size() != 4) {
             throw new AbortExecutionException(
                     "'inside' requires exactly 4 coordinates [xMin, yMin, xMax, yMax], got "
@@ -149,7 +152,37 @@ public class JpqlWhereBuilder {
             ctx.params.put(p[i], coords.get(i));
         }
         return String.format("(%s.x >= :%s AND %s.y >= :%s AND %s.x <= :%s AND %s.y <= :%s)",
-                path, p[0], path, p[1], path, p[2], path, p[3]);
+                resolvedPath, p[0], resolvedPath, p[1], resolvedPath, p[2], resolvedPath, p[3]);
+    }
+
+    /**
+     * GraphQL exposes transient nested DTO-like fields (e.g. video.text.fi) that do not exist as
+     * JPA paths. Translate those to actual mapped entity fields used in JPQL.
+     */
+    private String resolveJpaPath(final String path) {
+        return path
+                .replace(".video.text.fi", ".video.textFi")
+                .replace(".video.text.sv", ".video.textSv")
+                .replace(".video.text.en", ".video.textEn")
+                .replace(".audio.text.fi", ".audio.textFi")
+                .replace(".audio.text.sv", ".audio.textSv")
+                .replace(".audio.text.en", ".audio.textEn")
+                .replace(".video.deliveryRules.deliveryType", ".video.deliveryType")
+                .replace(".video.deliveryRules.startDateTime", ".video.startDateTime")
+                .replace(".video.deliveryRules.endDateTime", ".video.endDateTime")
+                .replace(".video.deliveryRules.startTime", ".video.startTime")
+                .replace(".video.deliveryRules.endTime", ".video.endTime")
+                .replace(".video.deliveryRules.weekDays", ".video.weekDays")
+                .replace(".audio.deliveryRules.deliveryType", ".audio.deliveryType")
+                .replace(".audio.deliveryRules.eventType", ".audio.eventType")
+                .replace(".audio.deliveryRules.startDateTime", ".audio.startDateTime")
+                .replace(".audio.deliveryRules.endDateTime", ".audio.endDateTime")
+                .replace(".audio.deliveryRules.startTime", ".audio.startTime")
+                .replace(".audio.deliveryRules.endTime", ".audio.endTime")
+                .replace(".audio.deliveryRules.weekDays", ".audio.weekDays")
+                .replace(".audio.deliveryRules.deliveryAt", ".audio.deliveryAt")
+                .replace(".audio.deliveryRules.repetitions", ".audio.repetitions")
+                .replace(".audio.deliveryRules.repeatEvery", ".audio.repeatEvery");
     }
 
     private Object convertValue(final Object value) {
