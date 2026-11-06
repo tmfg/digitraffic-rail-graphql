@@ -31,19 +31,10 @@ jobs:
       actions: read
     environment: ${{ github.event.inputs.env }}
     steps:
-      - name: Log workflow inputs and environment
-        run: |
-          echo "## Workflow Inputs" >> $GITHUB_STEP_SUMMARY
-          echo "| Name | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| actor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| env | ${{ github.event.inputs.env }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ref | ${{ github.event.inputs.ref }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| diff-only | ${{ github.event.inputs.diff-only }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| config-repo-branch | ${{ github.event.inputs.config-repo-branch }} |" >> $GITHUB_STEP_SUMMARY
-          # echo "| db-install | ${{ github.event.inputs.db-install }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-        shell: bash
+      - name: Log workflow inputs
+        uses: tmfg/digitraffic-actions@24e33d7e6d14273dde9094c5172e8b440a70440c # log-workflow-inputs/v1
+        with:
+          inputs: ${{ toJSON(inputs) }}
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
