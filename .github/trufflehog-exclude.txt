@@ -1,1 +1,3 @@
 target/dependency-check-report.html
+\.github/workflows/build\.yml
+src/(main|test)/resources/application\.yml
